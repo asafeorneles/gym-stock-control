@@ -1,0 +1,13 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_gym_stock_control
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gym_stock_control_api
+    ports:
+      - "3306:3306"
+    volumes:
+      - gym_stock_control_data:/var/lib/mysql
+volumes:
+  gym_stock_control_data:
