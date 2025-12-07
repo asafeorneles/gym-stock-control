@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class ProductInventory {
         this.updated_date = LocalDateTime.now();
     }
 
+    @Builder
     public ProductInventory(Product product, int quantity, int lowStockThreshold) {
         this.product = product;
         this.quantity = quantity;
