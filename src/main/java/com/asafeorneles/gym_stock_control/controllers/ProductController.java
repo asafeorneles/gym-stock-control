@@ -31,4 +31,9 @@ public class ProductController {
     public ResponseEntity<ResponseProductDto> findProductById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductById(id));
     }
+
+    @GetMapping("/products/low-stock")
+    public ResponseEntity<List<ResponseProductDto>> findProductsWithLowStock (){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsWithLowStock());
+    }
 }
