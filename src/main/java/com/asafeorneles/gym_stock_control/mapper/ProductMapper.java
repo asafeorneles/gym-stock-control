@@ -9,6 +9,7 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 public class ProductMapper {
     public static ResponseProductDto productToResponseProduct(Product product) {
         return new ResponseProductDto(
+                product.getProductId(),
                 product.getName(),
                 product.getBrand(),
                 product.getPrice(),

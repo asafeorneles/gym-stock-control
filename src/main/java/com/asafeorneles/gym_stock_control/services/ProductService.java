@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @Service
@@ -48,6 +49,14 @@ public class ProductService {
 
     public List<ResponseProductDto> findProducts() {
         List<Product> productsFound = productRepository.findAll();
+        if (productsFound.isEmpty()){
+            throw new ErrorResponseException(HttpStatus.NOT_FOUND);
+        }
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
+    }
+
+    public ResponseProductDto findProductById(UUID id) {
+        Product productFound = productRepository.findById(id).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when Pei is not found
+        return ProductMapper.productToResponseProduct(productFound);
     }
 }
