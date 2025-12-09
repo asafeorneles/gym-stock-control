@@ -21,13 +21,9 @@ public class CategoryService {
     CategoryRepository categoryRepository;
 
     public ResponseCategoryDto createCategory(CreateCategoryDto createCategoryDto){
-        var category = new Category();
-        BeanUtils.copyProperties(createCategoryDto, category);
-        categoryRepository.save(category);
-        return new ResponseCategoryDto(
-                category.getCategoryId(),
-                category.getName(),
-                category.getDescription());
+        Category newCategory = CategoryMapper.createCategoryToCategory(createCategoryDto);
+        categoryRepository.save(newCategory);
+        return CategoryMapper.categoryToResponseCategory(newCategory);
     }
 
     public List<ResponseCategoryDto> findCategory() {
