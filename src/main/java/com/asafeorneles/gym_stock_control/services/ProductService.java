@@ -60,7 +60,7 @@ public class ProductService {
         return ProductMapper.productToResponseProduct(productFound);
     }
 
-    public List<ResponseProductDto> findProductsWithLowStock() {
+    public List<ResponseProductDto> findProductsWithLowStock() { // Improve later
         List<ResponseProductDto> productsWithLowStock = productRepository.findAll()
                 .stream()
                 .filter(product -> product.getInventory().getQuantity() <= product.getInventory().getLowStockThreshold())
