@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
@@ -25,7 +26,7 @@ public class ProductService {
     CategoryRepository categoryRepository;
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
-        Category category = categoryRepository.findById(createProductDto.category_id())
+        Category category = categoryRepository.findById(createProductDto.categoryId())
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
@@ -69,6 +70,20 @@ public class ProductService {
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
         }
         return productsWithLowStock;
+    }
+
+
+    public ResponseProductDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
+        Product productFound = productRepository.findById(id).orElseThrow(()-> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
+
+        Category category = categoryRepository.findById(updateProductDto.categoryId())
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+
+        ProductMapper.updateProductToProduct(updateProductDto, productFound, category);
+
+        productRepository.save(productFound);
+
+        return ProductMapper.productToResponseProduct(productFound);
     }
 
 }

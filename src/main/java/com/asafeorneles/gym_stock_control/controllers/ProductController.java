@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,10 @@ public class ProductController {
     @GetMapping("/products/low-stock")
     public ResponseEntity<List<ResponseProductDto>> findProductsWithLowStock (){
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsWithLowStock());
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ResponseProductDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
     }
 }
