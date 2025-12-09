@@ -7,21 +7,8 @@ import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
-import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 
 public class ProductMapper {
-    public static ResponseProductDto productToResponseProduct(Product product) {
-        return new ResponseProductDto(
-                product.getProductId(),
-                product.getName(),
-                product.getBrand(),
-                product.getPrice(),
-                product.getCostPrice(),
-                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
-                new ResponseProductInventory(product.getInventory().getProductInventoryId(), product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
-        );
-    }
-
     public static Product createProductToProduct(CreateProductDto createProductDto, Category category){
         return Product.builder()
                 .name(createProductDto.name())
@@ -45,5 +32,17 @@ public class ProductMapper {
             product.getInventory().setQuantity(updateProductDto.quantity());
             product.getInventory().setLowStockThreshold(updateProductDto.lowStockThreshold());
         }
+    }
+
+    public static ResponseProductDto productToResponseProduct(Product product) {
+        return new ResponseProductDto(
+                product.getProductId(),
+                product.getName(),
+                product.getBrand(),
+                product.getPrice(),
+                product.getCostPrice(),
+                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
+                new ResponseProductInventory(product.getInventory().getProductInventoryId(), product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
+        );
     }
 }
