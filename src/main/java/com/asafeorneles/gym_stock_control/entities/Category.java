@@ -1,10 +1,7 @@
 package com.asafeorneles.gym_stock_control.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -26,4 +23,9 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    @Builder
+    public Category (String name, String description){
+        this.name = name;
+        this.description = description;
+    }
 }
