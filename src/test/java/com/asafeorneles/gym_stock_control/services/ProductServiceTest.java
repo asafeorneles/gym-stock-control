@@ -367,5 +367,15 @@ class ProductServiceTest {
             assertEquals(product.getProductId(), idCaptured);
             assertEquals(product, productCaptured);
         }
+
+        @Test
+        void shouldThrowExceptionWhenProductNotFound() {
+            // ARRANGE
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.empty());
+
+            // ASSERTS
+            assertThrows(ErrorResponseException.class, () -> productService.deleteProduct(product.getProductId()));
+            verify(productRepository, times(1)).findById(product.getProductId());
+        }
     }
 }
