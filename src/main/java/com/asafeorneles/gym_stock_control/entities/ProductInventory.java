@@ -40,10 +40,12 @@ public class ProductInventory {
 
     @Builder
     public ProductInventory(
+            UUID productInventoryId,
             Product product,
             int quantity,
             int lowStockThreshold) {
 
+        this.productInventoryId = productInventoryId;
         this.product = product;
         this.quantity = quantity;
         this.lowStockThreshold = lowStockThreshold;
