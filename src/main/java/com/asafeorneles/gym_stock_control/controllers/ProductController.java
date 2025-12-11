@@ -3,12 +3,14 @@ package com.asafeorneles.gym_stock_control.controllers;
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
+import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,8 +46,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping()
-    public ResponseEntity<List<ResponseProductDto>> findProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts());
+    public ResponseEntity<List<ResponseProductDto>> findProducts(@ParameterObject ProductQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a product by id")

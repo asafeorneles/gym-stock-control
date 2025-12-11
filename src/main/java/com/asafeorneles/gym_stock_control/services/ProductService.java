@@ -6,13 +6,16 @@ import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
+import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.services.factory.ProductInventoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,8 +50,8 @@ public class ProductService {
         return ProductMapper.productToResponseProduct(product);
     }
 
-    public List<ResponseProductDto> findProducts() {
-        List<Product> productsFound = productRepository.findAll();
+    public List<ResponseProductDto> findProducts(Specification<Product> specification) {
+        List<Product> productsFound = productRepository.findAll(specification);
         if (productsFound.isEmpty()) {
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
         }
