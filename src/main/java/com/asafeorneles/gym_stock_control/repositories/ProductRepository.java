@@ -12,10 +12,11 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     boolean existsByNameAndBrand(String name, String brand);
+
     @Query(value =
             """
-            SELECT p FROM Product p
-            WHERE p.inventory.quantity <= p.inventory.lowStockThreshold
-            """)
+                    SELECT p FROM Product p
+                    WHERE p.inventory.quantity <= p.inventory.lowStockThreshold
+                    """)
     List<Product> findProductWithLowStock();
 }

@@ -345,10 +345,11 @@ class ProductServiceTest {
         }
 
     }
+
     @Nested
     class deleteProduct {
         @Test
-        void shouldDeleteAProductsSuccessfully(){
+        void shouldDeleteAProductsSuccessfully() {
             // ARRANGE
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             doNothing().when(productRepository).delete(product);
