@@ -243,12 +243,11 @@ class ProductServiceTest {
         @Test
         void shouldFindAProductWithLowStockIdSuccessfully() {
             // ARRANGE
-            List<Product> products = List.of(product, productLowStock);
-            when(productRepository.findAll()).thenReturn(products);
+            when(productRepository.findProductWithLowStock()).thenReturn(List.of(productLowStock));
             // ACT
             List<ResponseProductDto> productsWithLowStockFound = productService.findProductsWithLowStock();
             // ASSERT
-            verify(productRepository, times(1)).findAll();
+            verify(productRepository, times(1)).findProductWithLowStock();
             assertFalse(productsWithLowStockFound.isEmpty());
             assertEquals(1, productsWithLowStockFound.size());
 
@@ -264,11 +263,11 @@ class ProductServiceTest {
         @Test
         void shouldThrowExceptionWhenProductWithLowStockIsNotFound() {
             // ARRANGE
-            when(productRepository.findAll()).thenReturn(List.of());
+            when(productRepository.findProductWithLowStock()).thenReturn(List.of());
 
             // ASSERT
             assertThrows(ErrorResponseException.class, () -> productService.findProductsWithLowStock());
-            verify(productRepository, times(1)).findAll();
+            verify(productRepository, times(1)).findProductWithLowStock();
         }
     }
 

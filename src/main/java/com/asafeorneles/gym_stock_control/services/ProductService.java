@@ -61,11 +61,11 @@ public class ProductService {
     }
 
     public List<ResponseProductDto> findProductsWithLowStock() { // Improve later
-        List<ResponseProductDto> productsWithLowStock = productRepository.findAll()
+        List<ResponseProductDto> productsWithLowStock = productRepository.findProductWithLowStock()
                 .stream()
-                .filter(product -> product.getInventory().getQuantity() <= product.getInventory().getLowStockThreshold())
                 .map(ProductMapper::productToResponseProduct)
                 .toList();
+
         if (productsWithLowStock.isEmpty()) {
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
         }
