@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.ErrorResponseException;
 
@@ -188,12 +189,12 @@ class ProductServiceTest {
         @Test
         void shouldFindAllProductsSuccessfully() {
             // ARRANGE
-            when(productRepository.findAll()).thenReturn(List.of(product));
+            when(productRepository.findAll(any(Specification.class))).thenReturn(List.of(product));
             // ACT
-            List<ResponseProductDto> productsFound = productService.findProducts();
+            List<ResponseProductDto> productsFound = productService.findProducts(Specification.unrestricted());
             // ASSERT
             assertFalse(productsFound.isEmpty());
-            verify(productRepository, times(1)).findAll();
+            verify(productRepository, times(1)).findAll(any(Specification.class));
             assertEquals(1, productsFound.size());
             assertEquals(product.getProductId(), productsFound.get(0).productId());
         }
@@ -201,11 +202,11 @@ class ProductServiceTest {
         @Test
         void shouldThrowExceptionWhenProductIsNotCreate() {
             // ASSERT
-            when(productRepository.findAll()).thenReturn(List.of());
+            when(productRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(RuntimeException.class, () -> productService.findProducts());
-            verify(productRepository, times(1)).findAll();
+            assertThrows(RuntimeException.class, () -> productService.findProducts(Specification.unrestricted()));
+            verify(productRepository, times(1)).findAll(any(Specification.class));
         }
 
     }
