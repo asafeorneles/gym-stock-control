@@ -43,7 +43,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Categories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ResponseCategoryDto>> findCategories() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategory());
     }
