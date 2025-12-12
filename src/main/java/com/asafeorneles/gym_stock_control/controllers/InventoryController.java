@@ -30,7 +30,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "404", description = "Product inventories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ResponseProductInventory>> findProductsInventories(){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductsInventories());
     }
