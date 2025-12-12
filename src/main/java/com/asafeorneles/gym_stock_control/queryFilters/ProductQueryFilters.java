@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static com.asafeorneles.gym_stock_control.specifications.ProductSpec.*;
 
@@ -18,6 +19,7 @@ public class ProductQueryFilters {
     private BigDecimal costPrice;
     private BigDecimal costPriceMax;
     private BigDecimal costPriceMin;
+    private UUID categoryId;
 
     public Specification<Product> toSpecification(){
         return nameContains(name)
@@ -27,6 +29,7 @@ public class ProductQueryFilters {
                 .and(priceLessThanOrEqualTo(priceMax))
                 .and(costPriceEqual(costPrice))
                 .and(costPriceGreaterThanOrEqualTo(costPriceMin))
-                .and(costPriceLessThanOrEqualTo(costPriceMax));
+                .and(costPriceLessThanOrEqualTo(costPriceMax))
+                .and(categoryIdEqual(categoryId));
     }
 }

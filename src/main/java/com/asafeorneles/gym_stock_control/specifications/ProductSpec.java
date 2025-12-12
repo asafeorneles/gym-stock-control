@@ -5,6 +5,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class ProductSpec {
     public static Specification<Product> nameContains(String name) {
@@ -76,6 +77,15 @@ public class ProductSpec {
                 return null;
             }
             return builder.lessThanOrEqualTo(root.get("costPrice"), costPrice);
+        };
+    }
+
+    public static Specification<Product> categoryIdEqual(UUID categoryId){
+        return (root, query, builder) -> {
+            if (ObjectUtils.isEmpty(categoryId)){
+                return null;
+            }
+            return builder.equal(root.get("category").get("categoryId"), categoryId);
         };
     }
 
