@@ -38,7 +38,7 @@ public class CategoryController {
 
     @Operation(summary = "Get all categories")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Category returned successfully"),
+            @ApiResponse(responseCode = "200", description = "Categories returned successfully"),
             @ApiResponse(responseCode = "404", description = "Categories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
