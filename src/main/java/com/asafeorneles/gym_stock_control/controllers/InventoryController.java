@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/inventory")
+@RequestMapping(value = "/inventory", produces = {"application/json"})
 @Tag(name = "Products Inventories")
 public class InventoryController {
     @Autowired
