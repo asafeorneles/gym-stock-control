@@ -24,6 +24,9 @@ public class SaleItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(name = "quantity")
+    private int quantity;
+
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
