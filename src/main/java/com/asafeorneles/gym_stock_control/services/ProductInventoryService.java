@@ -4,6 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInve
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantity;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventory;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
+import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,15 @@ public class ProductInventoryService {
         productInventoryRepository.save(productInventoryFound);
 
         return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
+    }
+
+    public void updateQuantity(List<SaleItem> saleItems){
+        for (SaleItem saleItem : saleItems){
+            int quantitySold = saleItem.getQuantity();
+            ProductInventory inventory = saleItem.getProduct().getInventory();
+
+            inventory.setQuantity(inventory.getQuantity() - quantitySold);
+            productInventoryRepository.save(inventory);
+        }
     }
 }
