@@ -21,19 +21,22 @@ public class SaleItem {
     private UUID saleItemId;
 
     @ManyToOne
+    @JoinColumn(name = "sale_id")
+    private Sale sale;
+
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "total_price")
-    private BigDecimal totalPrice;
+    @Column(name = "cost_price", nullable = false)
+    private BigDecimal costPrice;
 
-    @Column(name = "unity_price")
+    @Column(name = "unity_price", nullable = false)
     private BigDecimal unityPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "sale_id")
-    private Sale sale;
+    @Column(name = "total_price", nullable = false)
+    private BigDecimal totalPrice;
 }
