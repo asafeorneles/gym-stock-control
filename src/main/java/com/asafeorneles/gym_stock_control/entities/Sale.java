@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.entities;
 
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,6 +40,7 @@ public class Sale {
         this.created_date = LocalDateTime.now();
     }
 
+    @Builder
     public Sale(
             UUID saleId,
             List<SaleItem> saleItems,
