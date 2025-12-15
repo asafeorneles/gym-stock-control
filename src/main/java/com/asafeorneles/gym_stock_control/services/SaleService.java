@@ -55,11 +55,12 @@ public class SaleService {
             BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(createSaleItem.quantity()));
 
             SaleItem saleItem = SaleItem.builder()
+                    .sale(sale)
                     .product(product)
                     .quantity(createSaleItem.quantity())
-                    .totalPrice(totalPrice)
+                    .costPrice(product.getCostPrice())
                     .unityPrice(product.getPrice())
-                    .sale(sale)
+                    .totalPrice(totalPrice)
                     .build();
 
             saleItems.add(saleItem);
