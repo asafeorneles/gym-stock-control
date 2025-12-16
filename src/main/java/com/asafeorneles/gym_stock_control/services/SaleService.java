@@ -50,7 +50,7 @@ public class SaleService {
 
         for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
             Product product = productRepository.findById(createSaleItem.productId())
-                    .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+                    .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
 
             BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(createSaleItem.quantity()));
 
@@ -69,4 +69,13 @@ public class SaleService {
         return saleItems;
     }
 
+    public List<ResponseSaleDto> findSales() {
+        List<Sale> salesFound = saleRepository.findAll();
+
+        if (salesFound.isEmpty()){
+            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Sale does not exist
+        }
+
+        return salesFound.stream().map(SaleMapper::saleToResponseSale).toList();
+    }
 }
