@@ -1,6 +1,6 @@
 package com.asafeorneles.gym_stock_control.mapper;
 
-import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventory;
+import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
@@ -42,7 +42,7 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getCostPrice(),
                 new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
-                new ResponseProductInventory(product.getInventory().getProductInventoryId(), product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
+                new ResponseProductInventoryDto(product.getInventory().getProductInventoryId(), product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
         );
     }
 }
