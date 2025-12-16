@@ -3,8 +3,10 @@ package com.asafeorneles.gym_stock_control.controllers;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gym_stock_control.queryFilters.SaleQueryFilters;
 import com.asafeorneles.gym_stock_control.services.SaleService;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +28,8 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseSaleDto>> findSales(){
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.findSales());
+    public ResponseEntity<List<ResponseSaleDto>> findSales(@ParameterObject SaleQueryFilters filters){
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.findSales(filters.toSpecification()));
     }
 
     @GetMapping("/{id}")

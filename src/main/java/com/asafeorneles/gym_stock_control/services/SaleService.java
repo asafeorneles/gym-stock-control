@@ -12,6 +12,7 @@ import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,8 +72,8 @@ public class SaleService {
         return saleItems;
     }
 
-    public List<ResponseSaleDto> findSales() {
-        List<Sale> salesFound = saleRepository.findAll();
+    public List<ResponseSaleDto> findSales(Specification<Sale> specification) {
+        List<Sale> salesFound = saleRepository.findAll(specification);
 
         if (salesFound.isEmpty()){
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Sale does not exist

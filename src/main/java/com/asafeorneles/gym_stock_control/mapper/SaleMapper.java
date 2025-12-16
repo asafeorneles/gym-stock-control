@@ -16,7 +16,8 @@ public class SaleMapper {
                 sale.getSaleId(),
                 SaleItemMapper.saleItemsToResponseSaleItems(sale.getSaleItems()),
                 sale.getTotalPrice(),
-                sale.getPaymentMethod()
+                sale.getPaymentMethod(),
+                sale.getCreatedDate()
         );
     }
 }

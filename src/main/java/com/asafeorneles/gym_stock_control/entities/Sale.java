@@ -33,11 +33,19 @@ public class Sale {
     private PaymentMethod paymentMethod;
 
     @Column(name = "created_date")
-    private LocalDateTime created_date;
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
 
     @PrePersist
     public void prePersist() {
-        this.created_date = LocalDateTime.now();
+        this.createdDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
     }
 
     @Builder
