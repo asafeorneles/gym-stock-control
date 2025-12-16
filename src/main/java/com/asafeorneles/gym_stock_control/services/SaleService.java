@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
+import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethod;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
@@ -92,5 +93,15 @@ public class SaleService {
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
 
         saleRepository.delete(saleFound);
+    }
+
+    public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethod patchPaymentMethod) {
+        Sale saleFound = saleRepository.findById(id)
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+
+        saleFound.setPaymentMethod(patchPaymentMethod.paymentMethod());
+        saleRepository.save(saleFound);
+
+        return SaleMapper.saleToResponseSale(saleFound);
     }
 }

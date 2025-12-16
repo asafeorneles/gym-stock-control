@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
+import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethod;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gym_stock_control.services.SaleService;
 import jakarta.validation.Valid;
@@ -32,6 +33,11 @@ public class SaleController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseSaleDto> findSales(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.findSaleById(id));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResponseSaleDto> updatePaymentMethod(@PathVariable(name = "id") UUID id, PatchPaymentMethod patchPaymentMethod){
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.updatePaymentMethod(id, patchPaymentMethod));
     }
 
     @DeleteMapping("/{id}")
