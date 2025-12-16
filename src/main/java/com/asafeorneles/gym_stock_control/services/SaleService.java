@@ -19,6 +19,7 @@ import org.springframework.web.ErrorResponseException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class SaleService {
@@ -77,5 +78,12 @@ public class SaleService {
         }
 
         return salesFound.stream().map(SaleMapper::saleToResponseSale).toList();
+    }
+
+    public ResponseSaleDto findSaleById(UUID id) {
+        Sale saleFound = saleRepository.findById(id)
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+
+        return SaleMapper.saleToResponseSale(saleFound);
     }
 }

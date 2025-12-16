@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/sales", produces = {"application/json"})
@@ -26,5 +27,10 @@ public class SaleController {
     @GetMapping
     public ResponseEntity<List<ResponseSaleDto>> findSales(){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.findSales());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseSaleDto> findSales(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.findSaleById(id));
     }
 }
