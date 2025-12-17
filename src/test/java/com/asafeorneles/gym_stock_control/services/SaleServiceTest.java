@@ -178,8 +178,31 @@ class SaleServiceTest {
         }
     }
 
-    @Test
-    void findSaleById() {
+    @Nested
+    class findSaleById {
+        @Test
+        void shouldFindSaleByIdSuccessfully() {
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
+
+            //ACT
+            ResponseSaleDto saleFound = saleService.findSaleById(sale.getSaleId());
+
+            // ASSERT
+            assertEquals(sale.getTotalPrice(), saleFound.totalPrice());
+            assertEquals(sale.getPaymentMethod(), saleFound.paymentMethod());
+            verify(saleRepository, times(1)).findById(sale.getSaleId());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenSalesIsNotFound(){
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> saleService.findSaleById(sale.getSaleId()));
+            verify(saleRepository, times(1)).findById(sale.getSaleId());
+        }
     }
 
     @Test
