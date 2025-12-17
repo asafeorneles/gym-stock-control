@@ -42,7 +42,7 @@ public class SaleService {
         sale.setSaleItems(saleItems);
         sale.calculateTotalPrice();
 
-        productInventoryService.updateQuantity(saleItems);
+        productInventoryService.updateQuantityAfterSale(saleItems);
 
         saleRepository.save(sale);
         return SaleMapper.saleToResponseSale(sale);

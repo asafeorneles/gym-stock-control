@@ -51,7 +51,7 @@ public class ProductInventoryService {
         return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
     }
 
-    public void updateQuantity(List<SaleItem> saleItems){
+    public void updateQuantityAfterSale(List<SaleItem> saleItems){
         for (SaleItem saleItem : saleItems){
             int quantitySold = saleItem.getQuantity();
             ProductInventory inventory = saleItem.getProduct().getInventory();
