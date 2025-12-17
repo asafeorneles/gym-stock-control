@@ -44,7 +44,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PatchMapping(value = "/quantity/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductInventoryDto> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
+    public ResponseEntity<ResponseProductInventoryDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryQuantityDto patchProductInventoryQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
     }
 
@@ -57,7 +57,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PatchMapping(value = "/low-stock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductInventoryDto> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold){
+    public ResponseEntity<ResponseProductInventoryDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateLowStockThreshold(id, patchProductInventoryLowStockThreshold));
     }
 }
