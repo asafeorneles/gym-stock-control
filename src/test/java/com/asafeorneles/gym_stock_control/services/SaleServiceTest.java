@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
+import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
@@ -49,6 +50,7 @@ class SaleServiceTest {
     private Sale sale;
     private CreateSaleDto createSaleDto;
     private CreateSaleItemDto createSaleItemDto;
+    private PatchPaymentMethodDto patchPaymentMethodDto;
     @Captor
     ArgumentCaptor<Sale> saleCaptor;
 
@@ -86,6 +88,7 @@ class SaleServiceTest {
 
         createSaleItemDto = new CreateSaleItemDto(product.getProductId(), 5);
         createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX);
+        patchPaymentMethodDto = new PatchPaymentMethodDto(PaymentMethod.DEBIT_CARD);
     }
 
     @Nested
@@ -205,11 +208,89 @@ class SaleServiceTest {
         }
     }
 
-    @Test
-    void deleteSale() {
+    @Nested
+    class deleteSale{
+        @Test
+        void shouldDeleteSaleSuccessfully(){
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
+            doNothing().when(saleRepository).delete(sale);
+
+            // ACT
+            saleService.deleteSale(sale.getSaleId());
+
+            // ASSERT
+            verify(saleRepository).delete(saleCaptor.capture());
+            Sale saleCaptures = saleCaptor.getValue();
+
+            assertEquals(sale.getSaleId(), saleCaptures.getSaleId());
+            assertEquals(sale, saleCaptures);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenSalesIsNotFound(){
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> saleService.deleteSale(sale.getSaleId()));
+            verify(saleRepository, times(1)).findById(sale.getSaleId());
+            verify(saleRepository, never()).deleteById(sale.getSaleId());
+        }
+
     }
 
-    @Test
-    void updatePaymentMethod() {
+    @Nested
+    class updatePaymentMethod {
+        @Test
+        void shouldUpdateThePaymentMethodSuccessfully(){
+            // ARRANGE
+            PaymentMethod oldPaymentMethod = sale.getPaymentMethod();
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
+            when(saleRepository.save(any(Sale.class))).thenReturn(sale);
+
+            // ACT
+
+            ResponseSaleDto responseSaleDto = saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto);
+
+            // ASSERT
+            verify(saleRepository).save(saleCaptor.capture());
+            Sale saleCaptured = saleCaptor.getValue();
+
+            assertNotNull(responseSaleDto);
+
+            assertEquals(sale.getTotalPrice(), responseSaleDto.totalPrice());
+            assertEquals(sale.getTotalPrice(), saleCaptured.getTotalPrice());
+
+            assertEquals(saleCaptured.getPaymentMethod(), patchPaymentMethodDto.paymentMethod());
+            assertEquals(responseSaleDto.paymentMethod(), patchPaymentMethodDto.paymentMethod());
+
+            assertNotEquals(oldPaymentMethod, saleCaptured.getPaymentMethod());
+            assertNotEquals(oldPaymentMethod, responseSaleDto.paymentMethod());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenSalesIsNotFound(){
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            verify(saleRepository, times(1)).findById(sale.getSaleId());
+            verify(saleRepository, never()).save(any(Sale.class));
+        }
+
+        @Test
+        void shouldNotPersistSaleWhenSaleUpdateFails() {
+            // ARRANGE
+            when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
+            when(saleRepository.save(any(Sale.class))).thenThrow(RuntimeException.class);
+
+
+            // ASSERT
+            assertThrows(RuntimeException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            verify(saleRepository, times(1)).save(any());
+        }
+
     }
 }
