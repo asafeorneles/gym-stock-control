@@ -3,9 +3,7 @@ package com.asafeorneles.gym_stock_control.services;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
-import com.asafeorneles.gym_stock_control.entities.Category;
-import com.asafeorneles.gym_stock_control.entities.Product;
-import com.asafeorneles.gym_stock_control.entities.ProductInventory;
+import com.asafeorneles.gym_stock_control.entities.*;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -36,9 +34,8 @@ class ProductInventoryServiceTest {
     @InjectMocks
     ProductInventoryService productInventoryService;
 
-    private Category category;
-    private Product product;
-    private  ProductInventory productInventory;
+    private ProductInventory productInventory;
+    private SaleItem saleItem;
     private PatchProductInventoryQuantityDto patchProductInventoryQuantity;
     private PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold;
 
@@ -47,13 +44,13 @@ class ProductInventoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        category = Category.builder()
+        Category category = Category.builder()
                 .categoryId(UUID.randomUUID())
                 .name("Suplementos")
                 .description("Alimento em pó para maior eficiência")
                 .build();
 
-        product = Product.builder()
+        Product product = Product.builder()
                 .productId(UUID.randomUUID())
                 .name("Hipercalórico")
                 .brand("Growth")
@@ -67,6 +64,17 @@ class ProductInventoryServiceTest {
                 .product(product)
                 .quantity(10)
                 .lowStockThreshold(5)
+                .build();
+
+        product.setInventory(productInventory);
+
+        saleItem = SaleItem.builder().saleItemId(UUID.randomUUID())
+                .sale(new Sale())
+                .product(product)
+                .quantity(5)
+                .costPrice(product.getCostPrice())
+                .unityPrice(product.getPrice())
+                .totalPrice(product.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
         patchProductInventoryQuantity = new PatchProductInventoryQuantityDto(25);
@@ -168,6 +176,23 @@ class ProductInventoryServiceTest {
             // ASSERT
             assertThrows(RuntimeException.class, ()-> productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold));
             verify(productInventoryRepository, times(1)).save(any(ProductInventory.class));
+        }
+    }
+
+    @Nested
+    class updateQuantityAfterSale{
+        @Test
+        void shouldUpdatePaymentTheQuantityOfInventoriesAfterMakingASale(){
+            List<SaleItem> saleItems = List.of(saleItem);
+            int initialQuantity = saleItem.getProduct().getInventory().getQuantity();
+            when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
+
+            productInventoryService.updateQuantityAfterSale(saleItems);
+
+            verify(productInventoryRepository).save(productInventoryArgumentCaptor.capture());
+            ProductInventory inventoryCaptured = productInventoryArgumentCaptor.getValue();
+
+            assertEquals(initialQuantity - saleItem.getQuantity(), inventoryCaptured.getQuantity());
         }
     }
 }
