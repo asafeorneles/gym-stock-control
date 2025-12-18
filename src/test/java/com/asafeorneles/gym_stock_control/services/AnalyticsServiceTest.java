@@ -56,14 +56,6 @@ class AnalyticsServiceTest {
                 .costPrice(BigDecimal.valueOf(69.99))
                 .build();
 
-        Product product3 = Product.builder()
-                .productId(UUID.randomUUID())
-                .name("Creatina")
-                .brand("Growth")
-                .price(BigDecimal.valueOf(100.99))
-                .costPrice(BigDecimal.valueOf(69.99))
-                .build();
-
         SaleItem saleItem1 = SaleItem.builder().saleItemId(UUID.randomUUID())
                 .product(product1)
                 .quantity(2)
@@ -78,14 +70,6 @@ class AnalyticsServiceTest {
                 .costPrice(product2.getCostPrice())
                 .unityPrice(product2.getPrice())
                 .totalPrice(product2.getPrice().multiply(BigDecimal.valueOf(5)))
-                .build();
-
-        SaleItem saleItem3 = SaleItem.builder().saleItemId(UUID.randomUUID())
-                .product(product3)
-                .quantity(8)
-                .costPrice(product3.getCostPrice())
-                .unityPrice(product3.getPrice())
-                .totalPrice(product3.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
         topSellingProductsDto1 = new TopSellingProductsDto(
