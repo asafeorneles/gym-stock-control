@@ -14,8 +14,10 @@ Projeto de controle de estoque para academia e lojas de musculação.
 ## Status
 🚧 Em desenvolvimento
 
-## Funcionalidades previstas
+## Funcionalidades sendo feitas
 - Cadastro de produtos
 - Controle de inventário
 - Aviso de estoque baixo
+- Criação de vendas
 - Histórico de vendas
+- Endpoints para geraçãod e relatórios
