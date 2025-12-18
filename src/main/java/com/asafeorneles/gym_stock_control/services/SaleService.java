@@ -37,7 +37,7 @@ public class SaleService {
     @Transactional
     public ResponseSaleDto createSale(@Valid CreateSaleDto createSaleDto) {
         Sale sale = SaleMapper.createSaleToSale(createSaleDto);
-        List<SaleItem> saleItems = newSaleItemList(createSaleDto.saleItems(), productRepository, sale);
+        List<SaleItem> saleItems = newSaleItemList(createSaleDto.saleItems(), productRepository, sale, productInventoryService);
 
         sale.setSaleItems(saleItems);
         sale.calculateTotalPrice();
@@ -48,12 +48,14 @@ public class SaleService {
         return SaleMapper.saleToResponseSale(sale);
     }
 
-    public static List<SaleItem> newSaleItemList(List<CreateSaleItemDto> createSaleItemDtoList, ProductRepository productRepository, Sale sale) {
+    public static List<SaleItem> newSaleItemList(List<CreateSaleItemDto> createSaleItemDtoList, ProductRepository productRepository, Sale sale, ProductInventoryService productInventoryService) {
         List<SaleItem> saleItems = new ArrayList<>();
 
         for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
             Product product = productRepository.findById(createSaleItem.productId())
                     .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+
+            productInventoryService.validateQuantity(product, createSaleItem.quantity());
 
             BigDecimal totalPrice = product.getPrice().multiply(BigDecimal.valueOf(createSaleItem.quantity()));
 
@@ -68,14 +70,13 @@ public class SaleService {
 
             saleItems.add(saleItem);
         }
-
         return saleItems;
     }
 
     public List<ResponseSaleDto> findSales(Specification<Sale> specification) {
         List<Sale> salesFound = saleRepository.findAll(specification);
 
-        if (salesFound.isEmpty()){
+        if (salesFound.isEmpty()) {
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Sale does not exist
         }
 

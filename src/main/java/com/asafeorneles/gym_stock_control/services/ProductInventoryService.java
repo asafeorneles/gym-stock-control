@@ -3,6 +3,7 @@ package com.asafeorneles.gym_stock_control.services;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
+import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
@@ -58,6 +59,14 @@ public class ProductInventoryService {
 
             inventory.setQuantity(inventory.getQuantity() - quantitySold);
             productInventoryRepository.save(inventory);
+        }
+    }
+
+    public void validateQuantity(Product product, int quantityToBuy){
+        ProductInventory inventory = product.getInventory();
+
+        if (quantityToBuy > inventory.getQuantity()){
+            throw new IllegalArgumentException("insufficient quantity!"); // Create an Exception Handler for when quantity is not supported
         }
     }
 }
