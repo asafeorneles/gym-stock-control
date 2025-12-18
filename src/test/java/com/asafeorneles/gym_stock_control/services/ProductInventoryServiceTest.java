@@ -2,7 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
-import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
+import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gym_stock_control.entities.*;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +13,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.ErrorResponseException;
 
@@ -90,7 +89,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.findAll()).thenReturn(List.of(productInventory));
 
             //ACT
-            List<ResponseProductInventoryDto> inventoriesFound = productInventoryService.findProductsInventories();
+            List<ResponseProductInventoryDetailDto> inventoriesFound = productInventoryService.findProductsInventories();
 
             //ASSERT
             assertNotNull(inventoriesFound);
@@ -118,7 +117,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
             //ACT
-            ResponseProductInventoryDto responseProductInventory = productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity);
+            ResponseProductInventoryDetailDto responseProductInventory = productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity);
 
             //ASSERT
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
@@ -153,7 +152,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
             //ACT
-            ResponseProductInventoryDto responseProductInventory = productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold);
+            ResponseProductInventoryDetailDto responseProductInventory = productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold);
 
             //ASSERT
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());

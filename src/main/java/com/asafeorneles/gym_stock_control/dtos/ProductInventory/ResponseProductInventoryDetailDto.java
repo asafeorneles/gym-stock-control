@@ -1,6 +1,10 @@
 package com.asafeorneles.gym_stock_control.dtos.ProductInventory;
 
-public record ResponseProductInventoryDto(
+import java.util.UUID;
+
+public record ResponseProductInventoryDetailDto(
+        UUID productId,
+        String productName,
         int quantity,
         int lowStockThreshold
 ) {

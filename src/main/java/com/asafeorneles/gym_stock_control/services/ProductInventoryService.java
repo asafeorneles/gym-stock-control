@@ -2,7 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
-import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
+import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
@@ -22,34 +22,34 @@ public class ProductInventoryService {
     @Autowired
     ProductInventoryRepository productInventoryRepository;
 
-    public List<ResponseProductInventoryDto> findProductsInventories() {
+    public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
         if (productsInventoriesFound.isEmpty()){
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when ProductInventory is not found
         }
         return productsInventoriesFound.stream()
-                .map(ProductInventoryMapper::productInventoryToResponseProductInventory)
+                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
                 .toList();
     }
 
-    public ResponseProductInventoryDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
+    public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
+        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
-    public ResponseProductInventoryDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
+    public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
+        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
     public void updateQuantityAfterSale(List<SaleItem> saleItems){

@@ -19,12 +19,6 @@ public record UpdateProductDto(
         @DecimalMin(value = "0.01", message = "The min cost price is 0.01!")
         BigDecimal costPrice,
         @NotNull(message = "The category is mandatory!")
-        UUID categoryId,
-        @NotNull(message = "The quantity cannot be null!")
-        @Min(value = 1, message = "The min quantity is 1!")
-        int quantity,
-        @NotNull(message = "The low stock threshold cannot be null!")
-        @Min(value = 1, message = "The low stock threshold cannot be less than 1!")
-        int lowStockThreshold
+        UUID categoryId
 ) {
 }

@@ -3,13 +3,14 @@ package com.asafeorneles.gym_stock_control.mapper;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 
 public class ProductMapper {
-    public static Product createProductToProduct(CreateProductDto createProductDto, Category category){
+    public static Product createProductToProduct(CreateProductDto createProductDto, Category category) {
         return Product.builder()
                 .name(createProductDto.name())
                 .brand(createProductDto.brand())
@@ -19,19 +20,24 @@ public class ProductMapper {
                 .build();
     }
 
-    public static void updateProductToProduct(UpdateProductDto updateProductDto, Product product, Category category){
+    public static void updateProductToProduct(UpdateProductDto updateProductDto, Product product, Category category) {
         product.setName(updateProductDto.name());
         product.setBrand(updateProductDto.brand());
         product.setPrice(updateProductDto.price());
         product.setCostPrice(updateProductDto.costPrice());
         product.setCategory(category);
+    }
 
-        if (product.getInventory() == null){
-            throw new RuntimeException(); // Create an Exception Handler for when Inventory is null
-        } else {
-            product.getInventory().setQuantity(updateProductDto.quantity());
-            product.getInventory().setLowStockThreshold(updateProductDto.lowStockThreshold());
-        }
+    public static ResponseProductDetailDto productToResponseCreatedProduct(Product product) {
+        return new ResponseProductDetailDto(
+                product.getProductId(),
+                product.getName(),
+                product.getBrand(),
+                product.getPrice(),
+                product.getCostPrice(),
+                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
+                new ResponseProductInventoryDto(product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
+        );
     }
 
     public static ResponseProductDto productToResponseProduct(Product product) {
@@ -40,9 +46,7 @@ public class ProductMapper {
                 product.getName(),
                 product.getBrand(),
                 product.getPrice(),
-                product.getCostPrice(),
-                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
-                new ResponseProductInventoryDto(product.getInventory().getProductInventoryId(), product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold())
+                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription())
         );
     }
 }

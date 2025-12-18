@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
@@ -26,7 +27,7 @@ public class ProductService {
     @Autowired
     CategoryRepository categoryRepository;
 
-    public ResponseProductDto createProduct(CreateProductDto createProductDto) {
+    public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
         Category category = categoryRepository.findById(createProductDto.categoryId())
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
 
@@ -44,8 +45,8 @@ public class ProductService {
 
         productRepository.save(product);
 
-        // Product -> ResponseProductDto
-        return ProductMapper.productToResponseProduct(product);
+        // Product -> ResponseProductDetailDto
+        return ProductMapper.productToResponseCreatedProduct(product);
     }
 
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
@@ -61,10 +62,10 @@ public class ProductService {
         return ProductMapper.productToResponseProduct(productFound);
     }
 
-    public List<ResponseProductDto> findProductsWithLowStock() { // Improve later
-        List<ResponseProductDto> productsWithLowStock = productRepository.findProductWithLowStock()
+    public List<ResponseProductDetailDto> findProductsWithLowStock() { // Improve later
+        List<ResponseProductDetailDto> productsWithLowStock = productRepository.findProductWithLowStock()
                 .stream()
-                .map(ProductMapper::productToResponseProduct)
+                .map(ProductMapper::productToResponseCreatedProduct)
                 .toList();
 
         if (productsWithLowStock.isEmpty()) {
@@ -74,7 +75,7 @@ public class ProductService {
     }
 
 
-    public ResponseProductDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
+    public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
         Product productFound = productRepository.findById(id).orElseThrow(()-> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
 
         Category category = categoryRepository.findById(updateProductDto.categoryId())
@@ -84,7 +85,7 @@ public class ProductService {
 
         productRepository.save(productFound);
 
-        return ProductMapper.productToResponseProduct(productFound);
+        return ProductMapper.productToResponseCreatedProduct(productFound);
     }
 
     public void deleteProduct(UUID id) {

@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
@@ -35,7 +36,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
+    public ResponseEntity<ResponseProductDetailDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(createProductDto));
     }
 
@@ -70,7 +71,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/low-stock")
-    public ResponseEntity<List<ResponseProductDto>> findProductsWithLowStock (){
+    public ResponseEntity<List<ResponseProductDetailDto>> findProductsWithLowStock (){
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsWithLowStock());
     }
 
@@ -83,7 +84,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
+    public ResponseEntity<ResponseProductDetailDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
     }
 

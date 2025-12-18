@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -107,9 +110,7 @@ class ProductServiceTest {
                 "Growth",
                 BigDecimal.valueOf(100.99),
                 BigDecimal.valueOf(69.99),
-                category.getCategoryId(),
-                35,
-                8
+                category.getCategoryId()
         );
 
     }
@@ -122,11 +123,11 @@ class ProductServiceTest {
             when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
             when(productRepository.save(any(Product.class))).thenReturn(product);
             // ACT
-            ResponseProductDto responseProductDto = productService.createProduct(createProductDto);
+            ResponseProductDetailDto responseProductDetailDto = productService.createProduct(createProductDto);
             // ASSERTS
             verify(productRepository).save(productArgumentCaptor.capture());
             Product productCaptured = productArgumentCaptor.getValue();
-            assertNotNull(responseProductDto);
+            assertNotNull(responseProductDetailDto);
 
             assertEquals(category, productCaptured.getCategory());
 
@@ -139,14 +140,14 @@ class ProductServiceTest {
             assertEquals(createProductDto.quantity(), productCaptured.getInventory().getQuantity());
             assertEquals(createProductDto.lowStockThreshold(), productCaptured.getInventory().getLowStockThreshold());
 
-            // CreateProductDto -> ResponseProductDto
-            assertEquals(createProductDto.name(), responseProductDto.name());
-            assertEquals(createProductDto.brand(), responseProductDto.brand());
-            assertEquals(createProductDto.price(), responseProductDto.price());
-            assertEquals(createProductDto.costPrice(), responseProductDto.costPrice());
-            assertEquals(createProductDto.categoryId(), responseProductDto.category().categoryId());
-            assertEquals(createProductDto.quantity(), responseProductDto.inventory().quantity());
-            assertEquals(createProductDto.lowStockThreshold(), responseProductDto.inventory().lowStockThreshold());
+            // CreateProductDto -> ResponseProductDetailDto
+            assertEquals(createProductDto.name(), responseProductDetailDto.name());
+            assertEquals(createProductDto.brand(), responseProductDetailDto.brand());
+            assertEquals(createProductDto.price(), responseProductDetailDto.price());
+            assertEquals(createProductDto.costPrice(), responseProductDetailDto.costPrice());
+            assertEquals(createProductDto.categoryId(), responseProductDetailDto.category().categoryId());
+            assertEquals(createProductDto.quantity(), responseProductDetailDto.inventory().quantity());
+            assertEquals(createProductDto.lowStockThreshold(), responseProductDetailDto.inventory().lowStockThreshold());
         }
 
         @Test
@@ -246,18 +247,18 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findProductWithLowStock()).thenReturn(List.of(productLowStock));
             // ACT
-            List<ResponseProductDto> productsWithLowStockFound = productService.findProductsWithLowStock();
+            List<ResponseProductDetailDto> productsWithLowStockFound = productService.findProductsWithLowStock();
             // ASSERT
             verify(productRepository, times(1)).findProductWithLowStock();
             assertFalse(productsWithLowStockFound.isEmpty());
             assertEquals(1, productsWithLowStockFound.size());
 
-            ResponseProductDto responseProductDto = productsWithLowStockFound.get(0);
+            ResponseProductDetailDto responseProductDetailDto = productsWithLowStockFound.get(0);
 
-            assertEquals(productLowStock.getProductId(), responseProductDto.productId());
-            assertEquals(productLowStock.getName(), responseProductDto.name());
-            assertEquals(productLowStock.getInventory().getQuantity(), responseProductDto.inventory().quantity());
-            assertEquals(productLowStock.getInventory().getLowStockThreshold(), responseProductDto.inventory().lowStockThreshold());
+            assertEquals(productLowStock.getProductId(), responseProductDetailDto.productId());
+            assertEquals(productLowStock.getName(), responseProductDetailDto.name());
+            assertEquals(productLowStock.getInventory().getQuantity(), responseProductDetailDto.inventory().quantity());
+            assertEquals(productLowStock.getInventory().getLowStockThreshold(), responseProductDetailDto.inventory().lowStockThreshold());
 
         }
 
@@ -282,13 +283,13 @@ class ProductServiceTest {
             when(productRepository.save(any(Product.class))).thenReturn(new Product());
 
             // ACT
-            ResponseProductDto responseProductDto = productService.updateProduct(product.getProductId(), updateProductDto);
+            ResponseProductDetailDto responseProductDetailDto = productService.updateProduct(product.getProductId(), updateProductDto);
 
             // ASSERT
             verify(productRepository).save(productArgumentCaptor.capture());
             Product productCaptured = productArgumentCaptor.getValue();
 
-            assertNotNull(responseProductDto);
+            assertNotNull(responseProductDetailDto);
             assertEquals(product.getProductId(), productCaptured.getProductId());
 
             //Product -> ProductUpdated
@@ -297,17 +298,13 @@ class ProductServiceTest {
             assertEquals(updateProductDto.price(), productCaptured.getPrice());
             assertEquals(updateProductDto.costPrice(), productCaptured.getCostPrice());
             assertEquals(updateProductDto.categoryId(), productCaptured.getCategory().getCategoryId());
-            assertEquals(updateProductDto.quantity(), productCaptured.getInventory().getQuantity());
-            assertEquals(updateProductDto.lowStockThreshold(), productCaptured.getInventory().getLowStockThreshold());
 
             //UpdateProduct -> RespondeProductDto
-            assertEquals(updateProductDto.name(), responseProductDto.name());
-            assertEquals(updateProductDto.brand(), responseProductDto.brand());
-            assertEquals(updateProductDto.price(), responseProductDto.price());
-            assertEquals(updateProductDto.costPrice(), responseProductDto.costPrice());
-            assertEquals(updateProductDto.categoryId(), responseProductDto.category().categoryId());
-            assertEquals(updateProductDto.quantity(), responseProductDto.inventory().quantity());
-            assertEquals(updateProductDto.lowStockThreshold(), responseProductDto.inventory().lowStockThreshold());
+            assertEquals(updateProductDto.name(), responseProductDetailDto.name());
+            assertEquals(updateProductDto.brand(), responseProductDetailDto.brand());
+            assertEquals(updateProductDto.price(), responseProductDetailDto.price());
+            assertEquals(updateProductDto.costPrice(), responseProductDetailDto.costPrice());
+            assertEquals(updateProductDto.categoryId(), responseProductDetailDto.category().categoryId());
         }
 
         @Test
