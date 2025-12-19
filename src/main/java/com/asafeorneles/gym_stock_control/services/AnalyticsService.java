@@ -16,13 +16,13 @@ public class AnalyticsService {
     AnalyticsRepository analyticsRepository;
 
     public List<TopSellingProductsDto> getTopSellingProducts(Integer limit) {
-        int finalLimit = (limit == null || limit < 0) ? 10 : Math.min(limit, 30);
+        int finalLimit = limit == null ? 10 : limit;
 
         return analyticsRepository.findTopSellingProducts(finalLimit);
     }
 
     public List<TopSellingProductsDto> getTopSellingProductsByPeriod(Integer limit, LocalDate startDate, LocalDate endDate) {
-        int finalLimit = (limit == null || limit < 0) ? 10 : Math.min(limit, 30);
+        int finalLimit = limit == null ? 10 : limit;
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
