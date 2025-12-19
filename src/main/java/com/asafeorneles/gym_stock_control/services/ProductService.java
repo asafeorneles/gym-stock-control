@@ -6,6 +6,7 @@ import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -52,7 +53,7 @@ public class ProductService {
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
         if (productsFound.isEmpty()) {
-            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
+            throw new ProductNotFoundException("Products not found.");
         }
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
@@ -60,31 +61,34 @@ public class ProductService {
     public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
         if (productsFound.isEmpty()) {
-            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
+            throw new ProductNotFoundException("Products not found.");
         }
         return productsFound.stream().map(ProductMapper::productToResponseCreatedProduct).toList();
     }
 
     public ResponseProductDto findProductById(UUID id) {
-        Product productFound = productRepository.findById(id).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by this id: " + id));
         return ProductMapper.productToResponseProduct(productFound);
     }
 
-    public List<ResponseProductDetailDto> findProductsWithLowStock() { // Improve later
+    public List<ResponseProductDetailDto> findProductsWithLowStock() {
         List<ResponseProductDetailDto> productsWithLowStock = productRepository.findProductWithLowStock()
                 .stream()
                 .map(ProductMapper::productToResponseCreatedProduct)
                 .toList();
 
         if (productsWithLowStock.isEmpty()) {
-            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
+            throw new ProductNotFoundException("Products with low stock not found");
         }
         return productsWithLowStock;
     }
 
 
+    // Testar se é possivel alterar a categoria
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
-        Product productFound = productRepository.findById(id).orElseThrow(()-> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(()-> new ProductNotFoundException("Product not found by this id: " + id));
 
         Category category = categoryRepository.findById(updateProductDto.categoryId())
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
@@ -97,7 +101,8 @@ public class ProductService {
     }
 
     public void deleteProduct(UUID id) {
-        Product productFound = productRepository.findById(id).orElseThrow(()-> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(()-> new ProductNotFoundException("Product not found by this id: " + id));
         productRepository.delete(productFound);
     }
 }

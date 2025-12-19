@@ -7,6 +7,7 @@ import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
@@ -52,8 +53,9 @@ public class SaleService {
         List<SaleItem> saleItems = new ArrayList<>();
 
         for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
-            Product product = productRepository.findById(createSaleItem.productId())
-                    .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+            UUID productId = createSaleItem.productId();
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found by this id: " + productId));
 
             productInventoryService.validateQuantity(product, createSaleItem.quantity());
 
@@ -85,21 +87,21 @@ public class SaleService {
 
     public ResponseSaleDto findSaleById(UUID id) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
 
         return SaleMapper.saleToResponseSale(saleFound);
     }
 
     public void deleteSale(UUID id) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
 
         saleRepository.delete(saleFound);
     }
 
     public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethodDto patchPaymentMethod) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
 
         saleFound.setPaymentMethod(patchPaymentMethod.paymentMethod());
         saleRepository.save(saleFound);
