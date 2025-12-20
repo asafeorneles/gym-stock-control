@@ -18,4 +18,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> categoryNotFoundExceptionHandler(CategoryNotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler(SaleNotFoundException.class)
+    public ResponseEntity<String> saleNotFoundExceptionHandler (SaleNotFoundException e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
 }
