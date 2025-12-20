@@ -4,6 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
+import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -122,7 +123,7 @@ class CategoryServiceTest {
             when(categoryRepository.findAll()).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> categoryService.findCategory());
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategory());
             verify(categoryRepository, times(1)).findAll();
 
         }
@@ -153,7 +154,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
 
         }
@@ -190,7 +191,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
@@ -232,7 +233,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
     }
