@@ -6,6 +6,7 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductI
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.exceptions.InsufficientProductQuantityException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductInventoryNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
@@ -71,8 +72,9 @@ public class ProductInventoryService {
     public void validateQuantity(Product product, int quantityToBuy){
         ProductInventory inventory = product.getInventory();
 
-        if (quantityToBuy > inventory.getQuantity()){
-            throw new IllegalArgumentException("insufficient quantity!"); // Create an Exception Handler for when quantity is not supported
+        int quantityAvailable = inventory.getQuantity();
+        if (quantityToBuy > quantityAvailable){
+            throw new InsufficientProductQuantityException("insufficient quantity in stock! Quantity available: " + quantityAvailable);
         }
     }
 }
