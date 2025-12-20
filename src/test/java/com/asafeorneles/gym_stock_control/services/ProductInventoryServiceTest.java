@@ -4,6 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInve
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gym_stock_control.entities.*;
+import com.asafeorneles.gym_stock_control.exceptions.ProductInventoryNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -14,7 +15,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.ErrorResponseException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -103,7 +103,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.findAll()).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> productInventoryService.findProductsInventories());
+            assertThrows(ProductInventoryNotFoundException.class, ()-> productInventoryService.findProductsInventories());
             verify(productInventoryRepository, times(1)).findAll();
         }
     }
