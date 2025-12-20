@@ -31,7 +31,7 @@ public class SaleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sale created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
-            @ApiResponse(responseCode = "409", description = "Conflict creating sale"),
+            @ApiResponse(responseCode = "409", description = "Insufficient product quantity in stock"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping
