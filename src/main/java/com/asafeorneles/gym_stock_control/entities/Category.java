@@ -3,6 +3,7 @@ package com.asafeorneles.gym_stock_control.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -23,4 +24,12 @@ public class Category {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedDate = LocalDateTime.now();
+    }
 }
