@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.specifications;
 
 import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.enums.InventoryStatus;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
 
@@ -86,6 +87,15 @@ public class ProductSpec {
                 return null;
             }
             return builder.equal(root.get("category").get("categoryId"), categoryId);
+        };
+    }
+
+    public static Specification<Product> inventoryStatus(InventoryStatus inventoryStatus){
+        return (root, query, builder) -> {
+            if (ObjectUtils.isEmpty(inventoryStatus)){
+                return null;
+            }
+            return builder.equal(root.get("inventory").get("inventoryStatus"), inventoryStatus);
         };
     }
 }

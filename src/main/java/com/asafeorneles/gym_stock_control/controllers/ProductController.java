@@ -4,6 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
+import com.asafeorneles.gym_stock_control.queryFilters.ProductDetailsQueryFilters;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +61,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/details")
-    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductQueryFilters filters) {
+    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductDetailsQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsDetails(filters.toSpecification()));
     }
 
