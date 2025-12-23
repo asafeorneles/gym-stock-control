@@ -12,7 +12,8 @@ public class ProductInventoryMapper {
                 productInventory.getProductInventoryId(),
                 productInventory.getProduct().getName(),
                 productInventory.getQuantity(),
-                productInventory.getLowStockThreshold()
+                productInventory.getLowStockThreshold(),
+                productInventory.getInventoryStatus()
         );
     }
 

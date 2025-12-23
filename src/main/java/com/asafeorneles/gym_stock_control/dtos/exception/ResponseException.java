@@ -1,4 +1,4 @@
-package com.asafeorneles.gym_stock_control.exceptions;
+package com.asafeorneles.gym_stock_control.dtos.exception;
 
 import java.time.LocalDateTime;
 

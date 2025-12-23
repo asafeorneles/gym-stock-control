@@ -1,5 +1,6 @@
 package com.asafeorneles.gym_stock_control.entities;
 
+import com.asafeorneles.gym_stock_control.enums.InventoryStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +31,9 @@ public class ProductInventory {
     @Column(name = "low_stock_threshold")
     private int lowStockThreshold;
 
+    @Enumerated(EnumType.STRING)
+    private InventoryStatus inventoryStatus;
+
     @Column(name = "updated_date")
     private LocalDateTime updated_date;
 
@@ -43,11 +47,13 @@ public class ProductInventory {
             UUID productInventoryId,
             Product product,
             int quantity,
-            int lowStockThreshold) {
+            int lowStockThreshold,
+            InventoryStatus inventoryStatus) {
 
         this.productInventoryId = productInventoryId;
         this.product = product;
         this.quantity = quantity;
         this.lowStockThreshold = lowStockThreshold;
+        this.inventoryStatus = inventoryStatus;
     }
 }

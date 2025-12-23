@@ -6,6 +6,7 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductI
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.enums.InventoryStatus;
 import com.asafeorneles.gym_stock_control.exceptions.InsufficientProductQuantityException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductInventoryNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
@@ -24,7 +25,7 @@ public class ProductInventoryService {
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
-        if (productsInventoriesFound.isEmpty()){
+        if (productsInventoriesFound.isEmpty()) {
             throw new ProductInventoryNotFoundException("Products Inventories not found");
         }
         return productsInventoriesFound.stream()
@@ -39,11 +40,14 @@ public class ProductInventoryService {
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
-    public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
+    public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
+
+        assignInventoryStatus(productInventoryFound);
+
         productInventoryRepository.save(productInventoryFound);
 
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
@@ -54,26 +58,41 @@ public class ProductInventoryService {
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
+
+        assignInventoryStatus(productInventoryFound);
+
         productInventoryRepository.save(productInventoryFound);
 
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
-    public void updateQuantityAfterSale(List<SaleItem> saleItems){
-        for (SaleItem saleItem : saleItems){
+    public void updateQuantityAfterSale(List<SaleItem> saleItems) {
+        for (SaleItem saleItem : saleItems) {
             int quantitySold = saleItem.getQuantity();
             ProductInventory inventory = saleItem.getProduct().getInventory();
 
             inventory.setQuantity(inventory.getQuantity() - quantitySold);
+
+            assignInventoryStatus(inventory);
+
             productInventoryRepository.save(inventory);
         }
     }
 
-    public void validateQuantity(Product product, int quantityToBuy){
+    private static void assignInventoryStatus(ProductInventory inventory) {
+        InventoryStatus inventoryStatus;
+        inventoryStatus =
+                inventory.getQuantity() == 0 ? InventoryStatus.OUT_OF_STOCK
+                : inventory.getQuantity() <= inventory.getLowStockThreshold() ? InventoryStatus.LOW_STOCK
+                : InventoryStatus.OK;
+        inventory.setInventoryStatus(inventoryStatus);
+    }
+
+    public void validateQuantity(Product product, int quantityToBuy) {
         ProductInventory inventory = product.getInventory();
 
         int quantityAvailable = inventory.getQuantity();
-        if (quantityToBuy > quantityAvailable){
+        if (quantityToBuy > quantityAvailable) {
             throw new InsufficientProductQuantityException("insufficient quantity in stock! Quantity available: " + quantityAvailable);
         }
     }

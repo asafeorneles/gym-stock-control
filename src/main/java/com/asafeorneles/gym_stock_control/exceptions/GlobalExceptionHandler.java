@@ -1,5 +1,6 @@
 package com.asafeorneles.gym_stock_control.exceptions;
 
+import com.asafeorneles.gym_stock_control.dtos.exception.ResponseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
