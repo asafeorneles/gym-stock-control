@@ -3,6 +3,7 @@ package com.asafeorneles.gym_stock_control.services;
 import com.asafeorneles.gym_stock_control.dtos.product.*;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyExistsException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
@@ -34,10 +35,9 @@ public class ProductService {
             throw new ProductAlreadyExistsException("Product already exists");
         }
 
-        // CreateProductDto -> Product
-        var product = ProductMapper.createProductToProduct(createProductDto, category);
+        Product product = ProductMapper.createProductToProduct(createProductDto, category);
 
-        var productInventory = ProductInventoryFactory
+        ProductInventory productInventory = ProductInventoryFactory
                 .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
 
         product.setInventory(productInventory);
@@ -45,7 +45,6 @@ public class ProductService {
 
         productRepository.save(product);
 
-        // Product -> ResponseProductDetailDto
         return ProductMapper.productToResponseCreatedProduct(product);
     }
 
@@ -91,7 +90,7 @@ public class ProductService {
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
-        
+
         productRepository.delete(productFound);
     }
 
