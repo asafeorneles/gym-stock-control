@@ -1,9 +1,6 @@
 package com.asafeorneles.gym_stock_control.services;
 
-import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.*;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
@@ -44,6 +41,7 @@ public class ProductService {
                 .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
 
         product.setInventory(productInventory);
+        product.activity();
 
         productRepository.save(product);
 
@@ -69,6 +67,7 @@ public class ProductService {
 
     public ResponseProductDto findProductById(UUID id) {
         Product productFound = productRepository.findById(id)
+                .filter(Product::isActivity)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
         return ProductMapper.productToResponseProduct(productFound);
     }
