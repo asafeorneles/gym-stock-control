@@ -100,9 +100,20 @@ public class ProductSpec {
         };
     }
 
+    public static Specification<Product> activityStatusEquals(ActivityStatus activityStatus) {
+        return (root, query, builder) -> {
+            if (ObjectUtils.isEmpty(activityStatus)) {
+                return null;
+            }
+            return builder.equal(root.get("activityStatus"), activityStatus);
+        };
+    }
+
     public static Specification<Product> isActivity() {
         return (root, query, builder) ->
                 builder.equal(root.get("activityStatus"), ActivityStatus.ACTIVE);
     }
+
+
 }
 
