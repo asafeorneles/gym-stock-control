@@ -41,7 +41,7 @@ public class AnalyticsController {
         return ResponseEntity.status(HttpStatus.OK).body(analyticsService.getTopSellingProducts(limit));
     }
 
-    @Operation(summary = "Get top n best-selling products")
+    @Operation(summary = "Get top n best-selling products by period")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product data returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid date format or missing required parameters"),
