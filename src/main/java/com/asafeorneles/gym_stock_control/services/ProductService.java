@@ -16,6 +16,7 @@ import com.asafeorneles.gym_stock_control.services.factory.ProductInventoryFacto
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class ProductService {
     @Autowired
     SaleItemRepository saleItemRepository;
 
+    @Transactional
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
         UUID categoryId = createProductDto.categoryId();
         Category category = categoryRepository.findById(categoryId)
@@ -74,6 +76,7 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
@@ -89,6 +92,7 @@ public class ProductService {
         return ProductMapper.productToResponseCreatedProduct(productFound);
     }
 
+    @Transactional
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
@@ -101,6 +105,7 @@ public class ProductService {
     }
 
 
+    @Transactional
     public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
@@ -112,6 +117,7 @@ public class ProductService {
         return ProductMapper.productToResponseCreatedProduct(productFound);
     }
 
+    @Transactional
     public ResponseProductDetailDto activateProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));

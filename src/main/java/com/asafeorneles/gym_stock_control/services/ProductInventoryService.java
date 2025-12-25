@@ -13,6 +13,7 @@ import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +37,7 @@ public class ProductInventoryService {
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
     }
 
+    @Transactional
     public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
@@ -49,6 +51,7 @@ public class ProductInventoryService {
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
+    @Transactional
     public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
@@ -62,6 +65,7 @@ public class ProductInventoryService {
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
+    @Transactional
     public void updateQuantityAfterSale(List<SaleItem> saleItems) {
         for (SaleItem saleItem : saleItems) {
             int quantitySold = saleItem.getQuantity();

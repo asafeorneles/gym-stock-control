@@ -85,6 +85,7 @@ public class SaleService {
                 .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
     }
 
+    @Transactional
     public void deleteSale(UUID id) {
         Sale saleFound = saleRepository.findById(id)
                 .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
@@ -92,6 +93,7 @@ public class SaleService {
         saleRepository.delete(saleFound);
     }
 
+    @Transactional
     public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethodDto patchPaymentMethod) {
         Sale saleFound = saleRepository.findById(id)
                 .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));

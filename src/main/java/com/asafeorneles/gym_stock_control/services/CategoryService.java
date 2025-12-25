@@ -9,6 +9,7 @@ import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public class CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Transactional
     public ResponseCategoryDto createCategory(CreateCategoryDto createCategoryDto){
         Category newCategory = CategoryMapper.createCategoryToCategory(createCategoryDto);
         categoryRepository.save(newCategory);
@@ -34,6 +36,7 @@ public class CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
     }
 
+    @Transactional
     public ResponseCategoryDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
         Category categoryFound = categoryRepository
                 .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
@@ -45,6 +48,7 @@ public class CategoryService {
         return CategoryMapper.categoryToResponseCategory(categoryFound);
     }
 
+    @Transactional
     public void deleteCategory(UUID id) {
         Category categoryFound = categoryRepository
                 .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
