@@ -89,7 +89,6 @@ public class ProductService {
         return ProductMapper.productToResponseCreatedProduct(productFound);
     }
 
-    // Refactor to implements the logic for inactivate the product when it is in a sale
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
