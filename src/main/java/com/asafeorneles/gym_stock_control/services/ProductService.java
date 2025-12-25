@@ -7,9 +7,11 @@ import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyExistsException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ProductSoldException;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
+import com.asafeorneles.gym_stock_control.repositories.SaleItemRepository;
 import com.asafeorneles.gym_stock_control.services.factory.ProductInventoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,6 +27,8 @@ public class ProductService {
     ProductRepository productRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    SaleItemRepository saleItemRepository;
 
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
         UUID categoryId = createProductDto.categoryId();
@@ -89,6 +93,10 @@ public class ProductService {
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+
+        if (saleItemRepository.existsByProduct_id(id)){
+            throw new ProductSoldException("This product has already been used in a sale. Please use the deactivate option.");
+        }
 
         productRepository.delete(productFound);
     }
