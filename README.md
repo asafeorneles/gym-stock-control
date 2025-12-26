@@ -1,6 +1,6 @@
 # SmartGym - Controle de Estoque (Em desenvolvimento)
 
-Projeto de controle de estoque para academia e lojas de musculação.
+Projeto de controle de estoque e vendas de produtos, com foco em lojas de academia e musculação.
 
 ## Tecnologias (Usadas até o momento)
 - Java 17
