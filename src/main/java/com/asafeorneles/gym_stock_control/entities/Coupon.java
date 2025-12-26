@@ -30,7 +30,6 @@ public class Coupon {
     private String description;
 
     @Column(name = "discount_value")
-    @Enumerated(EnumType.STRING)
     private BigDecimal discountValue;
 
     @Column(name = "discount_type")
@@ -41,6 +40,7 @@ public class Coupon {
     private int quantity;
 
     @Column(name = "activity_status")
+    @Enumerated(EnumType.STRING)
     private ActivityStatus activityStatus;
 
     @Column(name = "expiration_date")
