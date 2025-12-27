@@ -128,6 +128,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InvalidCouponException.class)
+    public ResponseEntity<ResponseException> couponUnavailableExceptionHandler(InvalidCouponException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseException(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "BAD_REQUEST",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ResponseException> categoryNotFoundExceptionHandler(CouponNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseException(
+                        HttpStatus.NOT_FOUND.value(),
+                        "NOT_FOUND",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
