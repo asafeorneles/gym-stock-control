@@ -6,6 +6,7 @@ import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
+import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CouponService {
@@ -91,5 +93,13 @@ public class CouponService {
         coupon.setQuantity(currentCouponQuantity - 1);
         couponRepository.save(coupon);
     }
+
+    public ResponseCouponDto getCouponById(UUID id) {
+        return couponRepository.findById(id)
+                .map(CouponMapper::couponToResponseCoupon)
+                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+
+    }
 }
+
 

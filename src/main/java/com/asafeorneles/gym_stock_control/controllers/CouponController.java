@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/coupon")
@@ -25,6 +26,11 @@ public class CouponController {
     @GetMapping
     public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(){
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseCouponDto> getCouponById(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getCouponById(id));
     }
 
 }
