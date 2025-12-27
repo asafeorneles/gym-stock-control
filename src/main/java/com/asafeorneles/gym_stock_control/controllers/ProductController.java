@@ -40,7 +40,7 @@ public class ProductController {
 
     @Operation(summary = "Get all products")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "200", description = "Products returned successfully"),
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -103,7 +103,7 @@ public class ProductController {
             @ApiResponse(responseCode = "201", description = "Product deactivated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
-            @ApiResponse(responseCode = "409", description = "Product is already inactive!"),
+            @ApiResponse(responseCode = "409", description = "Product is already inactive"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -116,7 +116,7 @@ public class ProductController {
             @ApiResponse(responseCode = "201", description = "Product activated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
-            @ApiResponse(responseCode = "409", description = "Product is already active!"),
+            @ApiResponse(responseCode = "409", description = "Product is already active"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PatchMapping(value = "/{id}/activate")
