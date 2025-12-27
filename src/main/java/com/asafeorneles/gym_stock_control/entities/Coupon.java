@@ -73,6 +73,7 @@ public class Coupon {
                   String description,
                   BigDecimal discountValue,
                   DiscountType discountType,
+                  boolean unlimited,
                   int quantity,
                   ActivityStatus activityStatus,
                   LocalDateTime expirationDate) {
@@ -82,6 +83,7 @@ public class Coupon {
         this.description = description;
         this.discountValue = discountValue;
         this.discountType = discountType;
+        this.unlimited = unlimited;
         this.quantity = quantity;
         this.activityStatus = activityStatus;
         this.expirationDate = expirationDate;

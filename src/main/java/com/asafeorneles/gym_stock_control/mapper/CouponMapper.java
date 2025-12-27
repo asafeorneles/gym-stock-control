@@ -11,6 +11,7 @@ public class CouponMapper {
                 .description(createCouponDto.description())
                 .discountValue(createCouponDto.discountValue())
                 .discountType(createCouponDto.discountType())
+                .unlimited(createCouponDto.unlimited())
                 .quantity(createCouponDto.quantity())
                 .activityStatus(createCouponDto.activityStatus())
                 .expirationDate(createCouponDto.expirationDate())
