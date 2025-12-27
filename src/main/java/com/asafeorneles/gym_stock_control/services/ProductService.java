@@ -4,10 +4,8 @@ import com.asafeorneles.gym_stock_control.dtos.product.*;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
-import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyExistsException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductSoldException;
+import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
+import com.asafeorneles.gym_stock_control.exceptions.*;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -37,9 +35,15 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
+        if (category.getActivityStatus() == ActivityStatus.INACTIVITY){
+            throw new CategoryInactivityException("This category is inactivity!");
+        }
+
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
             throw new ProductAlreadyExistsException("Product already exists");
         }
+
+
 
         Product product = ProductMapper.createProductToProduct(createProductDto, category);
 
