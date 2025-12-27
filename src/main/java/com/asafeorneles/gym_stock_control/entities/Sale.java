@@ -26,9 +26,12 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> saleItems;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "coupon_id", nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
+    @Column(name = "discount_amount")
+    private BigDecimal discountAmount;
 
     @Column(name = "total_price")
     private BigDecimal totalPrice;
@@ -57,12 +60,17 @@ public class Sale {
             UUID saleId,
             List<SaleItem> saleItems,
             BigDecimal totalPrice,
-            PaymentMethod paymentMethod) {
+            PaymentMethod paymentMethod,
+            Coupon coupon) {
 
         this.saleId = saleId;
         this.saleItems = saleItems;
         this.totalPrice = totalPrice;
         this.paymentMethod = paymentMethod;
+        this.coupon = coupon;
+    }
+    public Boolean containsCoupon(){
+        return this.getCoupon() != null;
     }
 
     public void calculateTotalPrice() {
@@ -70,4 +78,5 @@ public class Sale {
                 .map(SaleItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
 }
