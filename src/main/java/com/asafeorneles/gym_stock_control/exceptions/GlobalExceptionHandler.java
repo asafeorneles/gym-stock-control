@@ -56,6 +56,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(CategoryInactivityException.class)
+    public ResponseEntity<ResponseException> categoryInactivityExceptionHandler(CategoryInactivityException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
     @ExceptionHandler(SaleNotFoundException.class)
     public ResponseEntity<ResponseException> saleNotFoundExceptionHandler(SaleNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
