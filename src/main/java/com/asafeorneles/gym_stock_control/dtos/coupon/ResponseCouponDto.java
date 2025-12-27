@@ -17,6 +17,7 @@ public record ResponseCouponDto(
         String description,
         BigDecimal discountValue,
         DiscountType discountType,
+        boolean isUnlimited,
         int quantity,
         ActivityStatus activityStatus,
         LocalDateTime expirationDate
