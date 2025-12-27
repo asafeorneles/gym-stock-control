@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.dtos.coupon;
 
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,6 +26,7 @@ public record CreateCouponDto(
         int quantity,
         @NotNull(message = "The activityStatus cannot be empty!")
         ActivityStatus activityStatus,
+        @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime expirationDate
 ) {
 }
