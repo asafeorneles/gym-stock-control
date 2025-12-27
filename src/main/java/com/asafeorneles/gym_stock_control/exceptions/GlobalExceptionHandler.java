@@ -129,7 +129,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCouponException.class)
-    public ResponseEntity<ResponseException> couponUnavailableExceptionHandler(InvalidCouponException e){
+    public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseException(
                         HttpStatus.BAD_REQUEST.value(),
@@ -141,7 +141,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CouponNotFoundException.class)
-    public ResponseEntity<ResponseException> categoryNotFoundExceptionHandler(CouponNotFoundException e) {
+    public ResponseEntity<ResponseException> couponNotFoundExceptionHandler(CouponNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseException(
                         HttpStatus.NOT_FOUND.value(),
@@ -153,7 +153,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CouponUsedException.class)
-    public ResponseEntity<ResponseException> categoryNotFoundExceptionHandler(CouponUsedException e) {
+    public ResponseEntity<ResponseException> couponNotUsedExceptionHandler(CouponUsedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponAlreadyInactivityException.class)
+    public ResponseEntity<ResponseException> couponAlreadyInactivityExceptionHandler(CouponAlreadyInactivityException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        409,
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponAlreadyActiveException.class)
+    public ResponseEntity<ResponseException> couponAlreadyActivityExceptionHandler(CouponAlreadyActiveException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),
