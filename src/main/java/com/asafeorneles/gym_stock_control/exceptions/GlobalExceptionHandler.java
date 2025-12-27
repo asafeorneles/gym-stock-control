@@ -44,6 +44,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(CategoryAlreadyUsedException.class)
+    public ResponseEntity<ResponseException> categoryAlreadyUsedException(CategoryAlreadyUsedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
     @ExceptionHandler(SaleNotFoundException.class)
     public ResponseEntity<ResponseException> saleNotFoundExceptionHandler(SaleNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -152,8 +164,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CouponUsedException.class)
-    public ResponseEntity<ResponseException> couponNotUsedExceptionHandler(CouponUsedException e) {
+    @ExceptionHandler(CouponAlreadyUsedException.class)
+    public ResponseEntity<ResponseException> couponAlreadyUsedException(CouponAlreadyUsedException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),

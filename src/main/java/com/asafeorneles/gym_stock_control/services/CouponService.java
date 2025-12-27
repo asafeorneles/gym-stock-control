@@ -7,13 +7,12 @@ import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
 import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.CouponUsedException;
+import com.asafeorneles.gym_stock_control.exceptions.CouponAlreadyUsedException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,7 +109,7 @@ public class CouponService {
     @Transactional
     public void deleteCoupon(UUID id) {
         if (saleRepository.existsByCoupon_CouponId(id)){
-            throw new CouponUsedException("This coupon has already been used in a sale. Please use the deactivate option.");
+            throw new CouponAlreadyUsedException("This coupon has already been used in a sale. Please use the deactivate option.");
         }
 
         Coupon coupon = couponRepository.findById(id)
