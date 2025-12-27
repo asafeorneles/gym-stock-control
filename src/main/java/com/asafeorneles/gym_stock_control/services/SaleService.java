@@ -54,8 +54,8 @@ public class SaleService {
 
         sale.calculateTotalPrice();
 
-        if (sale.containsCoupon()){
-            UUID couponId = sale.getCoupon().getCouponId();
+        if (createSaleDto.couponId() != null){
+            UUID couponId = createSaleDto.couponId();
             Coupon coupon = couponRepository.findById(couponId)
                     .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + couponId));
 
