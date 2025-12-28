@@ -4,7 +4,6 @@ import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
-import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +14,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -104,26 +102,26 @@ class CategoryServiceTest {
         @Test
         void shouldFindCategoriesSuccessfully(){
             // ARRANGE
-            when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of(category));
+            when(categoryRepository.findAll()).thenReturn(List.of(category));
 
             // ACT
-            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory(Specification.unrestricted());
+            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory();
 
             // ASSERT
             assertFalse(responseCategoriesFound.isEmpty());
             assertEquals(1, responseCategoriesFound.size());
             assertEquals(category.getName(), responseCategoriesFound.get(0).name());
             assertEquals(category.getDescription(), responseCategoriesFound.get(0).description());
-            verify(categoryRepository, times(1)).findAll(any(Specification.class));
+            verify(categoryRepository, times(1)).findAll();
         }
 
         @Test
         void shouldThrowExceptionWhenCategoriesIsNotFound(){
             // ARRANGE
-            when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of());
+            when(categoryRepository.findAll()).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.findCategory(Specification.unrestricted()));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategory());
             verify(categoryRepository, times(1)).findAll();
 
         }
@@ -154,7 +152,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
 
         }
@@ -191,7 +189,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
@@ -233,7 +231,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            assertThrows(CategoryNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
     }

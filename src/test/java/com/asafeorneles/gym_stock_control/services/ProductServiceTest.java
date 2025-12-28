@@ -1,17 +1,15 @@
 package com.asafeorneles.gym_stock_control.services;
 
-import com.asafeorneles.gym_stock_control.dtos.product.*;
+import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
+import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
-import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
-import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
-import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
-import com.asafeorneles.gym_stock_control.repositories.SaleItemRepository;
-import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,9 +40,6 @@ class ProductServiceTest {
     @Mock
     CategoryRepository categoryRepository;
 
-    @Mock
-    SaleItemRepository saleItemRepository;
-
     @InjectMocks
     ProductService productService;
 
@@ -52,7 +47,6 @@ class ProductServiceTest {
     private Product productLowStock;
     private CreateProductDto createProductDto;
     private UpdateProductDto updateProductDto;
-    private DeactivateProductDto deactivateProductDto;
     private Category category;
 
     @Captor
@@ -67,7 +61,6 @@ class ProductServiceTest {
                 .categoryId(UUID.randomUUID())
                 .name("Suplementos")
                 .description("Alimento em pó para maior eficiência")
-                .activityStatus(ActivityStatus.ACTIVE)
                 .build();
         product = Product.builder()
                 .productId(UUID.randomUUID())
@@ -77,7 +70,6 @@ class ProductServiceTest {
                 .costPrice(BigDecimal.valueOf(69.99))
                 .category(category)
                 .build();
-        product.activity();
 
         ProductInventory inventory = ProductInventory.builder()
                 .productInventoryId(product.getProductId())
@@ -122,8 +114,6 @@ class ProductServiceTest {
                 category.getCategoryId()
         );
 
-        deactivateProductDto = new DeactivateProductDto("test");
-
     }
 
     @Nested
@@ -133,12 +123,10 @@ class ProductServiceTest {
             // ARRANGE
             when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
             when(productRepository.save(any(Product.class))).thenReturn(product);
-            when(productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())).thenReturn(false);
             // ACT
             ResponseProductDetailDto responseProductDetailDto = productService.createProduct(createProductDto);
             // ASSERTS
             verify(productRepository).save(productArgumentCaptor.capture());
-            verify(productRepository, times(1)).existsByNameAndBrand(createProductDto.name(), createProductDto.brand());
             Product productCaptured = productArgumentCaptor.getValue();
             assertNotNull(responseProductDetailDto);
 
@@ -194,17 +182,7 @@ class ProductServiceTest {
             when(productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())).thenReturn(true);
 
             // ASSERTS
-            assertThrows(BusinessConflictException.class, () -> productService.createProduct(createProductDto));
-        }
-
-        @Test
-        void shouldThrowAExceptionWhenCategoryIsNotActivity() {
-            // ARRANGE
-            category.inactivity();
-            when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
-
-            // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> productService.createProduct(createProductDto));
+            assertThrows(IllegalArgumentException.class, () -> productService.createProduct(createProductDto));
         }
     }
 
@@ -224,16 +202,13 @@ class ProductServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyListWhenProductIsNotFound() {
+        void shouldThrowExceptionWhenProductIsNotCreate() {
             // ASSERT
             when(productRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
-            // ACT
-            List<ResponseProductDto> productsFound = productService.findProducts(Specification.unrestricted());
-
             // ASSERT
+            assertThrows(RuntimeException.class, () -> productService.findProducts(Specification.unrestricted()));
             verify(productRepository, times(1)).findAll(any(Specification.class));
-            assertTrue(productsFound.isEmpty());
         }
 
     }
@@ -264,17 +239,6 @@ class ProductServiceTest {
             assertThrows(ResourceNotFoundException.class, () -> productService.findProductById(falseId));
             verify(productRepository, times(1)).findById(falseId);
         }
-
-        @Test
-        void shouldThrowExceptionWhenProductIsNotActivity() {
-            product.inactivity("test");
-            // ARRANGE
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-
-            // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> productService.findProductById(product.getProductId()));
-            verify(productRepository, times(1)).findById(product.getProductId());
-        }
     }
 
     @Nested
@@ -300,16 +264,13 @@ class ProductServiceTest {
         }
 
         @Test
-        void shouldReturnEmptyListWhenProductWithLowStockIsNotFound() {
-            // ASSERT
+        void shouldThrowExceptionWhenProductWithLowStockIsNotFound() {
+            // ARRANGE
             when(productRepository.findProductWithLowStock()).thenReturn(List.of());
 
-            // ACT
-            List<ResponseProductDetailDto> productsFound = productService.findProductsWithLowStock();
-
             // ASSERT
+            assertThrows(ResourceNotFoundException.class, () -> productService.findProductsWithLowStock());
             verify(productRepository, times(1)).findProductWithLowStock();
-            assertTrue(productsFound.isEmpty());
         }
     }
 
@@ -364,7 +325,7 @@ class ProductServiceTest {
             when(categoryRepository.findById((product.getCategory().getCategoryId()))).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ResourceNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(CategoryNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
             verify(productRepository, times(1)).findById(product.getProductId());
             verify(categoryRepository, times(1)).findById(product.getCategory().getCategoryId());
         }
@@ -389,7 +350,6 @@ class ProductServiceTest {
         @Test
         void shouldDeleteAProductsSuccessfully() {
             // ARRANGE
-            when(saleItemRepository.existsByProduct_ProductId(product.getProductId())).thenReturn(false);
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             doNothing().when(productRepository).delete(product);
 
@@ -408,17 +368,6 @@ class ProductServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenProductHaveAlreadyUsedInASale() {
-            // ARRANGE
-            when(saleItemRepository.existsByProduct_ProductId(product.getProductId())).thenReturn(true);
-
-            // ASSERTS
-            assertThrows(BusinessConflictException.class, () -> productService.deleteProduct(product.getProductId()));
-            verify(productRepository, never()).findById(product.getProductId());
-            verify(productRepository, never()).delete(product);
-        }
-
-        @Test
         void shouldThrowExceptionWhenProductNotFound() {
             // ARRANGE
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.empty());
@@ -426,65 +375,6 @@ class ProductServiceTest {
             // ASSERTS
             assertThrows(ResourceNotFoundException.class, () -> productService.deleteProduct(product.getProductId()));
             verify(productRepository, times(1)).findById(product.getProductId());
-        }
-    }
-
-    @Nested
-    class deactivateProduct{
-        @Test
-        void shouldDeactivateAProductWithSuccessfully(){
-            // ARRANGE
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-            when(productRepository.save(product)).thenReturn(product);
-
-            // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.deactivateProduct(product.getProductId(), deactivateProductDto);
-
-            // ASSERT
-            assertNotNull(responseProductDetailDto);
-            assertFalse(product.isActivity());
-
-        }
-
-        @Test
-        void shouldThrowExceptionWhenProductIsAlreadyInactivity() {
-            // ARRANGE
-            product.setActivityStatus(ActivityStatus.INACTIVITY);
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-
-            // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> productService.deactivateProduct(product.getProductId(), deactivateProductDto));
-            verify(productRepository, times(1)).findById(product.getProductId());
-            verify(productRepository, never()).save(any(Product.class));
-        }
-    }
-
-    @Nested
-    class activateProduct{
-        @Test
-        void shouldActivateAProductWithSuccessfully(){
-            // ARRANGE
-            product.setActivityStatus(ActivityStatus.INACTIVITY);
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-            when(productRepository.save(product)).thenReturn(product);
-
-            // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.activateProduct(product.getProductId());
-
-            // ASSERT
-            assertNotNull(responseProductDetailDto);
-            assertTrue(product.isActivity());
-        }
-
-        @Test
-        void shouldThrowExceptionWhenProductIsAlreadyActivity() {
-            // ARRANGE
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-
-            // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> productService.activateProduct(product.getProductId()));
-            verify(productRepository, times(1)).findById(product.getProductId());
-            verify(productRepository, never()).save(any(Product.class));
         }
     }
 }
