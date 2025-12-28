@@ -4,9 +4,10 @@ import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
-import com.asafeorneles.gym_stock_control.entities.*;
-import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
-import com.asafeorneles.gym_stock_control.enums.DiscountType;
+import com.asafeorneles.gym_stock_control.entities.Category;
+import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.entities.Sale;
+import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -47,7 +48,6 @@ class SaleServiceTest {
 
     private SaleItem saleItem;
     private Sale sale;
-    private Coupon coupon;
     private CreateSaleDto createSaleDto;
     private CreateSaleItemDto createSaleItemDto;
     private PatchPaymentMethodDto patchPaymentMethodDto;
@@ -78,30 +78,16 @@ class SaleServiceTest {
                 .totalPrice(product.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
-        coupon = Coupon.builder()
-                .couponId(UUID.randomUUID())
-                .code("TESTE10")
-                .description("teste")
-                .activityStatus(ActivityStatus.ACTIVE)
-                .discountType(DiscountType.PERCENTAGE)
-                .discountValue(BigDecimal.valueOf(10))
-                .unlimited(false)
-                .quantity(5)
-                .build();
-
-        sale = Sale.builder()
-                .saleId(UUID.randomUUID())
+        sale = Sale.builder().saleId(UUID.randomUUID())
                 .saleItems(List.of(saleItem))
-                .paymentMethod(PaymentMethod.PIX)
-                .coupon(coupon)
-                .build();
+                .paymentMethod(PaymentMethod.PIX).build();
 
         saleItem.setSale(sale);
 
         sale.calculateTotalPrice();
 
         createSaleItemDto = new CreateSaleItemDto(product.getProductId(), 5);
-        createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX, coupon.getCouponId());
+        createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX);
         patchPaymentMethodDto = new PatchPaymentMethodDto(PaymentMethod.DEBIT_CARD);
     }
 
@@ -190,7 +176,7 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.findSales(Specification.unrestricted()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.findSales(Specification.unrestricted()));
             verify(saleRepository, times(1)).findAll(any(Specification.class));
         }
     }
@@ -217,7 +203,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
         }
     }
@@ -247,7 +233,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).deleteById(sale.getSaleId());
         }
@@ -289,7 +275,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).save(any(Sale.class));
         }

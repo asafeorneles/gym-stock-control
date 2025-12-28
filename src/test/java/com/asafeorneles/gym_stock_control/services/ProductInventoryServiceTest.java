@@ -4,7 +4,6 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInve
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gym_stock_control.entities.*;
-import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -103,7 +102,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.findAll()).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> productInventoryService.findProductsInventories());
+            assertThrows(ProductInventoryNotFoundException.class, ()-> productInventoryService.findProductsInventories());
             verify(productInventoryRepository, times(1)).findAll();
         }
     }

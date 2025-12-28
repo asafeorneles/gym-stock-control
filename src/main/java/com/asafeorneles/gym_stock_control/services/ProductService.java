@@ -58,10 +58,7 @@ public class ProductService {
     }
 
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
-        return productRepository.findAll(specification)
-                .stream()
-                .map(ProductMapper::productToResponseProduct)
-                .toList();
+        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseProduct).toList();
     }
 
     public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
