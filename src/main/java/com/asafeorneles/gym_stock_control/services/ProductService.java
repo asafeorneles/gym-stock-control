@@ -35,8 +35,8 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
-        if (category.getActivityStatus() == ActivityStatus.INACTIVITY){
-            throw new CategoryInactivityException("This category is inactivity!");
+        if (!category.isActivity()){
+            throw new StatusActivityException("This category is inactivity!");
         }
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {

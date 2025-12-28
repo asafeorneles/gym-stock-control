@@ -9,6 +9,7 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -72,8 +73,11 @@ public class SaleService {
         for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
             UUID productId = createSaleItem.productId();
             Product product = productRepository.findById(productId)
-                    .filter(Product::isActivity)
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + productId));
+
+            if (!product.isActivity()){
+                throw new StatusActivityException("This product is inactivity!");
+            }
 
             productInventoryService.validateQuantity(product, createSaleItem.quantity());
 

@@ -56,18 +56,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CategoryInactivityException.class)
-    public ResponseEntity<ResponseException> categoryInactivityExceptionHandler(CategoryInactivityException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
     @ExceptionHandler(InsufficientProductQuantityException.class)
     public ResponseEntity<ResponseException> insufficientProductQuantityExceptionHandler(InsufficientProductQuantityException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(

@@ -83,6 +83,10 @@ public class Coupon {
         this.activityStatus = ActivityStatus.ACTIVE;
     }
 
+    public boolean isActivity(){
+        return this.activityStatus == ActivityStatus.ACTIVE;
+    }
+
     @Builder
     public Coupon(UUID couponId,
                   String code,

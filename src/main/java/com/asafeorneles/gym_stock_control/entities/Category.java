@@ -51,6 +51,10 @@ public class Category {
         this.activityStatus = ActivityStatus.ACTIVE;
     }
 
+    public boolean isActivity(){
+        return this.activityStatus == ActivityStatus.ACTIVE;
+    }
+
     @PrePersist
     public void prePersist(){
         this.createdDate = LocalDateTime.now();
