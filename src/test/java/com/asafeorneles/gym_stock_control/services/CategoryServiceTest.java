@@ -278,7 +278,7 @@ class CategoryServiceTest {
             }
 
             @Test
-            void shouldThrowExceptionWhenProductIsAlreadyActivity() {
+            void shouldThrowExceptionWhenCategoryIsAlreadyActivity() {
                 // ARRANGE
                 when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
 
@@ -306,7 +306,7 @@ class CategoryServiceTest {
             }
 
             @Test
-            void shouldThrowExceptionWhenProductIsAlreadyInactivity() {
+            void shouldThrowExceptionWhenCategoryIsAlreadyInactivity() {
                 // ARRANGE
                 when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
 
