@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.entities;
 
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
-import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,7 +70,7 @@ public class Product {
 
     public void inactivity(String inactivityReason){
         if (this.activityStatus == ActivityStatus.INACTIVITY){
-            throw new StatusActivityException("Product is already inactive!");
+            throw new ActivityStatusException("Product is already inactive!");
         }
 
         this.activityStatus = ActivityStatus.INACTIVITY;
@@ -79,7 +79,7 @@ public class Product {
 
     public void activity(){
         if (this.activityStatus == ActivityStatus.ACTIVE){
-            throw new StatusActivityException("Product is already active!");
+            throw new ActivityStatusException("Product is already active!");
         }
         this.activityStatus = ActivityStatus.ACTIVE;
         this.inactivityReason = null;

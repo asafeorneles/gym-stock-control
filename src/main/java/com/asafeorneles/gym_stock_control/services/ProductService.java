@@ -6,7 +6,7 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -37,7 +37,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
         if (!category.isActivity()){
-            throw new StatusActivityException("This category is inactivity!");
+            throw new ActivityStatusException("This category is inactivity!");
         }
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {

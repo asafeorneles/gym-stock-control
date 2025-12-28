@@ -9,7 +9,7 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -76,7 +76,7 @@ public class SaleService {
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + productId));
 
             if (!product.isActivity()){
-                throw new StatusActivityException("This product is inactivity!");
+                throw new ActivityStatusException("This product is inactivity!");
             }
 
             productInventoryService.validateQuantity(product, createSaleItem.quantity());

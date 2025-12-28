@@ -9,7 +9,7 @@ import com.asafeorneles.gym_stock_control.enums.DiscountType;
 import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
@@ -64,7 +64,7 @@ public class CouponService {
 
     public void validateCouponToCreateSale(Coupon coupon) {
         if (coupon.getActivityStatus() == ActivityStatus.INACTIVITY) {
-            throw new StatusActivityException("Coupon inactivity!");
+            throw new ActivityStatusException("Coupon inactivity!");
         }
 
         if (!coupon.isUnlimited() && coupon.getQuantity() <= 0) {

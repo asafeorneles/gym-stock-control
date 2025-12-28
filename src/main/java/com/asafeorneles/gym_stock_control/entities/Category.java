@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.entities;
 
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
-import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,14 +39,14 @@ public class Category {
 
     public void inactivity(){
         if (this.activityStatus == ActivityStatus.INACTIVITY){
-            throw new StatusActivityException("Category is already inactive!");
+            throw new ActivityStatusException("Category is already inactive!");
         }
         this.activityStatus = ActivityStatus.INACTIVITY;
     }
 
     public void activity(){
         if (this.activityStatus == ActivityStatus.ACTIVE){
-            throw new StatusActivityException("Category is already active!");
+            throw new ActivityStatusException("Category is already active!");
         }
         this.activityStatus = ActivityStatus.ACTIVE;
     }

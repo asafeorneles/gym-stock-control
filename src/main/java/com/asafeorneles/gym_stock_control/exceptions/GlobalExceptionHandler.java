@@ -32,8 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(StatusActivityException.class)
-    public ResponseEntity<ResponseException> statusActivityExceptionHandler(StatusActivityException e) {
+    @ExceptionHandler(ActivityStatusException.class)
+    public ResponseEntity<ResponseException> statusActivityExceptionHandler(ActivityStatusException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),
