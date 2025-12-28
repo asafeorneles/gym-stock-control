@@ -6,14 +6,15 @@ import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +40,8 @@ public class CouponService {
         return CouponMapper.couponToResponseCoupon(coupon);
     }
 
-    public List<ResponseCouponDto> getAllCoupons() {
-        return couponRepository.findAll().stream().map(CouponMapper::couponToResponseCoupon).toList();
+    public List<ResponseCouponDto> getAllCoupons(Specification<Coupon> specification) {
+        return couponRepository.findAll(specification).stream().map(CouponMapper::couponToResponseCoupon).toList();
     }
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {

@@ -2,11 +2,13 @@ package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.coupon.CreateCouponDto;
 import com.asafeorneles.gym_stock_control.dtos.coupon.ResponseCouponDto;
+import com.asafeorneles.gym_stock_control.queryFilters.CouponQueryFilters;
 import com.asafeorneles.gym_stock_control.services.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,8 +43,8 @@ public class CouponController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(){
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons());
+    public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(@ParameterObject CouponQueryFilters filters){
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a coupon by id")
