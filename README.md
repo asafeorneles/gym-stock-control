@@ -40,6 +40,8 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - API baseada em princípios REST
 - Código orientado à legibilidade e manutenção
 
+## 🗂️ Estrutura
+
 ```
 src/
  └── main/
