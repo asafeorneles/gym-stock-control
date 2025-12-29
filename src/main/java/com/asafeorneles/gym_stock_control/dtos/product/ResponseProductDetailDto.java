@@ -11,6 +11,7 @@ public record ResponseProductDetailDto(
         UUID productId,
         String name,
         String brand,
+        String description,
         BigDecimal price,
         BigDecimal costPrice,
         ResponseCategoryDetailsDto category,

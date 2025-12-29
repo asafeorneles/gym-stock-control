@@ -12,6 +12,9 @@ public record UpdateProductDto(
         @NotBlank(message = "The brand cannot be empty!")
         @Size(min = 2, max = 100, message = "The brand should be between 2 and 100 characters!")
         String brand,
+        @NotBlank(message = "The description cannot be empty!")
+        @Size(min = 2, max = 255, message = "The description should be between 2 and 255 characters")
+        String description,
         @NotNull(message = "The price is mandatory!")
         @DecimalMin(value = "0.01", message = "The min price is 0.01!")
         BigDecimal price,

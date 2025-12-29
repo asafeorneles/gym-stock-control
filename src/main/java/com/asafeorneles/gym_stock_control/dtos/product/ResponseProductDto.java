@@ -9,6 +9,7 @@ public record ResponseProductDto(
         UUID productId,
         String name,
         String brand,
+        String description,
         BigDecimal price,
         ResponseCategoryDto category
 ) {

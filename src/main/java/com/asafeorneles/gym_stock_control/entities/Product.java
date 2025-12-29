@@ -32,6 +32,9 @@ public class Product {
     @Column(name = "brand")
     private String brand;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "sale_price")
     private BigDecimal price;
 
@@ -93,6 +96,7 @@ public class Product {
     private Product(UUID productId,
                     String name,
                     String brand,
+                    String description,
                     BigDecimal price,
                     BigDecimal costPrice,
                     Category category,
@@ -101,6 +105,7 @@ public class Product {
         this.productId = productId;
         this.name = name;
         this.brand = brand;
+        this.description = description;
         this.price = price;
         this.costPrice = costPrice;
         this.category = category;

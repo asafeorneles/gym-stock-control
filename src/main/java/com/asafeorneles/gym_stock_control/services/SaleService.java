@@ -16,6 +16,8 @@ import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,8 +99,8 @@ public class SaleService {
         return saleItems;
     }
 
-    public List<ResponseSaleDto> getAllSales(Specification<Sale> specification) {
-        return saleRepository.findAll(specification).stream().map(SaleMapper::saleToResponseSale).toList();
+    public Page<ResponseSaleDto> getAllSales(Specification<Sale> specification, Pageable pageable) {
+        return saleRepository.findAll(specification, pageable).map(SaleMapper::saleToResponseSale);
     }
 
     public ResponseSaleDto getSaleById(UUID id) {
