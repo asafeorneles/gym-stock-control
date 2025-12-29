@@ -22,6 +22,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -60,6 +64,7 @@ class SaleServiceTest {
     private CreateSaleDto createSaleDto;
     private CreateSaleItemDto createSaleItemDto;
     private PatchPaymentMethodDto patchPaymentMethodDto;
+    private Pageable pageable;
     @Captor
     ArgumentCaptor<Sale> saleCaptor;
 
@@ -114,12 +119,13 @@ class SaleServiceTest {
         createSaleItemDto = new CreateSaleItemDto(product.getProductId(), 5);
         createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX, coupon.getCouponId());
         patchPaymentMethodDto = new PatchPaymentMethodDto(PaymentMethod.DEBIT_CARD);
+        pageable = PageRequest.of(0, 10);
     }
 
     @Nested
     class createSale {
         @Test
-        void shouldCreateSaleSuccessfully(){
+        void shouldCreateSaleSuccessfully() {
             // ARRANGE
             when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(saleItem.getProduct()));
             when(couponRepository.findById(coupon.getCouponId())).thenReturn(Optional.of(coupon));
@@ -145,13 +151,14 @@ class SaleServiceTest {
 
             verify(productInventoryService, times(1)).updateQuantityAfterSale(anyList());
         }
+
         @Test
         void shouldThrowExceptionWhenProductIsNotFound() {
             when(productRepository.findById(createSaleItemDto.productId()))
                     .thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class,() -> saleService.createSale(createSaleDto));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.createSale(createSaleDto));
 
             verify(productInventoryService, never()).updateQuantityAfterSale(any());
 
@@ -190,30 +197,35 @@ class SaleServiceTest {
         @Test
         void shouldFindSalesSuccessfully() {
             // ARRANGE
-            when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of(sale));
+            Page<Sale> salePage = new PageImpl<>(List.of(sale), pageable, 1);
+            when(saleRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(salePage);
 
             //ACT
-            List<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted());
+            Page<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
 
             // ASSERT
             assertFalse(salesFound.isEmpty());
-            assertEquals(1, salesFound.size());
-            assertEquals(sale.getTotalPrice(), salesFound.get(0).totalPrice());
-            assertEquals(sale.getPaymentMethod(), salesFound.get(0).paymentMethod());
-            verify(saleRepository, times(1)).findAll(any(Specification.class));
+            assertEquals(1, salesFound.getTotalElements());
+
+            ResponseSaleDto responseSaleDto = salesFound.getContent().get(0);
+            assertEquals(sale.getTotalPrice(), responseSaleDto.totalPrice());
+            assertEquals(sale.getPaymentMethod(), responseSaleDto.paymentMethod());
+
+            verify(saleRepository, times(1)).findAll(any(Specification.class), eq(pageable));
         }
 
         @Test
-        void shouldReturnEmptyListWhenSalesIsNotFound(){
+        void shouldReturnEmptyListWhenSalesIsNotFound() {
             // ARRANGE
-            when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
+            Page<Sale> emptyPage = Page.empty(pageable);
+            when(saleRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(emptyPage);
 
             // ACT
-            List<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted());
+            Page<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
 
             // ASSERT
             assertTrue(salesFound.isEmpty());
-            verify(saleRepository, times(1)).findAll(any(Specification.class));
+            verify(saleRepository, times(1)).findAll(any(Specification.class), eq(pageable));
         }
     }
 
@@ -234,20 +246,20 @@ class SaleServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenSalesIsNotFound(){
+        void shouldThrowExceptionWhenSalesIsNotFound() {
             // ARRANGE
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.getSaleById(sale.getSaleId()));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.getSaleById(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
         }
     }
 
     @Nested
-    class deleteSale{
+    class deleteSale {
         @Test
-        void shouldDeleteSaleSuccessfully(){
+        void shouldDeleteSaleSuccessfully() {
             // ARRANGE
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
             doNothing().when(saleRepository).delete(sale);
@@ -264,12 +276,12 @@ class SaleServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenSalesIsNotFound(){
+        void shouldThrowExceptionWhenSalesIsNotFound() {
             // ARRANGE
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.deleteSale(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).deleteById(sale.getSaleId());
         }
@@ -279,7 +291,7 @@ class SaleServiceTest {
     @Nested
     class updatePaymentMethod {
         @Test
-        void shouldUpdateThePaymentMethodSuccessfully(){
+        void shouldUpdateThePaymentMethodSuccessfully() {
             // ARRANGE
             PaymentMethod oldPaymentMethod = sale.getPaymentMethod();
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
@@ -306,12 +318,12 @@ class SaleServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenSalesIsNotFound(){
+        void shouldThrowExceptionWhenSalesIsNotFound() {
             // ARRANGE
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).save(any(Sale.class));
         }
@@ -324,7 +336,7 @@ class SaleServiceTest {
 
 
             // ASSERT
-            assertThrows(RuntimeException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(RuntimeException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
             verify(saleRepository, times(1)).save(any());
         }
 
