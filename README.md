@@ -40,6 +40,27 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - API baseada em princípios REST
 - Código orientado à legibilidade e manutenção
 
+```
+src/
+ └── main/
+     ├── java/com.asafeorneles.gym_stock_control
+     │    ├── controllers/
+     │    ├── dto/
+     |    ├── entities/
+     │    ├── enums/
+     │    ├── exceptions/
+     │    ├── mapper/    
+     │    ├── queryFilters/
+     │    ├── repositories/
+     │    ├── services/
+     │    └── specifications/
+     └── resources/
+         ├── db.migration/
+         ├── application.properties
+     └── test
+          └ ── ...
+```
+
 ## 🧪 Testes
 - 88 testes unitários focados na camada de Service
 - Testes escritos com JUnit 5 e Mockito
