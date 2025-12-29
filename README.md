@@ -64,7 +64,7 @@ src/
 ```
 
 ## 🧪 Testes
-- 88 testes unitários focados na camada de Service
+- No momento, 88 testes unitários focados na camada de Service
 - Testes escritos com JUnit 5 e Mockito
 - Cobertura das principais regras de negócio
 
