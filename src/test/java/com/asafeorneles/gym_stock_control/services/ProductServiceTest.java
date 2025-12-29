@@ -106,6 +106,7 @@ class ProductServiceTest {
         createProductDto = new CreateProductDto(
                 "Whey",
                 "Growth",
+                "test",
                 BigDecimal.valueOf(100.99),
                 BigDecimal.valueOf(69.99),
                 category.getCategoryId(),
@@ -116,6 +117,7 @@ class ProductServiceTest {
         updateProductDto = new UpdateProductDto(
                 "Whey de Baunilha",
                 "Growth",
+                "test",
                 BigDecimal.valueOf(100.99),
                 BigDecimal.valueOf(69.99),
                 category.getCategoryId()
@@ -146,6 +148,7 @@ class ProductServiceTest {
             // CreateProductDto -> Product
             assertEquals(createProductDto.name(), productCaptured.getName());
             assertEquals(createProductDto.brand(), productCaptured.getBrand());
+            assertEquals(createProductDto.description(), productCaptured.getDescription());
             assertEquals(createProductDto.price(), productCaptured.getPrice());
             assertEquals(createProductDto.costPrice(), productCaptured.getCostPrice());
             assertEquals(createProductDto.categoryId(), productCaptured.getCategory().getCategoryId());
@@ -155,6 +158,7 @@ class ProductServiceTest {
             // CreateProductDto -> ResponseProductDetailDto
             assertEquals(createProductDto.name(), responseProductDetailDto.name());
             assertEquals(createProductDto.brand(), responseProductDetailDto.brand());
+            assertEquals(createProductDto.description(), responseProductDetailDto.description());
             assertEquals(createProductDto.price(), responseProductDetailDto.price());
             assertEquals(createProductDto.costPrice(), responseProductDetailDto.costPrice());
             assertEquals(createProductDto.categoryId(), responseProductDetailDto.category().categoryId());
