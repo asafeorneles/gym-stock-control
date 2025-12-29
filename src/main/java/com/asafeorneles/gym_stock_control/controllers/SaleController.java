@@ -46,8 +46,8 @@ public class SaleController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseSaleDto>> findSales(@ParameterObject SaleQueryFilters filters){
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.findSales(filters.toSpecification()));
+    public ResponseEntity<List<ResponseSaleDto>> getAllSales(@ParameterObject SaleQueryFilters filters){
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.getAllSales(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a sale by id")
@@ -58,8 +58,8 @@ public class SaleController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseSaleDto> findSales(@PathVariable(name = "id") UUID id){
-        return ResponseEntity.status(HttpStatus.OK).body(saleService.findSaleById(id));
+    public ResponseEntity<ResponseSaleDto> getSaleById(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(saleService.getSaleById(id));
     }
 
     @Operation(summary = "Update the payment method of a sale")

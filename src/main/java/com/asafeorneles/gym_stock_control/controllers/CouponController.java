@@ -81,8 +81,8 @@ public class CouponController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PatchMapping("/{id}/activity")
-    public ResponseEntity<ResponseCouponDto> activityCoupon(@PathVariable(value = "id") UUID id){
-        return ResponseEntity.status(HttpStatus.OK).body(couponService.activityCoupon(id));
+    public ResponseEntity<ResponseCouponDto> activateCoupon(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(couponService.activateCoupon(id));
     }
 
     @Operation(summary = "Delete a coupon")

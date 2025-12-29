@@ -105,7 +105,7 @@ public class CouponService {
         return CouponMapper.couponToResponseCoupon(coupon);
     }
 
-    public ResponseCouponDto activityCoupon(UUID id) {
+    public ResponseCouponDto activateCoupon(UUID id) {
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 

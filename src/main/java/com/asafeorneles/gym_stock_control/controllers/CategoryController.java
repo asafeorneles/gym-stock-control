@@ -46,8 +46,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseCategoryDetailsDto>> findCategories(@ParameterObject CategoryQueryFilters filters) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategory(filters.toSpecification()));
+    public ResponseEntity<List<ResponseCategoryDetailsDto>> getAllCategories(@ParameterObject CategoryQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAllCategories(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a category by id")
@@ -58,8 +58,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseCategoryDetailsDto> findCategories(@PathVariable(name = "id") UUID id) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategoryById(id));
+    public ResponseEntity<ResponseCategoryDetailsDto> getCategoryById(@PathVariable(name = "id") UUID id) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategoryById(id));
     }
 
     @Operation(summary = "Update a category")

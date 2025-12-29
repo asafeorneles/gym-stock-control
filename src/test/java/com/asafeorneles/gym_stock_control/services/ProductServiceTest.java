@@ -214,7 +214,7 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findAll(any(Specification.class))).thenReturn(List.of(product));
             // ACT
-            List<ResponseProductDto> productsFound = productService.findProducts(Specification.unrestricted());
+            List<ResponseProductDto> productsFound = productService.getAllProducts(Specification.unrestricted());
             // ASSERT
             assertFalse(productsFound.isEmpty());
             verify(productRepository, times(1)).findAll(any(Specification.class));
@@ -228,7 +228,7 @@ class ProductServiceTest {
             when(productRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ACT
-            List<ResponseProductDto> productsFound = productService.findProducts(Specification.unrestricted());
+            List<ResponseProductDto> productsFound = productService.getAllProducts(Specification.unrestricted());
 
             // ASSERT
             verify(productRepository, times(1)).findAll(any(Specification.class));
@@ -244,7 +244,7 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             // ACT
-            ResponseProductDto responseProduct = productService.findProductById(product.getProductId());
+            ResponseProductDto responseProduct = productService.getProductById(product.getProductId());
             // ASSERT
             verify(productRepository, times(1)).findById(productIdArgumentCaptor.capture());
             UUID productIdCaptured = productIdArgumentCaptor.getValue();
@@ -260,7 +260,7 @@ class ProductServiceTest {
             when(productRepository.findById(falseId)).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> productService.findProductById(falseId));
+            assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(falseId));
             verify(productRepository, times(1)).findById(falseId);
         }
 
@@ -271,7 +271,7 @@ class ProductServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> productService.findProductById(product.getProductId()));
+            assertThrows(ResourceNotFoundException.class, () -> productService.getProductById(product.getProductId()));
             verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
@@ -283,7 +283,7 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findProductWithLowStock()).thenReturn(List.of(productLowStock));
             // ACT
-            List<ResponseProductDetailDto> productsWithLowStockFound = productService.findProductsWithLowStock();
+            List<ResponseProductDetailDto> productsWithLowStockFound = productService.getAllProductsWithLowStock();
             // ASSERT
             verify(productRepository, times(1)).findProductWithLowStock();
             assertFalse(productsWithLowStockFound.isEmpty());
@@ -304,7 +304,7 @@ class ProductServiceTest {
             when(productRepository.findProductWithLowStock()).thenReturn(List.of());
 
             // ACT
-            List<ResponseProductDetailDto> productsFound = productService.findProductsWithLowStock();
+            List<ResponseProductDetailDto> productsFound = productService.getAllProductsWithLowStock();
 
             // ASSERT
             verify(productRepository, times(1)).findProductWithLowStock();

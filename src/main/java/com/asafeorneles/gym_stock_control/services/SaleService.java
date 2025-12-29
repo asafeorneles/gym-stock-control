@@ -97,11 +97,11 @@ public class SaleService {
         return saleItems;
     }
 
-    public List<ResponseSaleDto> findSales(Specification<Sale> specification) {
+    public List<ResponseSaleDto> getAllSales(Specification<Sale> specification) {
         return saleRepository.findAll(specification).stream().map(SaleMapper::saleToResponseSale).toList();
     }
 
-    public ResponseSaleDto findSaleById(UUID id) {
+    public ResponseSaleDto getSaleById(UUID id) {
         return saleRepository.findById(id)
                 .map(SaleMapper::saleToResponseSale)
                 .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));

@@ -193,7 +193,7 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of(sale));
 
             //ACT
-            List<ResponseSaleDto> salesFound = saleService.findSales(Specification.unrestricted());
+            List<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted());
 
             // ASSERT
             assertFalse(salesFound.isEmpty());
@@ -209,7 +209,7 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ACT
-            List<ResponseSaleDto> salesFound = saleService.findSales(Specification.unrestricted());
+            List<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted());
 
             // ASSERT
             assertTrue(salesFound.isEmpty());
@@ -225,7 +225,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
 
             //ACT
-            ResponseSaleDto saleFound = saleService.findSaleById(sale.getSaleId());
+            ResponseSaleDto saleFound = saleService.getSaleById(sale.getSaleId());
 
             // ASSERT
             assertEquals(sale.getTotalPrice(), saleFound.totalPrice());
@@ -239,7 +239,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
+            assertThrows(ResourceNotFoundException.class, ()-> saleService.getSaleById(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
         }
     }

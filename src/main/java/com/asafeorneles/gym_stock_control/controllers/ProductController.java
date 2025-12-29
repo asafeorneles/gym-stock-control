@@ -46,8 +46,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseProductDto>> findProducts(@ParameterObject ProductQueryFilters filters) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts(filters.toSpecification()));
+    public ResponseEntity<List<ResponseProductDto>> getAllProducts(@ParameterObject ProductQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts(filters.toSpecification()));
     }
 
     @Operation(summary = "Get all products with all details")
@@ -58,8 +58,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/admin")
-    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsDetails(filters.toSpecification()));
+    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsDetails(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a product by id")
@@ -70,8 +70,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ResponseProductDto> findProductById(@PathVariable(name = "id") UUID id){
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findProductById(id));
+    public ResponseEntity<ResponseProductDto> getProductById(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(id));
     }
 
     @Operation(summary = "Get all products with low stock")
@@ -81,8 +81,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/low-stock")
-    public ResponseEntity<List<ResponseProductDetailDto>> findProductsWithLowStock (){
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsWithLowStock());
+    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsWithLowStock(){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsWithLowStock());
     }
 
     @Operation(summary = "Update a product")

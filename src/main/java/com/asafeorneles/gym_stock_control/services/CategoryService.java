@@ -32,11 +32,11 @@ public class CategoryService {
         return CategoryMapper.categoryToResponseCategoryDetails(category);
     }
 
-    public List<ResponseCategoryDetailsDto> findCategory(Specification<Category> specification) {
+    public List<ResponseCategoryDetailsDto> getAllCategories(Specification<Category> specification) {
         return categoryRepository.findAll(specification).stream().map(CategoryMapper::categoryToResponseCategoryDetails).toList();
     }
 
-    public ResponseCategoryDetailsDto findCategoryById(UUID id) {
+    public ResponseCategoryDetailsDto getCategoryById(UUID id) {
         return categoryRepository.findById(id)
                 .map(CategoryMapper::categoryToResponseCategoryDetails)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));

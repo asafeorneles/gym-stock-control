@@ -57,25 +57,25 @@ public class ProductService {
         return ProductMapper.productToResponseDetailsProduct(product);
     }
 
-    public List<ResponseProductDto> findProducts(Specification<Product> specification) {
+    public List<ResponseProductDto> getAllProducts(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
                 .map(ProductMapper::productToResponseProduct)
                 .toList();
     }
 
-    public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
+    public List<ResponseProductDetailDto> getAllProductsDetails(Specification<Product> specification) {
         return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseDetailsProduct).toList();
     }
 
-    public ResponseProductDto findProductById(UUID id) {
+    public ResponseProductDto getProductById(UUID id) {
         return productRepository.findById(id)
                 .filter(Product::isActivity)
                 .map(ProductMapper::productToResponseProduct)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
     }
 
-    public List<ResponseProductDetailDto> findProductsWithLowStock() {
+    public List<ResponseProductDetailDto> getAllProductsWithLowStock() {
         return productRepository.findProductWithLowStock()
                 .stream()
                 .map(ProductMapper::productToResponseDetailsProduct)

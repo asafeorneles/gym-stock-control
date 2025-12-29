@@ -74,7 +74,7 @@ class CategoryServiceTest {
     @Nested
     class createCategory {
         @Test
-        void shouldCreateACategorySuccessfully(){
+        void shouldCreateACategorySuccessfully() {
             // ARRANGE
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
@@ -97,12 +97,12 @@ class CategoryServiceTest {
         }
 
         @Test
-        void shouldExceptionWhenCategoryIsNotCreate(){
+        void shouldExceptionWhenCategoryIsNotCreate() {
             // ARRANGE
             when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException());
 
             //ASSERT
-            assertThrows(RuntimeException.class, ()-> categoryService.createCategory(createCategoryDto));
+            assertThrows(RuntimeException.class, () -> categoryService.createCategory(createCategoryDto));
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
     }
@@ -110,12 +110,12 @@ class CategoryServiceTest {
     @Nested
     class findCategory {
         @Test
-        void shouldFindCategoriesSuccessfully(){
+        void shouldFindCategoriesSuccessfully() {
             // ARRANGE
             when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of(category));
 
             // ACT
-            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory(Specification.unrestricted());
+            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.getAllCategories(Specification.unrestricted());
 
             // ASSERT
             assertFalse(responseCategoriesFound.isEmpty());
@@ -126,12 +126,12 @@ class CategoryServiceTest {
         }
 
         @Test
-        void shouldEmptyListWhenCategoriesIsNotFound(){
+        void shouldEmptyListWhenCategoriesIsNotFound() {
             // ARRANGE
             when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ACT
-            List<ResponseCategoryDetailsDto> categoryFound = categoryService.findCategory(Specification.unrestricted());
+            List<ResponseCategoryDetailsDto> categoryFound = categoryService.getAllCategories(Specification.unrestricted());
 
             // ASSERT
             assertTrue(categoryFound.isEmpty());
@@ -141,14 +141,14 @@ class CategoryServiceTest {
     }
 
     @Nested
-    class findCategoryById{
+    class findCategoryById {
         @Test
-        void shouldFindCategoryByIdSuccessfully(){
+        void shouldFindCategoryByIdSuccessfully() {
             // ARRANGE
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
 
             // ACT
-            ResponseCategoryDetailsDto responseCategory = categoryService.findCategoryById(category.getCategoryId());
+            ResponseCategoryDetailsDto responseCategory = categoryService.getCategoryById(category.getCategoryId());
 
             // ASSERT
             verify(categoryRepository).findById(categoryIdArgumentCaptor.capture());
@@ -160,21 +160,21 @@ class CategoryServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoryIsNotFoundById(){
+        void shouldThrowExceptionWhenCategoryIsNotFoundById() {
             // ARRANGE
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
+            assertThrows(ResourceNotFoundException.class, () -> categoryService.getCategoryById(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
 
         }
     }
 
     @Nested
-    class updateCategory{
+    class updateCategory {
         @Test
-        void shouldUpdateACategorySuccessfully(){
+        void shouldUpdateACategorySuccessfully() {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
@@ -197,23 +197,23 @@ class CategoryServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoryIsNotFound(){
+        void shouldThrowExceptionWhenCategoryIsNotFound() {
             // ARRANGE
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(ResourceNotFoundException.class, () -> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoryIsNotUpdate(){
+        void shouldThrowExceptionWhenCategoryIsNotUpdate() {
             // ARRANGE
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
             when(categoryRepository.save(any(Category.class))).thenThrow(RuntimeException.class);
 
             // ASSERT
-            assertThrows(RuntimeException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(RuntimeException.class, () -> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
@@ -222,7 +222,7 @@ class CategoryServiceTest {
     @Nested
     class deleteCategory {
         @Test
-        void shouldDeleteACategorySuccessfully(){
+        void shouldDeleteACategorySuccessfully() {
             // ARRANGE
             when(productRepository.existsByCategory_CategoryId(category.getCategoryId())).thenReturn(false);
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
@@ -240,30 +240,30 @@ class CategoryServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoryIsNotFound(){
+        void shouldThrowExceptionWhenCategoryIsNotFound() {
             // ARRANGE
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            assertThrows(ResourceNotFoundException.class, () -> categoryService.deleteCategory(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoryHasBeenUsedInAProduct(){
+        void shouldThrowExceptionWhenCategoryHasBeenUsedInAProduct() {
             // ARRANGE
             when(productRepository.existsByCategory_CategoryId(category.getCategoryId())).thenReturn(true);
 
             // ASSERT
-            assertThrows(BusinessConflictException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            assertThrows(BusinessConflictException.class, () -> categoryService.deleteCategory(category.getCategoryId()));
             verify(categoryRepository, never()).findById(category.getCategoryId());
             verify(categoryRepository, never()).delete(category);
         }
 
         @Nested
-        class activateCategory{
+        class activateCategory {
             @Test
-            void shouldActivateACategoryWithSuccessfully(){
+            void shouldActivateACategoryWithSuccessfully() {
                 // ARRANGE
                 category.setActivityStatus(ActivityStatus.INACTIVITY);
                 when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
@@ -290,9 +290,9 @@ class CategoryServiceTest {
         }
 
         @Nested
-        class deactivateCategory{
+        class deactivateCategory {
             @Test
-            void shouldInactivateACategoryWithSuccessfully(){
+            void shouldInactivateACategoryWithSuccessfully() {
                 // ARRANGE
                 when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
                 when(categoryRepository.save(any(Category.class))).thenReturn(category);
