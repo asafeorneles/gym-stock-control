@@ -77,30 +77,6 @@ public class CouponService {
         }
     }
 
-
-    public void applyCoupon(Sale sale) {
-        BigDecimal discount = calculateDiscount(sale);
-        sale.setTotalPrice(sale.getTotalPrice().subtract(discount));
-        sale.setDiscountAmount(discount);
-        decreaseCouponQuantity(sale.getCoupon());
-    }
-
-    public BigDecimal calculateDiscount(Sale sale) {
-        if (sale.getCoupon().getDiscountType() == DiscountType.PERCENTAGE) {
-            return sale.getTotalPrice()
-                    .multiply(sale.getCoupon().getDiscountValue())
-                    .divide(BigDecimal.valueOf(100));
-        } else {
-            return sale.getCoupon().getDiscountValue();
-        }
-    }
-
-    public void decreaseCouponQuantity(Coupon coupon) {
-        int currentCouponQuantity = coupon.getQuantity();
-        coupon.setQuantity(currentCouponQuantity - 1);
-        couponRepository.save(coupon);
-    }
-
     public ResponseCouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
                 .map(CouponMapper::couponToResponseCoupon)
@@ -137,6 +113,32 @@ public class CouponService {
         couponRepository.save(coupon);
         return CouponMapper.couponToResponseCoupon(coupon);
     }
+
+
+    public void applyCoupon(Sale sale) {
+        BigDecimal discount = calculateDiscount(sale);
+        sale.setTotalPrice(sale.getTotalPrice().subtract(discount));
+        sale.setDiscountAmount(discount);
+        decreaseCouponQuantity(sale.getCoupon());
+    }
+
+    public BigDecimal calculateDiscount(Sale sale) {
+        if (sale.getCoupon().getDiscountType() == DiscountType.PERCENTAGE) {
+            return sale.getTotalPrice()
+                    .multiply(sale.getCoupon().getDiscountValue())
+                    .divide(BigDecimal.valueOf(100));
+        } else {
+            return sale.getCoupon().getDiscountValue();
+        }
+    }
+
+    public void decreaseCouponQuantity(Coupon coupon) {
+        int currentCouponQuantity = coupon.getQuantity();
+        coupon.setQuantity(currentCouponQuantity - 1);
+        couponRepository.save(coupon);
+    }
+
+
 }
 
 
