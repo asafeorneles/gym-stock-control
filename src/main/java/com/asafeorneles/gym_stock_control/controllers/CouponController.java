@@ -7,6 +7,7 @@ import com.asafeorneles.gym_stock_control.services.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/coupon", produces = {"application/json"})
+@Tag(name = "Coupons")
 public class CouponController {
     @Autowired
     CouponService couponService;
