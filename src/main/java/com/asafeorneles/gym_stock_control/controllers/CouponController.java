@@ -89,9 +89,10 @@ public class CouponController {
 
     @Operation(summary = "Delete a coupon")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "coupon deleted successfully"),
+            @ApiResponse(responseCode = "200", description = "Coupon deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
-            @ApiResponse(responseCode = "404", description = "coupon not found"),
+            @ApiResponse(responseCode = "404", description = "Coupon not found"),
+            @ApiResponse(responseCode = "409", description = "This coupon has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @DeleteMapping ("/{id}")
