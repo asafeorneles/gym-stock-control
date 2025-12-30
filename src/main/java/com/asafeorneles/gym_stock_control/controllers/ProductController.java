@@ -129,6 +129,7 @@ public class ProductController {
             @ApiResponse(responseCode = "200", description = "Product deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
             @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "409", description = "This product has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @DeleteMapping("/{id}")
