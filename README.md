@@ -78,7 +78,7 @@ http://localhost:8080/swagger-ui/index.html#/
 ## ⚙️ Como Executar o Projeto
 Pré-requisitos:
 - Java 17
-- Docker e Docker COmpose
+- Docker e Docker Compose
 - Mavem
 
 ### 🐳 Subindo o banco de dados com Docker:
