@@ -57,7 +57,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @GetMapping("/admin")
+    @GetMapping("/details")
     public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsDetails(filters.toSpecification()));
     }
