@@ -1,4 +1,4 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
@@ -8,6 +8,7 @@ import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
+import com.asafeorneles.gym_stock_control.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,5 +1,6 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.security;
 
+import com.asafeorneles.gym_stock_control.dtos.auth.FirstAdminDto;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.enums.RoleName;

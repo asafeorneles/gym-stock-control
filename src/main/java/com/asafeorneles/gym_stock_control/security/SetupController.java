@@ -1,5 +1,6 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.security;
 
+import com.asafeorneles.gym_stock_control.dtos.auth.FirstAdminDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,5 +1,6 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.controllers;
 
+import com.asafeorneles.gym_stock_control.services.AuthService;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;

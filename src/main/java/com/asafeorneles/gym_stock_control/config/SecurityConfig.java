@@ -1,4 +1,4 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.config;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;

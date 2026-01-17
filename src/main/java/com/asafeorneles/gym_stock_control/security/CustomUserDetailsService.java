@@ -1,13 +1,10 @@
-package com.asafeorneles.gym_stock_control.configuration.security;
+package com.asafeorneles.gym_stock_control.security;
 
-import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.enums.Permission;
-import com.asafeorneles.gym_stock_control.enums.RoleName;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
