@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "404", description = "Product inventories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('inventory:read')")
     @GetMapping
     public ResponseEntity<List<ResponseProductInventoryDetailDto>> findProductsInventories(){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductsInventories());
@@ -42,6 +44,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "404", description = "Product inventory not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('inventory:read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseProductInventoryDetailDto> findProductsInventories(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductInventoryById(id));
@@ -55,6 +58,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('inventory:updateQuantity')")
     @PatchMapping(value = "/quantity/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductInventoryDetailDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryQuantityDto patchProductInventoryQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
@@ -68,6 +72,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('inventory:updateLowStock')")
     @PatchMapping(value = "/low-stock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductInventoryDetailDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateLowStockThreshold(id, patchProductInventoryLowStockThreshold));
