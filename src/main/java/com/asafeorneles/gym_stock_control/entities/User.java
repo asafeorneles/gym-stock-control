@@ -65,8 +65,8 @@ public class User {
         this.activityStatus = ActivityStatus.ACTIVE;
     }
 
-    public Boolean isInactivity(){
-        return this.activityStatus == ActivityStatus.INACTIVITY;
+    public Boolean isActivity(){
+        return this.activityStatus == ActivityStatus.ACTIVE;
     }
 
     @Builder
