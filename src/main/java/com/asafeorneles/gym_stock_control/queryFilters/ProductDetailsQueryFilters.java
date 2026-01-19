@@ -12,7 +12,7 @@ import java.util.UUID;
 import static com.asafeorneles.gym_stock_control.specifications.ProductSpec.*;
 
 @Data
-public class ProductAdminQueryFilters {
+public class ProductDetailsQueryFilters {
     private InventoryStatus inventoryStatus;
     private ActivityStatus activityStatus;
     private String name;
