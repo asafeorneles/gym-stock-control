@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -37,6 +38,7 @@ public class SaleController {
             @ApiResponse(responseCode = "409", description = "Insufficient product quantity in stock"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('sale:create')")
     @PostMapping
     public ResponseEntity<ResponseSaleDto> createSale(@RequestBody @Valid CreateSaleDto createSaleDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(saleService.createSale(createSaleDto));
@@ -48,6 +50,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sales not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('sale:read')")
     @GetMapping
     public ResponseEntity<Page<ResponseSaleDto>> getAllSales(@ParameterObject SaleQueryFilters filters, @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getAllSales(filters.toSpecification(), pageable));
@@ -60,6 +63,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('sale:read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseSaleDto> getSaleById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getSaleById(id));
@@ -73,6 +77,7 @@ public class SaleController {
             @ApiResponse(responseCode = "409", description = "Conflict updating sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('sale:update')")
     @PatchMapping("/payment-method/{id}")
     public ResponseEntity<ResponseSaleDto> updatePaymentMethod(@PathVariable(name = "id") UUID id, PatchPaymentMethodDto patchPaymentMethod){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.updatePaymentMethod(id, patchPaymentMethod));
@@ -85,6 +90,7 @@ public class SaleController {
             @ApiResponse(responseCode = "404", description = "Sale not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('sale:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSale(@PathVariable(name = "id") UUID id){
         saleService.deleteSale(id);
