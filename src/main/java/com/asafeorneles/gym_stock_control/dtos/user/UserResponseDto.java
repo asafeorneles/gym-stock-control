@@ -3,5 +3,10 @@ package com.asafeorneles.gym_stock_control.dtos.user;
 import java.util.Set;
 import java.util.UUID;
 
-public record UserResponseDto(UUID userId, String username, Set<String> roles){
+public record UserResponseDto(
+        UUID userId,
+        String username,
+        Set<String> roles,
+        String activityStatus
+){
 }

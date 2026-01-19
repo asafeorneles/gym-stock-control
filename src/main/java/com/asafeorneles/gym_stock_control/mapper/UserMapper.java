@@ -12,7 +12,8 @@ public class UserMapper {
         return new UserResponseDto(
                 user.getUserId(),
                 user.getUsername(),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toSet())
+                user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
+                user.getActivityStatus().name()
         );
     }
 }
