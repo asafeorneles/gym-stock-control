@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "Coupon with same code and brand already exists"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('coupon:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCouponDto> createCoupon(@RequestBody @Valid CreateCouponDto createCouponDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.createCoupon(createCouponDto));
@@ -44,6 +46,7 @@ public class CouponController {
             @ApiResponse(responseCode = "404", description = "Coupons not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping
     public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(@ParameterObject CouponQueryFilters filters){
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons(filters.toSpecification()));
@@ -56,6 +59,7 @@ public class CouponController {
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseCouponDto> getCouponById(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getCouponById(id));
@@ -69,6 +73,7 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "Coupon is already inactive"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('coupon:deactivate')")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<ResponseCouponDto> deactivateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.deactivateCoupon(id));
@@ -82,7 +87,8 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "Coupon is already active"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @PatchMapping("/{id}/activity")
+    @PreAuthorize("hasAuthority('coupon:activate')")
+    @PatchMapping("/{id}/activate")
     public ResponseEntity<ResponseCouponDto> activateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.activateCoupon(id));
     }
@@ -95,6 +101,7 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "This coupon has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('coupon:delete')")
     @DeleteMapping ("/{id}")
     public ResponseEntity<String> deleteCoupon(@PathVariable(value = "id") UUID id){
         couponService.deleteCoupon(id);
