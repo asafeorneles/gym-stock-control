@@ -4,6 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.auth.FirstAdminDto;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.enums.RoleName;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
@@ -32,8 +33,7 @@ public class SetupService {
     public void createFirstAdmin(FirstAdminDto firstAdminDto) {
 
         if (userRepository.existsByRoles_Name(RoleName.ROLE_ADMIN.name())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um administrador");
-            // Create a custom exception after
+            throw new BusinessConflictException("Já existe um administrador");
         }
 
         Role roleAdmin = roleRepository.findByName(RoleName.ROLE_ADMIN.name())
