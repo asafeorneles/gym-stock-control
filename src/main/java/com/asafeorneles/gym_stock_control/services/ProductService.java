@@ -84,18 +84,18 @@ public class ProductService {
 
     @Transactional
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         UUID updateCategoryId = updateProductDto.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
-        ProductMapper.updateProductToProduct(updateProductDto, productFound, category);
+        ProductMapper.updateProductToProduct(updateProductDto, product, category);
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 
     @Transactional
@@ -104,34 +104,34 @@ public class ProductService {
             throw new BusinessConflictException("This product has already been used in a sale. Please use the deactivate option.");
         }
 
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productRepository.delete(productFound);
+        productRepository.delete(product);
     }
 
 
     @Transactional
     public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productFound.inactivity(deactivateProductDto.reason());
+        product.inactivity(deactivateProductDto.reason());
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 
     @Transactional
     public ResponseProductDetailDto activateProduct(UUID id) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productFound.activity();
+        product.activity();
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 }
