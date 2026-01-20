@@ -36,6 +36,8 @@ public class SaleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sale created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "409", description = "Insufficient product quantity in stock"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -48,6 +50,8 @@ public class SaleController {
     @Operation(summary = "Get all sales")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sales returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Sales not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -61,6 +65,8 @@ public class SaleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sale returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Sale not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -74,6 +80,8 @@ public class SaleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sale updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Sale not found"),
             @ApiResponse(responseCode = "409", description = "Conflict updating sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -88,6 +96,8 @@ public class SaleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sale deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Sale not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })

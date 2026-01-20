@@ -40,6 +40,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
             @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "409", description = "Username already in use"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")

@@ -31,6 +31,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "409", description = "Product with same name and brand already exists"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -43,6 +45,8 @@ public class ProductController {
     @Operation(summary = "Get all products")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Products returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -56,6 +60,8 @@ public class ProductController {
     @Operation(summary = "Get all products with all details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -70,6 +76,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -82,6 +90,8 @@ public class ProductController {
     @Operation(summary = "Get all products with low stock")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -95,6 +105,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "409", description = "Conflict updating product"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -109,6 +121,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product deactivated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "409", description = "Product is already inactive"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -123,6 +137,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product activated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "409", description = "Product is already active"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -137,6 +153,8 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "409", description = "This product has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")

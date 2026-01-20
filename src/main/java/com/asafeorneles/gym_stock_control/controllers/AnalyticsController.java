@@ -36,6 +36,8 @@ public class AnalyticsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product data returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request parameter format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
 
@@ -48,6 +50,8 @@ public class AnalyticsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product data returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid date format or missing required parameters"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('analytics:read')")

@@ -28,6 +28,8 @@ public class InventoryController {
     @Operation(summary = "Get all products inventories")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product inventories returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product inventories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -41,6 +43,8 @@ public class InventoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product inventories returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product inventory not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -54,6 +58,8 @@ public class InventoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product inventory quantity updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product inventory not found"),
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -68,6 +74,8 @@ public class InventoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Low stock threshold updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Product inventory not found"),
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")

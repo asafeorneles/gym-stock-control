@@ -32,6 +32,8 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "409", description = "Conflict creating category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -44,6 +46,8 @@ public class CategoryController {
     @Operation(summary = "Get all categories")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Categories returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Categories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -57,6 +61,8 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -70,6 +76,8 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Category updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "409", description = "Conflict updating Category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -84,6 +92,7 @@ public class CategoryController {
     @Operation(summary = "Activate a category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category activated successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
             @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "409", description = "Category is already active"),
@@ -98,6 +107,7 @@ public class CategoryController {
     @Operation(summary = "Deactivate a category")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category deactivated successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
             @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "409", description = "Category is already inactive"),
@@ -113,6 +123,8 @@ public class CategoryController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "409", description = "This category has already been used in a product"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")

@@ -31,6 +31,8 @@ public class CouponController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Coupon created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "409", description = "Coupon with same code and brand already exists"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -43,6 +45,8 @@ public class CouponController {
     @Operation(summary = "Get all coupons")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Coupons returned successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Coupons not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -56,6 +60,8 @@ public class CouponController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Coupon returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
@@ -69,6 +75,8 @@ public class CouponController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Coupon deactivated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "409", description = "Coupon is already inactive"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -83,6 +91,8 @@ public class CouponController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Coupon activated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "409", description = "Coupon is already active"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
@@ -97,6 +107,8 @@ public class CouponController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Coupon deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
             @ApiResponse(responseCode = "404", description = "Coupon not found"),
             @ApiResponse(responseCode = "409", description = "This coupon has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
