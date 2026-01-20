@@ -5,6 +5,7 @@ import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
@@ -56,8 +57,7 @@ public class AuthService {
     @Transactional
     public void register(RegisterRequestDto registerRequestDto) {
         if (userRepository.existsByUsername(registerRequestDto.username())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use. Please enter another username.");
-            // Create a custom exception later
+            throw new BusinessConflictException("Username already in use. Please enter another username.");
         }
 
         Role role = roleRepository.findByName(registerRequestDto.role())

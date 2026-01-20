@@ -13,6 +13,7 @@ import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
+import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,15 +23,18 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,10 +58,17 @@ class SaleServiceTest {
     @Mock
     ProductInventoryService productInventoryService;
 
+    @Mock
+    UserRepository userRepository;
+
+    @Mock
+    JwtAuthenticationToken token;
+
     @InjectMocks
     SaleService saleService;
 
-    Product product;
+    private User user;
+    private Product product;
     private SaleItem saleItem;
     private Sale sale;
     private Coupon coupon;
@@ -65,11 +76,17 @@ class SaleServiceTest {
     private CreateSaleItemDto createSaleItemDto;
     private PatchPaymentMethodDto patchPaymentMethodDto;
     private Pageable pageable;
+
     @Captor
     ArgumentCaptor<Sale> saleCaptor;
 
     @BeforeEach
     void setUp() {
+        user = User.builder()
+                .userId(UUID.randomUUID())
+                .username("zafin")
+                .build();
+
         Category category = Category.builder()
                 .categoryId(UUID.randomUUID())
                 .name("Suplementos")
@@ -110,6 +127,7 @@ class SaleServiceTest {
                 .saleItems(List.of(saleItem))
                 .paymentMethod(PaymentMethod.PIX)
                 .coupon(coupon)
+                .user(user)
                 .build();
 
         saleItem.setSale(sale);
@@ -130,9 +148,11 @@ class SaleServiceTest {
             when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(saleItem.getProduct()));
             when(couponRepository.findById(coupon.getCouponId())).thenReturn(Optional.of(coupon));
             when(saleRepository.save(any(Sale.class))).thenReturn(sale);
+            when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+            when(token.getName()).thenReturn(user.getUserId().toString());
 
             // ACT
-            ResponseSaleDto responseSaleDto = saleService.createSale(createSaleDto);
+            ResponseSaleDto responseSaleDto = saleService.createSale(createSaleDto, token);
 
             // ASSERT
             verify(saleRepository).save(saleCaptor.capture());
@@ -148,17 +168,19 @@ class SaleServiceTest {
             assertEquals(sale.getPaymentMethod(), responseSaleDto.paymentMethod());
 
             verify(productRepository).findById(createSaleItemDto.productId());
-
             verify(productInventoryService, times(1)).updateQuantityAfterSale(anyList());
+            verify(userRepository, times(1)).findById(user.getUserId());
         }
 
         @Test
         void shouldThrowExceptionWhenProductIsNotFound() {
+            when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+            when(token.getName()).thenReturn(user.getUserId().toString());
             when(productRepository.findById(createSaleItemDto.productId()))
                     .thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> saleService.createSale(createSaleDto));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.createSale(createSaleDto, token));
 
             verify(productInventoryService, never()).updateQuantityAfterSale(any());
 
@@ -168,6 +190,8 @@ class SaleServiceTest {
         @Test
         void shouldNotPersistSaleWhenInventoryUpdateFails() {
             // ARRANGE
+            when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+            when(token.getName()).thenReturn(user.getUserId().toString());
             when(productRepository.findById(createSaleItemDto.productId()))
                     .thenReturn(Optional.of(saleItem.getProduct()));
 
@@ -176,7 +200,7 @@ class SaleServiceTest {
                     .updateQuantityAfterSale(any());
 
             // ASSERT
-            assertThrows(RuntimeException.class, () -> saleService.createSale(createSaleDto));
+            assertThrows(RuntimeException.class, () -> saleService.createSale(createSaleDto, token));
 
             verify(saleRepository, never()).save(any());
         }
@@ -184,11 +208,13 @@ class SaleServiceTest {
         @Test
         void shouldThrowAExceptionWhenProductIsNotActivity() {
             // ARRANGE
+            when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
+            when(token.getName()).thenReturn(user.getUserId().toString());
             product.inactivity("test");
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
 
             // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> saleService.createSale(createSaleDto));
+            assertThrows(ActivityStatusException.class, () -> saleService.createSale(createSaleDto, token));
         }
     }
 

@@ -4,8 +4,9 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInve
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gym_stock_control.entities.*;
-import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
+import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,13 @@ class ProductInventoryServiceTest {
     @Mock
     ProductInventoryRepository productInventoryRepository;
 
+    @Mock
+    ProductRepository productRepository;
+
     @InjectMocks
     ProductInventoryService productInventoryService;
 
+    private Product product;
     private ProductInventory productInventory;
     private SaleItem saleItem;
     private PatchProductInventoryQuantityDto patchProductInventoryQuantity;
@@ -49,7 +54,7 @@ class ProductInventoryServiceTest {
                 .description("Alimento em pó para maior eficiência")
                 .build();
 
-        Product product = Product.builder()
+        product = Product.builder()
                 .productId(UUID.randomUUID())
                 .name("Hipercalórico")
                 .brand("Growth")
@@ -116,6 +121,8 @@ class ProductInventoryServiceTest {
         @Test
         void shouldUpdateQuantityOfInventorySuccessfully(){
             // ARRANGE
+            product.activity();
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
@@ -137,12 +144,27 @@ class ProductInventoryServiceTest {
         @Test
         void shouldThrowExceptionWhenProductsInventoriesQuantityIsNotUpdated(){
             // ARRANGE
+            product.activity();
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenThrow(new RuntimeException());
 
             // ASSERT
             assertThrows(RuntimeException.class, ()-> productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity));
             verify(productInventoryRepository, times(1)).save(any(ProductInventory.class));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenProductsIsInactive(){
+            // ARRANGE
+            product.inactivity("teste");
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+            when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
+
+            // ASSERT
+            assertThrows(BusinessConflictException.class, ()-> productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity));
+            verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
+            verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
 
@@ -151,6 +173,8 @@ class ProductInventoryServiceTest {
         @Test
         void shouldUpdateLowStockThresholdOfInventorySuccessfully(){
             // ARRANGE
+            product.activity();
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
@@ -172,12 +196,27 @@ class ProductInventoryServiceTest {
         @Test
         void shouldThrowExceptionWhenProductsInventoriesLowStockThresholdIsNotUpdated(){
             // ARRANGE
+            product.activity();
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenThrow(new RuntimeException());
 
             // ASSERT
             assertThrows(RuntimeException.class, ()-> productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold));
             verify(productInventoryRepository, times(1)).save(any(ProductInventory.class));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenProductsIsInactive(){
+            // ARRANGE
+            product.inactivity("teste");
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+            when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
+
+            // ASSERT
+            assertThrows(BusinessConflictException.class, ()-> productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold));
+            verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
+            verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
 
