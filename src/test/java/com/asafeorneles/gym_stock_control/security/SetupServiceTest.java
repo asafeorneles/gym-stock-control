@@ -3,6 +3,7 @@ package com.asafeorneles.gym_stock_control.security;
 import com.asafeorneles.gym_stock_control.dtos.auth.FirstAdminDto;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith({MockitoExtension.class})
@@ -62,7 +61,7 @@ class SetupServiceTest {
         void shouldThrowExceptionWhenAdminAlreadyExists(){
             when(userRepository.existsByRoles_Name("ROLE_ADMIN")).thenReturn(true);
 
-            assertThrows(ResponseStatusException.class, ()->  setupService.createFirstAdmin(firstAdminDto));
+            assertThrows(BusinessConflictException.class, ()->  setupService.createFirstAdmin(firstAdminDto));
             verify(userRepository, never()).save(any(User.class));
         }
     }

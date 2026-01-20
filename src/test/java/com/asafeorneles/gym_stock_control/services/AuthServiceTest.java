@@ -5,6 +5,7 @@ import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
@@ -16,14 +17,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,7 +92,7 @@ class AuthServiceTest {
             when(userRepository.existsByUsername("zafin"))
                     .thenReturn(true);
 
-            assertThrows(ResponseStatusException.class, () ->
+            assertThrows(BusinessConflictException.class, () ->
                     authService.register(registerRequestDto)
             );
         }
