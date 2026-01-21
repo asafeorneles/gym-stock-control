@@ -63,12 +63,14 @@ public class AuthService {
         Role role = roleRepository.findByName(registerRequestDto.role())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found by this name: " + registerRequestDto.role()));
 
-        User newUser = User.builder()
+        User user = User.builder()
                 .username(registerRequestDto.username())
                 .password(passwordEncoder.encode(registerRequestDto.password()))
                 .roles(Set.of(role))
                 .build();
 
-        userRepository.save(newUser);
+        user.activity();
+
+        userRepository.save(user);
     }
 }

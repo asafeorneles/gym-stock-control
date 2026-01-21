@@ -45,6 +45,8 @@ public class SetupService {
                 .roles(Set.of(roleAdmin))
                 .build();
 
+        firstAdmin.activity();
+
         userRepository.save(firstAdmin);
     }
 }
