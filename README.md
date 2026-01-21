@@ -20,7 +20,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 
 ## 🧾 Funcionalidades
 - Gerenciamento completo de produtos e categorias
-- Controle de estoque com atualização automática ao realizar vedndas
+- Controle de estoque com atualização automática ao realizar vendas
 - Registro e gerenciamento de vendas
 - Aplicação de cupons de desconto
 - Ativação e desativação lógica de produtos, categorias e cupons
@@ -32,11 +32,11 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 ## 🧱 Arquitetura e Boas Práticas
 - Arquitetura em camadas:
   - Controller
-  - Serice
+  - Service
   - Repository
 - Uso de DTOs para isolamento da camada de domínio
 - Exceções customizadas para regras de negócio
-- Validações com Bean Validation
+- Validações de entrada com Bean Validation
 - API baseada em princípios REST
 - Código orientado à legibilidade e manutenção
 
@@ -63,8 +63,62 @@ src/
           └ ── ...
 ```
 
+## 🔐 Segurança e Autenticação
+A API utiliza Spring Security com autenticação baseada em JWT (JSON Web Token), garantindo controle de acesso seguro aos recursos.
+
+### 🔑 Autenticação
+- Autenticação via JWT
+- Tokens assinados com chave RSA (public/private key)
+- O token é enviado no header das requisições protegidas:
+
+Authorization: Bearer <token>
+  
+```
+Authorization: Bearer <token>
+```
+
+### 👥 Perfis de Usuário (Roles)
+Atualmente, o sistema possui os seguintes perfis:
+
+- ROLE_ADMIN
+  - Acesso total ao sistema
+  - Gerenciamento completo de produtos, categorias, cupons, usuários e vendas
+
+- ROLE_BASIC
+    - Acesso restrito às funcionalidades operacionais
+    - Registro de vendas e consulta de dados permitidos
+
+### 🔒 Controle de Acesso
+- Todas as rotas, com exceção da autenticação, são protegidas por Spring Security
+- O controle de acesso é realizado através de:
+  - Configuração centralizada no `SecurityConfig`
+  - Permissões granulares (authorities) definidas via Enum
+  - Associação das permissões às roles do sistema
+  - Uso de anotações como:
+
+@PreAuthorize("hasAuthority('product:create')")
+
+### 🛣️ Rotas e Permissões (Resumo)
+
+#### 🔓 Rotas Públicas
+```
+Método      Endpoint         Descrição
+
+POST        /auth/login      Autenticação do usuário
+```
+
+#### 🔒 Rotas Protegidas (JWT obrigatório)
+```
+Método      Endpoint         Permissão
+
+POST        /products       product:create
+GET         /products       product:read
+```
+*Obs: Lista resumida. A documentação completa está disponível via Swagger.*
+  
 ## 🧪 Testes
-- Até o momento, o projeto conta com 88 testes unitários focados na camada de Service
+- O projeto conta atualmente com 98 testes unitários
+- Foco principal na camada de Service
 - Testes escritos com JUnit 5 e Mockito
 - Cobertura das principais regras de negócio
 
@@ -75,11 +129,11 @@ A API conta com documentação interativa via Swagger:
 http://localhost:8080/swagger-ui/index.html#/
 ```
 
-## ⚙️ Como Executar o Projeto
+## ⚙️ Como Executar o Projeto 
 Pré-requisitos:
 - Java 17
 - Docker e Docker Compose
-- Mavem
+- Maven
 
 ### 🐳 Subindo o banco de dados com Docker:
 
@@ -104,10 +158,16 @@ volumes:
 ```
 mvn spring-boot:run
 ```
-Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints:
+Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints seguindo esses passos:
   
 ```
-http://localhost:8080/swagger-ui/index.html#/
+1- acesse a interface através do link: http://localhost:8080/swagger-ui/index.html#/
+2- Realize o login no endpoint `/auth/login`
+3- Copie o token JWT retornado
+4- Clique em **Authorize** no Swagger (canto superior direito)
+5- Insira o seu token
+
+Após isso, os endpoints protegidos poderão ser acessados normalmente.
 ```
 
 - As migrações de banco são executadas automaticamente via Flyway.
