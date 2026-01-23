@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class AuthController {
     })
     @PreAuthorize("hasAuthority('user:register')")
     @PostMapping("/register") // Proteger depois
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequestDto){
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         authService.register(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
