@@ -1,13 +1,15 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
-import com.asafeorneles.gym_stock_control.services.AuthService;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
+import com.asafeorneles.gym_stock_control.dtos.auth.RefreshTokenRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gym_stock_control.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +38,12 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+    }
+
     @Operation(summary = "Registers a user in the system.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
@@ -47,7 +55,7 @@ public class AuthController {
     })
     @PreAuthorize("hasAuthority('user:register')")
     @PostMapping("/register") // Proteger depois
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDto registerRequestDto){
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         authService.register(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }

@@ -69,7 +69,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCouponException.class)
-    public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e){
+    public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseException(
                         HttpStatus.BAD_REQUEST.value(),
@@ -89,13 +89,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 fieldErrors.put(error.getField(), error.getDefaultMessage())
         );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseExceptionValidation(
-                HttpStatus.BAD_REQUEST.value(),
-                "BAD_REQUEST",
-                "Validation error in the submitted fields.",
-                LocalDateTime.now(),
-                fieldErrors
-        ));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseExceptionValidation(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "BAD_REQUEST",
+                        "Validation error in the submitted fields.",
+                        LocalDateTime.now(),
+                        fieldErrors
+                ));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -116,6 +117,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         fieldErrors
                 )
         );
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ResponseException> handleUnauthorizedException(UnauthorizedException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ResponseException(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "UNAUTHORIZED",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                ));
     }
 
 }

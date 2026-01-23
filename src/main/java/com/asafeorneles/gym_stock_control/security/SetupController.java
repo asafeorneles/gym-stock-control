@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.security;
 
 import com.asafeorneles.gym_stock_control.dtos.auth.FirstAdminDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ public class SetupController {
     SetupService setupService;
 
     @PostMapping("admin")
-    public ResponseEntity<String> createFirstAdmin(@RequestBody FirstAdminDto firstAdminDto){
+    public ResponseEntity<String> createFirstAdmin(@RequestBody @Valid FirstAdminDto firstAdminDto){
         setupService.createFirstAdmin(firstAdminDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("First admin created successfully");
     }

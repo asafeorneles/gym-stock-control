@@ -44,6 +44,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/setup/admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").hasAuthority("user:register")
                         .requestMatchers(
