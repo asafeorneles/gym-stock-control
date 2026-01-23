@@ -1,9 +1,10 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
-import com.asafeorneles.gym_stock_control.services.AuthService;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
+import com.asafeorneles.gym_stock_control.dtos.auth.RefreshTokenRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gym_stock_control.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -33,6 +34,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto){
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
