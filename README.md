@@ -7,6 +7,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Java 17
 - Spring Boot 3
 - Spring Data JPA
+- Spring Security
 - Hibernate
 - Flyway
 - MySQL
