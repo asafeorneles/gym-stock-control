@@ -3,6 +3,7 @@ package com.asafeorneles.gym_stock_control.security;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -24,9 +25,11 @@ public class TokenService {
     @Autowired
     UserRepository userRepository;
 
+    @Getter
     @Value("${jwt.expiration}")
     private Long accessTokenExpiration;
 
+    @Getter
     @Value("${jwt.refresh-token.expiration}")
     private Long refreshTokenExpiration;
 
@@ -65,10 +68,6 @@ public class TokenService {
 
     public String getRefreshToken(Authentication authentication){
         return generateToken(authentication, refreshTokenExpiration, refreshType);
-    }
-
-    public Long getTokenExpiresIn() {
-        return accessTokenExpiration;
     }
 
 }
