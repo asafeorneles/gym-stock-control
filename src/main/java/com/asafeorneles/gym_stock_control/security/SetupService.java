@@ -33,7 +33,7 @@ public class SetupService {
     public void createFirstAdmin(FirstAdminDto firstAdminDto) {
 
         if (userRepository.existsByRoles_Name(RoleName.ROLE_ADMIN.name())){
-            throw new BusinessConflictException("Já existe um administrador");
+            throw new BusinessConflictException("There is already an admin in the system.");
         }
 
         Role roleAdmin = roleRepository.findByName(RoleName.ROLE_ADMIN.name())
