@@ -47,11 +47,12 @@ class TokenServiceTest {
                 .username("asafe")
                 .build();
 
-        ReflectionTestUtils.setField(tokenService, "expiresIn", 300L);
+        ReflectionTestUtils.setField(tokenService, "accessTokenExpiration", 300L);
+        ReflectionTestUtils.setField(tokenService, "refreshTokenExpiration", 28800L);
     }
 
     @Test
-    void shouldGenerateTokenSuccessfully() {
+    void shouldGenerateAccessTokenSuccessfully() {
         Collection<GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
@@ -68,15 +69,39 @@ class TokenServiceTest {
         when(jwtEncoder.encode(any(JwtEncoderParameters.class)))
                 .thenReturn(jwt);
 
-        String token = tokenService.generateToken(authentication);
+        String token = tokenService.getAccessToken(authentication);
 
         assertNotNull(token);
         assertEquals("fake-jwt-token", token);
     }
 
     @Test
-    void shouldGetTokenExpiresInSuccessfully() {
-        Long expires = tokenService.getTokenExpiresIn();
+    void shouldGenerateRefreshTokenSuccessfully() {
+        Collection<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("asafe");
+        doReturn(authorities).when(authentication).getAuthorities();
+
+        when(userRepository.findByUsername("asafe"))
+                .thenReturn(Optional.of(user));
+
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getTokenValue()).thenReturn("fake-jwt-token");
+
+        when(jwtEncoder.encode(any(JwtEncoderParameters.class)))
+                .thenReturn(jwt);
+
+        String token = tokenService.getRefreshToken(authentication);
+
+        assertNotNull(token);
+        assertEquals("fake-jwt-token", token);
+    }
+
+    @Test
+    void shouldGetAccessTokenExpirationSuccessfully() {
+        Long expires = tokenService.getAccessTokenExpiration();
         assertNotNull(expires);
     }
 }

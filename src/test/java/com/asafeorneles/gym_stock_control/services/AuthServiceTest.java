@@ -2,13 +2,18 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
+import com.asafeorneles.gym_stock_control.dtos.auth.RefreshTokenRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gym_stock_control.entities.RefreshToken;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.UnauthorizedException;
+import com.asafeorneles.gym_stock_control.repositories.RefreshTokenRepository;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
+import com.asafeorneles.gym_stock_control.security.CustomUserDetailsService;
 import com.asafeorneles.gym_stock_control.security.TokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -19,9 +24,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,33 +56,62 @@ class AuthServiceTest {
     @Mock
     PasswordEncoder passwordEncoder;
 
+    @Mock
+    RefreshTokenRepository refreshTokenRepository;
+
+    @Mock
+    JwtDecoder jwtDecoder;
+
+    @Mock
+    CustomUserDetailsService customUserDetailsService;
+
     @InjectMocks
     AuthService authService;
 
     private LoginRequestDto loginRequestDto;
     private RegisterRequestDto registerRequestDto;
+    private RefreshTokenRequestDto refreshTokenRequestDto;
     private Role role;
+    private User user;
+    private RefreshToken oldRefreshToken;
 
     @BeforeEach
     void setUp() {
         loginRequestDto = new LoginRequestDto("zafin", "123");
         registerRequestDto = new RegisterRequestDto("zafin", "123", "ROLE_BASIC");
+        refreshTokenRequestDto = new RefreshTokenRequestDto("old-refresh-token");
         role = new Role(2L, "BASIC");
+        user = User.builder()
+                .userId(UUID.randomUUID())
+                .username(loginRequestDto.username())
+                .password(passwordEncoder.encode(loginRequestDto.password()))
+                .build();
+
+        oldRefreshToken = RefreshToken.builder()
+                .revoked(false)
+                .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
+                .token(refreshTokenRequestDto.refreshToken())
+                .user(user)
+                .build();
     }
 
     @Test
     void shouldLoginSuccessful() {
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(tokenService.generateToken(authentication)).thenReturn("token-teste");
-        when(tokenService.getTokenExpiresIn()).thenReturn(300L);
+        when(tokenService.getAccessToken(authentication)).thenReturn("token-teste");
+        when(tokenService.getRefreshToken(authentication)).thenReturn("refresh-token-teste");
+        when(userRepository.findByUsername(loginRequestDto.username())).thenReturn(Optional.of(user));
+        when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
+        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(any(RefreshToken.class));
 
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
 
-
         assertNotNull(loginResponseDto);
         assertEquals("token-teste", loginResponseDto.token());
+        assertEquals("refresh-token-teste", loginResponseDto.refreshToken());
         assertEquals(300L, loginResponseDto.expiresIn());
+        verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     }
 
     @Nested
@@ -108,6 +148,78 @@ class AuthServiceTest {
             assertThrows(ResourceNotFoundException.class, () ->
                     authService.register(registerRequestDto)
             );
+        }
+    }
+
+    @Nested
+    class refreshToken{
+        @Test
+        void shouldRefreshTokenSuccessfully(){
+            Jwt jwt = mock(Jwt.class);
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+            when(jwt.getClaim("type")).thenReturn("refresh");
+            when(refreshTokenRepository.findByToken(refreshTokenRequestDto.refreshToken())).thenReturn(Optional.of(oldRefreshToken));
+
+
+            UserDetails userDetails = mock(UserDetails.class);
+            when(userDetails.getUsername()).thenReturn("asafe");
+            when(userDetails.getAuthorities()).thenReturn(List.of());
+            when(customUserDetailsService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
+
+
+            when(tokenService.getAccessToken(any())).thenReturn("new-access-token");
+            when(tokenService.getRefreshToken(any())).thenReturn("new-refresh-token");
+            when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
+            when(tokenService.getRefreshTokenExpiration()).thenReturn(28800L);
+
+            LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
+
+            assertNotNull(loginResponseDto);
+            assertEquals("new-refresh-token", loginResponseDto.refreshToken());
+            assertEquals("new-access-token", loginResponseDto.token());
+
+            assertTrue(oldRefreshToken.isRevoked());
+            verify(refreshTokenRepository, times(2)).save(any());
+
+        }
+
+        @Test
+        void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
+            String token = "invalid-token";
+
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("access");
+            when(jwtDecoder.decode(token)).thenReturn(jwt);
+
+            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
+
+            verify(refreshTokenRepository, never()).save(any());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRefreshTokenNotFound() {
+            String token = "non-existent-token";
+
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("refresh");
+            when(jwtDecoder.decode(token)).thenReturn(jwt);
+
+            when(refreshTokenRepository.findByToken(token)).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenRefreshTokenIsRevoked() {
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("refresh");
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+
+            oldRefreshToken.setRevoked(true);
+
+            when(refreshTokenRepository.findByToken(oldRefreshToken.getToken())).thenReturn(Optional.of(oldRefreshToken));
+
+            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(refreshTokenRequestDto.refreshToken())));
         }
     }
 }
