@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
-@Tag(name = "User")
+@Tag(name = "Users")
 public class UserController {
     @Autowired
     UserService userService;

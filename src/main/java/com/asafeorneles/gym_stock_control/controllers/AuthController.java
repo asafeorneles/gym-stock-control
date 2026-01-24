@@ -38,13 +38,20 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
+    @Operation(summary = "Refresh token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token refreshed  successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user or Unauthorized Exception"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
     @PostMapping("/refresh-token")
     public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
         LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
-    @Operation(summary = "Registers a user in the system.")
+    @Operation(summary = "Registers a user in the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
