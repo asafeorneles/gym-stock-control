@@ -47,7 +47,7 @@ public class TokenService {
         String username = authentication.getName();
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found creating JWT token"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found creating JWT accessToken"));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("gym-stock-api")

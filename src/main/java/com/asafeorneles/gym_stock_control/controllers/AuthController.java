@@ -39,7 +39,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
-    @Operation(summary = "Refresh token")
+    @Operation(summary = "Refresh accessToken")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Token refreshed  successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),

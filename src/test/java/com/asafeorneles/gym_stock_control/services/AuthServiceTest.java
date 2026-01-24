@@ -85,7 +85,7 @@ class AuthServiceTest {
     void setUp() {
         loginRequestDto = new LoginRequestDto("zafin", "123");
         registerRequestDto = new RegisterRequestDto("zafin", "123", "ROLE_BASIC");
-        refreshTokenRequestDto = new RefreshTokenRequestDto("old-refresh-token");
+        refreshTokenRequestDto = new RefreshTokenRequestDto("old-refresh-accessToken");
         role = new Role(2L, "BASIC");
         user = User.builder()
                 .userId(UUID.randomUUID())
@@ -105,8 +105,8 @@ class AuthServiceTest {
     void shouldLoginSuccessful() {
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(tokenService.getAccessToken(authentication)).thenReturn("token-teste");
-        when(tokenService.getRefreshToken(authentication)).thenReturn("refresh-token-teste");
+        when(tokenService.getAccessToken(authentication)).thenReturn("accessToken-teste");
+        when(tokenService.getRefreshToken(authentication)).thenReturn("refresh-accessToken-teste");
         when(userRepository.findByUsername(loginRequestDto.username())).thenReturn(Optional.of(user));
         when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(any(RefreshToken.class));
@@ -114,8 +114,8 @@ class AuthServiceTest {
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
 
         assertNotNull(loginResponseDto);
-        assertEquals("token-teste", loginResponseDto.token());
-        assertEquals("refresh-token-teste", loginResponseDto.refreshToken());
+        assertEquals("accessToken-teste", loginResponseDto.accessToken());
+        assertEquals("refresh-accessToken-teste", loginResponseDto.refreshToken());
         assertEquals(300L, loginResponseDto.expiresIn());
         verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
     }
@@ -173,16 +173,16 @@ class AuthServiceTest {
             when(customUserDetailsService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
 
 
-            when(tokenService.getAccessToken(any())).thenReturn("new-access-token");
-            when(tokenService.getRefreshToken(any())).thenReturn("new-refresh-token");
+            when(tokenService.getAccessToken(any())).thenReturn("new-access-accessToken");
+            when(tokenService.getRefreshToken(any())).thenReturn("new-refresh-accessToken");
             when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
             when(tokenService.getRefreshTokenExpiration()).thenReturn(28800L);
 
             LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
 
             assertNotNull(loginResponseDto);
-            assertEquals("new-refresh-token", loginResponseDto.refreshToken());
-            assertEquals("new-access-token", loginResponseDto.token());
+            assertEquals("new-refresh-accessToken", loginResponseDto.refreshToken());
+            assertEquals("new-access-accessToken", loginResponseDto.accessToken());
 
             assertTrue(oldRefreshToken.isRevoked());
             verify(refreshTokenRepository, times(2)).save(any());
@@ -191,7 +191,7 @@ class AuthServiceTest {
 
         @Test
         void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
-            String token = "invalid-token";
+            String token = "invalid-accessToken";
 
             Jwt jwt = mock(Jwt.class);
             when(jwt.getClaim("type")).thenReturn("access");
@@ -204,7 +204,7 @@ class AuthServiceTest {
 
         @Test
         void shouldThrowExceptionWhenRefreshTokenNotFound() {
-            String token = "non-existent-token";
+            String token = "non-existent-accessToken";
 
             Jwt jwt = mock(Jwt.class);
             when(jwt.getClaim("type")).thenReturn("refresh");

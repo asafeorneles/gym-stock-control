@@ -64,7 +64,7 @@ class TokenServiceTest {
                 .thenReturn(Optional.of(user));
 
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getTokenValue()).thenReturn("fake-jwt-token");
+        when(jwt.getTokenValue()).thenReturn("fake-jwt-accessToken");
 
         when(jwtEncoder.encode(any(JwtEncoderParameters.class)))
                 .thenReturn(jwt);
@@ -72,7 +72,7 @@ class TokenServiceTest {
         String token = tokenService.getAccessToken(authentication);
 
         assertNotNull(token);
-        assertEquals("fake-jwt-token", token);
+        assertEquals("fake-jwt-accessToken", token);
     }
 
     @Test
@@ -88,7 +88,7 @@ class TokenServiceTest {
                 .thenReturn(Optional.of(user));
 
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getTokenValue()).thenReturn("fake-jwt-token");
+        when(jwt.getTokenValue()).thenReturn("fake-jwt-accessToken");
 
         when(jwtEncoder.encode(any(JwtEncoderParameters.class)))
                 .thenReturn(jwt);
@@ -96,7 +96,7 @@ class TokenServiceTest {
         String token = tokenService.getRefreshToken(authentication);
 
         assertNotNull(token);
-        assertEquals("fake-jwt-token", token);
+        assertEquals("fake-jwt-accessToken", token);
     }
 
     @Test

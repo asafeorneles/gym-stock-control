@@ -67,7 +67,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByUsername(loginRequestDto.username())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh token"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh accessToken"));
 
         String token = tokenService.getAccessToken(authentication);
         String refreshTokenString = generateRefreshToken(authentication, user);
@@ -105,7 +105,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
         if (oldRefreshTokenEntity.isRevoked()){
-            throw new UnauthorizedException("Refresh token is revoked.");
+            throw new UnauthorizedException("Refresh accessToken is revoked.");
         }
 
         oldRefreshTokenEntity.setRevoked(true);
@@ -133,10 +133,10 @@ public class AuthService {
         validateRefreshToken(refreshTokenString);
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshTokenString)
-                .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh accessToken not found"));
 
         if (refreshTokenEntity.isRevoked()){
-            throw new UnauthorizedException("Refresh token is revoked.");
+            throw new UnauthorizedException("Refresh accessToken is revoked.");
         }
 
         refreshTokenEntity.setRevoked(true);
@@ -147,10 +147,10 @@ public class AuthService {
         try{
             Jwt jwt = jwtDecoder.decode(refreshTokenString);
             if (!"refresh".equals(jwt.getClaim("type"))){
-                throw new UnauthorizedException("Invalid token type");
+                throw new UnauthorizedException("Invalid accessToken type");
             }
         } catch (JwtException e){
-            throw new UnauthorizedException("Invalid or expired refresh token");
+            throw new UnauthorizedException("Invalid or expired refresh accessToken");
         }
     }
 
