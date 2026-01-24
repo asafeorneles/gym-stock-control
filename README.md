@@ -7,6 +7,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Java 17
 - Spring Boot 3
 - Spring Data JPA
+- Spring Security (JWT, Access Token e Refresh Token)
 - Hibernate
 - Flyway
 - MySQL
@@ -28,6 +29,8 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Busca dinâmica por parâmetros utilizando Specifications
 - Paginação de resultados
 - Tratamento global de exceções
+- Autenticação e autorização com Spring Security
+- Implementação de fluxo de autenticação com Access Token e Refresh Token
 
 ## 🧱 Arquitetura e Boas Práticas
 - Arquitetura em camadas:
@@ -39,6 +42,8 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Validações de entrada com Bean Validation
 - API baseada em princípios REST
 - Código orientado à legibilidade e manutenção
+- Configuração centralizada de segurança com Spring Security
+- Controle de acesso baseado em roles e authorities
 
 ## 🗂️ Estrutura
 
@@ -67,8 +72,10 @@ src/
 A API utiliza Spring Security com autenticação baseada em JWT (JSON Web Token), garantindo controle de acesso seguro aos recursos.
 
 ### 🔑 Autenticação
-- Autenticação via JWT
+- Autenticação baseada em JWT
+- Utilização de Access Token e Refresh Token
 - Tokens assinados com chave RSA (public/private key)
+- Renovação automática do token de acesso via Refresh Token
 - O token é enviado no header das requisições protegidas:
 
 Authorization: Bearer <token>
@@ -102,17 +109,18 @@ Atualmente, o sistema possui os seguintes perfis:
 
 #### 🔓 Rotas Públicas
 ```
-Método      Endpoint         Descrição
+Método      Endpoint          Descrição
 
-POST        /auth/login      Autenticação do usuário
+POST        /auth/login       Autenticação do usuário
+POST        /auth/refresh     Renovação do token de acesso
 ```
 
 #### 🔒 Rotas Protegidas (JWT obrigatório)
 ```
 Método      Endpoint         Permissão
 
-POST        /products       product:create
-GET         /products       product:read
+POST        /products        product:create
+GET         /products        roduct:read
 ```
 *Obs: Lista resumida. A documentação completa está disponível via Swagger.*
   
@@ -163,9 +171,10 @@ Com a aplicação rodando, acesse a interface interativa do Swagger para testar 
 ```
 1- acesse a interface através do link: http://localhost:8080/swagger-ui/index.html#/
 2- Realize o login no endpoint `/auth/login`
-3- Copie o token JWT retornado
+3- Copie o Access Token retornado
 4- Clique em **Authorize** no Swagger (canto superior direito)
 5- Insira o seu token
+6- Utilize o Refresh Token para renovação do token quando necessário
 
 Após isso, os endpoints protegidos poderão ser acessados normalmente.
 ```
