@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,22 +66,13 @@ public class AuthService {
                 )
         );
 
-        String token = tokenService.getAccessToken(authentication);
-        String refreshToken = tokenService.getRefreshToken(authentication);
-
         User user = userRepository.findByUsername(loginRequestDto.username())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh token"));
 
-        RefreshToken refreshTokenEntity = RefreshToken.builder()
-                .token(refreshToken)
-                .revoked(false)
-                .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
-                .user(user)
-                .build();
+        String token = tokenService.getAccessToken(authentication);
+        String refreshTokenString = generateRefreshToken(authentication, user);
 
-        refreshTokenRepository.save(refreshTokenEntity);
-
-        return new LoginResponseDto(token, refreshToken, tokenService.getAccessTokenExpiration());
+        return new LoginResponseDto(token, refreshTokenString, tokenService.getAccessTokenExpiration());
     }
 
     @Transactional
@@ -107,7 +99,14 @@ public class AuthService {
     @Transactional
     public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String oldRefreshTokenString = refreshTokenRequestDto.refreshToken();
-        Jwt jwt = jwtDecoder.decode(oldRefreshTokenString);
+        Jwt jwt;
+
+        try {
+            jwt = jwtDecoder.decode(oldRefreshTokenString);
+        } catch (JwtException e) {
+            throw new UnauthorizedException("Invalid or expired refresh token");
+        }
+
         if (!jwt.getClaim("type").equals("refresh")) {
             throw new UnauthorizedException("Invalid refresh token");
         }
@@ -133,8 +132,13 @@ public class AuthService {
         );
 
         String token = tokenService.getAccessToken(authentication);
-        String newRefreshTokenString = tokenService.getRefreshToken(authentication);
+        String newRefreshTokenString = generateRefreshToken(authentication, user);
 
+        return new LoginResponseDto(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
+    }
+
+    private String generateRefreshToken(Authentication authentication, User user){
+        String newRefreshTokenString = tokenService.getRefreshToken(authentication);
         RefreshToken newRefreshTokenEntity = RefreshToken.builder()
                 .token(newRefreshTokenString)
                 .revoked(false)
@@ -143,8 +147,7 @@ public class AuthService {
                 .build();
 
         refreshTokenRepository.save(newRefreshTokenEntity);
-
-        return new LoginResponseDto(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
+        return newRefreshTokenEntity.getToken();
     }
 
 }
