@@ -19,6 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 
 import java.time.Instant;
 import java.util.List;
@@ -75,6 +78,9 @@ class AuthServiceTest {
     private User user;
     private RefreshToken oldRefreshToken;
 
+    @Captor
+    ArgumentCaptor<RefreshToken> refreshTokenArgumentCaptor;
+
     @BeforeEach
     void setUp() {
         loginRequestDto = new LoginRequestDto("zafin", "123");
@@ -117,7 +123,7 @@ class AuthServiceTest {
     @Nested
     class register {
         @Test
-        void shouldRegisterAUserSuccessfully(){
+        void shouldRegisterAUserSuccessfully() {
             when(userRepository.existsByUsername(registerRequestDto.username())).thenReturn(false);
             when(roleRepository.findByName(registerRequestDto.role())).thenReturn(Optional.of(role));
             when(passwordEncoder.encode("123")).thenReturn("encoded-password");
@@ -152,9 +158,9 @@ class AuthServiceTest {
     }
 
     @Nested
-    class refreshToken{
+    class refreshToken {
         @Test
-        void shouldRefreshTokenSuccessfully(){
+        void shouldRefreshTokenSuccessfully() {
             Jwt jwt = mock(Jwt.class);
             when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
@@ -222,4 +228,53 @@ class AuthServiceTest {
             assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(refreshTokenRequestDto.refreshToken())));
         }
     }
+
+    @Nested
+    class logout {
+        @Test
+        void shouldLogoutSuccessfully(){
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("refresh");
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+            when(refreshTokenRepository.findByToken(refreshTokenRequestDto.refreshToken())).thenReturn(Optional.of(oldRefreshToken));
+
+            authService.logout(refreshTokenRequestDto);
+            verify(refreshTokenRepository, times(1)).save(refreshTokenArgumentCaptor.capture());
+            RefreshToken refreshTokenCaptured = refreshTokenArgumentCaptor.getValue();
+
+            assertTrue(refreshTokenCaptured.isRevoked());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenJwtIsInvalidOrExpired() {
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenThrow(new JwtException("Invalid"));
+
+            assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequestDto));
+
+            verify(refreshTokenRepository, never()).findByToken(any());
+            verify(refreshTokenRepository, never()).save(any());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("access");
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+
+            assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequestDto));
+
+            verify(refreshTokenRepository, never()).findByToken(any());
+        }
+        @Test
+        void shouldThrowExceptionWhenRefreshTokenNotFound() {
+            Jwt jwt = mock(Jwt.class);
+            when(jwt.getClaim("type")).thenReturn("refresh");
+            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+
+            when(refreshTokenRepository.findByToken(refreshTokenRequestDto.refreshToken())).thenReturn(Optional.empty());
+
+            assertThrows(ResourceNotFoundException.class, () -> authService.logout(refreshTokenRequestDto));
+        }
+    }
+
 }
