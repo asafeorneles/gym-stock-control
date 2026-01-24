@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,17 +100,7 @@ public class AuthService {
     @Transactional
     public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String oldRefreshTokenString = refreshTokenRequestDto.refreshToken();
-        Jwt jwt;
-
-        try {
-            jwt = jwtDecoder.decode(oldRefreshTokenString);
-        } catch (JwtException e) {
-            throw new UnauthorizedException("Invalid or expired refresh token");
-        }
-
-        if (!jwt.getClaim("type").equals("refresh")) {
-            throw new UnauthorizedException("Invalid refresh token");
-        }
+        validateRefreshToken(oldRefreshTokenString);
 
         RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshTokenString)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
@@ -137,6 +128,33 @@ public class AuthService {
         return new LoginResponseDto(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
     }
 
+    @Transactional
+    public void logout(RefreshTokenRequestDto refreshTokenRequestDto) {
+        String refreshTokenString = refreshTokenRequestDto.refreshToken();
+        validateRefreshToken(refreshTokenString);
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshTokenString)
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found"));
+
+        if (refreshTokenEntity.isRevoked()) {
+            return;
+        }
+
+        refreshTokenEntity.setRevoked(true);
+        refreshTokenRepository.save(refreshTokenEntity);
+    }
+
+    private void validateRefreshToken(String refreshTokenString) {
+        try{
+            Jwt jwt = jwtDecoder.decode(refreshTokenString);
+            if (!jwt.getClaim("type").equals("refresh")){
+                throw new UnauthorizedException("Invalid token type");
+            }
+        } catch (JwtException e){
+            throw new UnauthorizedException("Invalid or expired refresh token");
+        }
+    }
+
     private String generateRefreshToken(Authentication authentication, User user){
         String newRefreshTokenString = tokenService.getRefreshToken(authentication);
         RefreshToken newRefreshTokenEntity = RefreshToken.builder()
@@ -149,5 +167,4 @@ public class AuthService {
         refreshTokenRepository.save(newRefreshTokenEntity);
         return newRefreshTokenEntity.getToken();
     }
-
 }

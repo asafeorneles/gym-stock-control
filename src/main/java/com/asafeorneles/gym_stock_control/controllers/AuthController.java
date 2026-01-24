@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,9 +62,16 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('user:register')")
-    @PostMapping("/register") // Proteger depois
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         authService.register(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        authService.logout(refreshTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
+    }
+
 }
