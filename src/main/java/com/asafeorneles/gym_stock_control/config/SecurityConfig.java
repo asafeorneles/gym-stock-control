@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/refresh-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/logout").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/setup/admin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/setup/first-admin").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").hasAuthority("user:register")
                         .requestMatchers(
                                 "/v3/api-docs/**",
