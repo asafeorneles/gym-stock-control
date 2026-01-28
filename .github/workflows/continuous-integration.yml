@@ -39,7 +39,7 @@ jobs:
     - name: Docker Compose Build
       run: docker compose build
       
-    - name: Push to Docker Hub Containter Registry
+    - name: Push to Docker Hub Container Registry
       run: |
         docker tag ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:latest ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:${{ github.run_id }}
         
