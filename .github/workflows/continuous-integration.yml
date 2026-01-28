@@ -44,4 +44,4 @@ jobs:
         docker tag ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:latest ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:${{ github.run_id }}
         
         docker push ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:${{ github.run_id }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:lastet
+        docker push ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:latest
