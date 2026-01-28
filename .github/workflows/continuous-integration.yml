@@ -37,7 +37,7 @@ jobs:
 
     
     - name: Docker Compose Build
-      run: docker compose build
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gym-stock-control:latest .
       
     - name: Push to Docker Hub Containter Registry
       run: |
