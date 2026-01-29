@@ -20,7 +20,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Lombok
 - Bean Validation
 - Docker
--  GitHub Actions (CI)
+- GitHub Actions (CI)
 
 ## 🧾 Funcionalidades
 - Gerenciamento completo de produtos e categorias
@@ -123,7 +123,7 @@ POST        /auth/refresh     Renovação do token de acesso
 Método      Endpoint         Permissão
 
 POST        /products        product:create
-GET         /products        roduct:read
+GET         /products        product:read
 ```
 *Obs: Lista resumida. A documentação completa está disponível via Swagger.*
   
@@ -143,18 +143,23 @@ http://localhost:8080/swagger-ui/index.html#/
 ## ⚙️ Como Executar o Projeto 
 
 ### 🐳 Rodando a aplicação com Docker:
-Este método sobe a aplicação completa (API + Banco de Dados) prontos para uso.
+Este projeto está totalmente containerizado e pode ser executado sem a necessidade de Java ou Maven instalados localmente.
 
 #### **Pré-requisitos:**
 - Docker e Docker Compose instalados.
 
-### 1. Clone o repositório:
-
+#### Opção A: Via Repositório (Mais fácil)
+1. Clone o repositório:
 ```
 git clone https://github.com/asafeorneles/gymstock.git
 ```
-### 2. Crie um arquivo docker-compose.yml na raiz (caso não exista) com o seguinte conteúdo, ou utilize o já existente no projeto:
-(O arquivo já está configurado para baixar a imagem pronta do Docker Hub)
+2. Execute a aplicação:
+```
+docker compose up -d
+```
+
+#### Opção B: Sem clonar o repositório (Apenas rodar)
+1. Crie um arquivo chamado docker-compose.yml em qualquer pasta do seu computador com o seguinte conteúdo:
 
 ```
 services:
@@ -195,14 +200,15 @@ networks:
     driver: bridge
 ```
 
-### 3 Executando a aplicação:
+2. Execute a aplicação:
 ```
 docker compose up -d
 ```
-Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints seguindo esses passos:
+
+#### Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints seguindo esses passos:
   
 ```
-1- acesse a interface através do link: http://localhost:8080/swagger-ui/index.html#/
+1- Acesse a interface através do link: http://localhost:8080/swagger-ui/index.html#/
 2- Realize o login no endpoint `/auth/login`
 3- Copie o Access Token retornado
 4- Clique em **Authorize** no Swagger (canto superior direito)
