@@ -53,7 +53,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 ```
 src/
  └── main/
-     ├── java/com.asafeorneles.gym_stock_control
+     ├── java/com.asafeorneles.gymstock
      │    ├── controllers/
      │    ├── dto/
      |    ├── entities/
