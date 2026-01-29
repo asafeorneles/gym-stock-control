@@ -18,7 +18,7 @@ services:
     networks:
       - gym-stock-network
   gym_stock_control_api:
-    image: asafeorneles/gym-stock-control
+    image: asafeorneles/gymstock
     restart: always
     environment:
       TZ: America/Sao_Paulo

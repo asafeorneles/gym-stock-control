@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.asafeorneles</groupId>
-	<artifactId>gym-stock-control</artifactId>
+	<artifactId>gymstock</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gym-stock-control</name>
 	<description>Demo project for Spring Boot</description>
