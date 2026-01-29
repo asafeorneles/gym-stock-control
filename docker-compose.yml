@@ -2,12 +2,35 @@ services:
   mysql:
     image: mysql:8.0.36
     container_name: mysql_gym_stock_control
+    restart: always
     environment:
+      TZ: America/Sao_Paulo
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: root
       MYSQL_DATABASE: gym_stock_control_api
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3306
     ports:
       - "3306:3306"
-    volumes:
-      - gym_stock_control_data:/var/lib/mysql
-volumes:
-  gym_stock_control_data:
+    expose:
+      - 3306
+    networks:
+      - gym-stock-network
+  gym_stock_control_api:
+    image: asafeorneles/gym-stock-control
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gym_stock_control_api
+      SPRING.DATASOURCE.USERNAME: root
+      SPRING.DATASOURCE.PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - gym-stock-network
+networks:
+  gym-stock-network:
+    driver: bridge

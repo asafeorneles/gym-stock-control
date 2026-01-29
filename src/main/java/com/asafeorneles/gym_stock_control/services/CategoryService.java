@@ -92,8 +92,8 @@ public class CategoryService {
         return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
     }
 
-    public static void checkCategoryIsActiveBeforeUpdate(boolean isActive, String error){
-        if (!isActive){
+    public static void checkCategoryIsActiveBeforeUpdate(boolean isActive, String error) {
+        if (!isActive) {
             throw new BusinessConflictException(error);
         }
     }

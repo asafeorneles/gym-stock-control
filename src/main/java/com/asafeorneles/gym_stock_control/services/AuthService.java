@@ -104,7 +104,7 @@ public class AuthService {
         RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshTokenString)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
-        if (oldRefreshTokenEntity.isRevoked()){
+        if (oldRefreshTokenEntity.isRevoked()) {
             throw new UnauthorizedException("Refresh accessToken is revoked.");
         }
 
@@ -135,7 +135,7 @@ public class AuthService {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshTokenString)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh accessToken not found"));
 
-        if (refreshTokenEntity.isRevoked()){
+        if (refreshTokenEntity.isRevoked()) {
             throw new UnauthorizedException("Refresh accessToken is revoked.");
         }
 
@@ -144,17 +144,17 @@ public class AuthService {
     }
 
     private void validateRefreshToken(String refreshTokenString) {
-        try{
+        try {
             Jwt jwt = jwtDecoder.decode(refreshTokenString);
-            if (!"refresh".equals(jwt.getClaim("type"))){
+            if (!"refresh".equals(jwt.getClaim("type"))) {
                 throw new UnauthorizedException("Invalid accessToken type");
             }
-        } catch (JwtException e){
+        } catch (JwtException e) {
             throw new UnauthorizedException("Invalid or expired refresh accessToken");
         }
     }
 
-    private String generateRefreshToken(Authentication authentication, User user){
+    private String generateRefreshToken(Authentication authentication, User user) {
         String newRefreshTokenString = tokenService.getRefreshToken(authentication);
         RefreshToken newRefreshTokenEntity = RefreshToken.builder()
                 .token(newRefreshTokenString)
