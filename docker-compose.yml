@@ -17,7 +17,7 @@ services:
       - 3306
     networks:
       - gym-stock-network
-  gym_stock_control_api:
+  gymstock:
     image: asafeorneles/gymstock
     restart: always
     environment:

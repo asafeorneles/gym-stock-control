@@ -178,7 +178,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: docker
       MYSQL_PASSWORD: root
-      MYSQL_DATABASE: gym_stock_control_api
+      MYSQL_DATABASE: gymstock
       MYSQL_ROOT_HOST: '%'
       MYSQL_TCP_PORT: 3306
     ports:
@@ -187,12 +187,12 @@ services:
       - 3306
     networks:
       - gym-stock-network
-  gym_stock_control_api:
-    image: asafeorneles/gym-stock-control
+  gymstock:
+    image: asafeorneles/gymstock
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gym_stock_control_api
+      SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gymstock
       SPRING.DATASOURCE.USERNAME: root
       SPRING.DATASOURCE.PASSWORD: root
     ports:
