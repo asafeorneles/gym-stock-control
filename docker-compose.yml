@@ -5,9 +5,9 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: admin123
       MYSQL_USER: docker
-      MYSQL_PASSWORD: root
+      MYSQL_PASSWORD: admin123
       MYSQL_DATABASE: gymstock
       MYSQL_ROOT_HOST: '%'
       MYSQL_TCP_PORT: 3306
