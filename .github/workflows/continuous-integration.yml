@@ -31,7 +31,7 @@ jobs:
           echo "${{ secrets.JWT_PUBLIC_KEY }}" > src/main/resources/certs/public.key
           echo "${{ secrets.JWT_PRIVATE_KEY }}" > src/main/resources/certs/private.key
 
-      - name: Build Aplication JAR
+      - name: Build Application JAR
         run: mvn clean package
 
       - name: Build Docker Image
