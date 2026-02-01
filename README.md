@@ -3,6 +3,8 @@
 API desenvolvida em Java com Spring Boot para controle de estoque, vendas e cupons, focada em boas práticas de desenvolvimento, arquitetura limpa e testes unitários.
 Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java moderno.
 
+[![Continuous Integration with Github Actions](https://github.com/asafeorneles/gymstock/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/asafeorneles/gymstock/actions/workflows/continuous-integration.yml)
+
 [![Docker Hub Repo](https://img.shields.io/docker/pulls/asafeorneles/gymstock.svg)](https://hub.docker.com/repository/docker/asafeorneles/gymstock)
 
 ## 🚀 Tecnologias Utilizadas
