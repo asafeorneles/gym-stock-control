@@ -69,6 +69,10 @@ jobs:
         task-definition: task-definition.json
         container-name: ${{ secrets.CONTAINER_NAME }}
         image: ${{ secrets.IMAGE_REPO_URL }}:latest
+        environment-variables: |
+          SPRING_DATASOURCE_URL=${{ secrets.DB_URL }}
+          SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}
+          SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v2
