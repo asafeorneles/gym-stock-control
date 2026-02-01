@@ -5,6 +5,7 @@ on:
     branches:
       - feature
       - 'feature/**'
+
 jobs:
   build:
     runs-on: ubuntu-latest
