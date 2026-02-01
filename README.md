@@ -84,7 +84,7 @@ A API utiliza Spring Security com autenticação baseada em JWT (JSON Web Token)
 - O token é enviado no header das requisições protegidas:
 
 Authorization: Bearer <token>
-  
+
 ```
 Authorization: Bearer <token>
 ```
@@ -97,8 +97,8 @@ Atualmente, o sistema possui os seguintes perfis:
   - Gerenciamento completo de produtos, categorias, cupons, usuários e vendas
 
 - ROLE_BASIC
-    - Acesso restrito às funcionalidades operacionais
-    - Registro de vendas e consulta de dados permitidos
+  - Acesso restrito às funcionalidades operacionais
+  - Registro de vendas e consulta de dados permitidos
 
 ### 🔒 Controle de Acesso
 - Todas as rotas, com exceção da autenticação, são protegidas por Spring Security
@@ -128,7 +128,7 @@ POST        /products        product:create
 GET         /products        product:read
 ```
 *Obs: Lista resumida. A documentação completa está disponível via Swagger.*
-  
+
 ## 🧪 Testes
 - O projeto conta atualmente com 108 testes unitários
 - Foco principal na camada de Service
@@ -142,7 +142,21 @@ A API conta com documentação interativa via Swagger:
 http://localhost:8080/swagger-ui/index.html#/
 ```
 
-## ⚙️ Como Executar o Projeto 
+## 🚀 Fluxo de CI/CD
+
+Este projeto utiliza uma estratégia de integração e entrega contínua automatizada com GitHub Actions, Docker e AWS.
+
+### Estratégia de Branches:
+- **`feature/*`**: Branch de desenvolvimento. Cada push dispara um pipeline de **CI** que realiza o build do JAR, gera a imagem Docker e a publica no **Docker Hub** para validação e testes locais via Docker Compose.
+- **`master`**: Branch de produção. O merge de uma feature para a master dispara o pipeline de **CD**, que realiza o deploy automatizado no **Amazon ECS (Fargate/EC2)**, garantindo a atualização do serviço com zero downtime.
+
+### Tecnologias Utilizadas no Deploy:
+- **Docker & Docker Hub**: Conteinerização e registro de imagens.
+- **AWS ECR**: Registro privado de imagens para o ambiente Amazon.
+- **AWS ECS**: Orquestração de containers.
+- **GitHub Actions**: Automação completa do ciclo de vida.
+
+## ⚙️ Como Executar o Projeto
 
 ### 🐳 Rodando a aplicação com Docker:
 Este projeto está totalmente containerizado e pode ser executado sem a necessidade de Java ou Maven instalados localmente.
@@ -196,7 +210,7 @@ services:
       TZ: America/Sao_Paulo
       SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gymstock
       SPRING.DATASOURCE.USERNAME: root
-      SPRING.DATASOURCE.PASSWORD: root
+      SPRING.DATASOURCE.PASSWORD: admin123
     ports:
       - "8080:8080"
     depends_on:
@@ -213,8 +227,11 @@ networks:
 docker compose up -d
 ```
 
+3. Aguarde o banco de dados subir:
+- Após o comando docker compose up -d, o MySQL pode levar cerca de 30-60 segundos para inicializar completamente. A API só estará disponível no Swagger após o banco estar pronto.
+
 #### Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints seguindo esses passos:
-  
+
 ```
 1- Acesse a interface através do link: http://localhost:8080/swagger-ui/index.html#/
 2- Realize o login no endpoint `/auth/login`
