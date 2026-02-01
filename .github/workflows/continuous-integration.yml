@@ -50,7 +50,7 @@ jobs:
     - name: Build Docker Image
       run: docker build -t ${{ secrets.DOCKER_USERNAME }}/gymstock:latest .
 
-    - name: Build, tag, and push docker image to Amazon ECR
+    - name: Tag, and push image to Amazon ECR
       run: |
         docker tag ${{ secrets.DOCKER_USERNAME }}/gymstock:latest ${{ secrets.IMAGE_REPO_URL }}:${{ github.run_id }}
         docker tag ${{ secrets.DOCKER_USERNAME }}/gymstock:latest ${{ secrets.IMAGE_REPO_URL }}:latest
