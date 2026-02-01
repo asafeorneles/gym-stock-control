@@ -5,6 +5,8 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 
 [![Docker Hub Repo](https://img.shields.io/docker/pulls/asafeorneles/gymstock.svg)](https://hub.docker.com/repository/docker/asafeorneles/gymstock)
 
+[![Continuous Integration with Github Actions](https://github.com/asafeorneles/gymstock/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/asafeorneles/gymstock/actions/workflows/continuous-integration.yml)
+
 ## 🚀 Tecnologias Utilizadas
 - Java 17
 - Spring Boot 3
