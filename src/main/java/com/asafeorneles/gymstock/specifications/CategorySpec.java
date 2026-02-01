@@ -7,18 +7,18 @@ import org.springframework.util.ObjectUtils;
 
 public class CategorySpec {
 
-    public static Specification<Category> nameContains(String name){
+    public static Specification<Category> nameContains(String name) {
         return (root, query, builder) -> {
-            if (ObjectUtils.isEmpty(name)){
+            if (ObjectUtils.isEmpty(name)) {
                 return null;
             }
             return builder.like(root.get("name"), "%" + name + "%");
         };
     }
 
-    public static Specification<Category> activityStatusEquals(ActivityStatus activityStatus){
+    public static Specification<Category> activityStatusEquals(ActivityStatus activityStatus) {
         return (root, query, builder) -> {
-            if (ObjectUtils.isEmpty(activityStatus)){
+            if (ObjectUtils.isEmpty(activityStatus)) {
                 return null;
             }
             return builder.equal(root.get("activityStatus"), activityStatus);
