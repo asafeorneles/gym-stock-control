@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: docker
       MYSQL_PASSWORD: admin123
       MYSQL_DATABASE: gymstock
@@ -24,7 +24,7 @@ services:
       TZ: America/Sao_Paulo
       SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gymstock
       SPRING.DATASOURCE.USERNAME: root
-      SPRING.DATASOURCE.PASSWORD: admin123
+      SPRING.DATASOURCE.PASSWORD: root
     ports:
       - "8080:8080"
     depends_on:
