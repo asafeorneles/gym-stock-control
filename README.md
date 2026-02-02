@@ -148,7 +148,7 @@ Este projeto utiliza uma estratégia de integração e entrega contínua automat
 
 ### Estratégia de Branches:
 - **`feature/*`**: Branch de desenvolvimento. Cada push dispara um pipeline de **CI** que realiza o build do JAR, gera a imagem Docker e a publica no **Docker Hub** para validação e testes locais via Docker Compose.
-- **`master`**: Branch de produção. O merge de uma feature para a master dispara o pipeline de **CD**, que realiza o deploy automatizado no **Amazon ECS (Fargate/EC2)**, garantindo a atualização do serviço com zero downtime.
+- **`main`**: Branch de produção. O merge de uma feature para a main dispara o pipeline de **CD**, que realiza o deploy automatizado no **Amazon ECS (Fargate/EC2)**, garantindo a atualização do serviço com zero downtime.
 
 ### Tecnologias Utilizadas no Deploy:
 - **Docker & Docker Hub**: Conteinerização e registro de imagens.
