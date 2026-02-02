@@ -3,7 +3,7 @@ name: Continuous Integration and Continuous Delivery with Github Actions (AWS)
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   build:
