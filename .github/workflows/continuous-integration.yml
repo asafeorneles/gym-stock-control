@@ -42,4 +42,4 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/gymstock:latest ${{ secrets.DOCKER_USERNAME }}/gymstock:${{ github.run_id }}
           
           docker push ${{ secrets.DOCKER_USERNAME }}/gymstock:${{ github.run_id }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/gymstock:latest
+        #  docker push ${{ secrets.DOCKER_USERNAME }}/gymstock:latest -  I commented so that my feature branches wouldn't overwrite my images with the "latest" tag.

@@ -1,7 +1,7 @@
 name: Continuous Integration and Continuous Delivery with Github Actions (AWS)
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
