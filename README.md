@@ -21,7 +21,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Lombok
 - Bean Validation
 - Docker
-- GitHub Actions (CI)
+- GitHub Actions (CI/CD)
 
 ## 🧾 Funcionalidades
 - Gerenciamento completo de produtos e categorias
