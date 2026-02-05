@@ -149,6 +149,10 @@ Este projeto utiliza uma estratégia de integração e entrega contínua automat
 - **`feature/*`**: Branch de desenvolvimento. Cada push dispara um pipeline de **CI** que realiza o build do JAR, gera a imagem Docker e a publica no **Docker Hub** para validação e testes locais via Docker Compose.
 - **`main`**: Branch de produção. O merge de uma feature para a main dispara o pipeline de **CD**, que realiza o deploy automatizado no **Amazon ECS (Fargate/EC2)**, garantindo a atualização do serviço com zero downtime.
 
+### Estratégia de Chaves RSA (JWT):
+- Ambiente Local/Dev: O projeto inclui um par de chaves RSA de teste em **`src/main/resources/certs`**. Isso permite que qualquer desenvolvedor realize o **`git clone`** e execute o projeto imediatamente.
+- Ambiente de Produção (AWS): O Spring Boot está configurado para priorizar chaves injetadas via variáveis de ambiente. Durante o deploy, as chaves reais são injetadas pelo GitHub Actions no Amazon ECS, sobrescrevendo as chaves de teste sem exposição de arquivos sensíveis no repositório.
+
 ### Tecnologias Utilizadas no Deploy:
 - **Docker & Docker Hub**: Conteinerização e registro de imagens.
 - **AWS ECR**: Registro privado de imagens para o ambiente Amazon.
@@ -190,7 +194,7 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: docker
       MYSQL_PASSWORD: admin123
       MYSQL_DATABASE: gymstock
@@ -207,9 +211,9 @@ services:
     restart: always
     environment:
       TZ: America/Sao_Paulo
-      SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gymstock
-      SPRING.DATASOURCE.USERNAME: root
-      SPRING.DATASOURCE.PASSWORD: admin123
+      DB_URL: jdbc:mysql://mysql:3306/gymstock
+      DB_USERNAME: root
+      DB_PASSWORD: root
     ports:
       - "8080:8080"
     depends_on:
