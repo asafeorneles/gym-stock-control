@@ -36,13 +36,10 @@ jobs:
         distribution: 'adopt'
         cache: maven
 
-    - name: Create RSA Keys from Secrets
-      run: |
-        mkdir -p src/main/resources/certs
-        echo "${{ secrets.JWT_PUBLIC_KEY }}" > src/main/resources/certs/public.key
-        echo "${{ secrets.JWT_PRIVATE_KEY }}" > src/main/resources/certs/private.key
-
-    - name: Build Application JAR
+    - name: Build Application JAR and Test
+      env:
+        JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+        JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
       run: mvn clean package
 
     - name: Build Docker Image
@@ -68,9 +65,11 @@ jobs:
         container-name: ${{ secrets.CONTAINER_NAME }}
         image: ${{ secrets.IMAGE_REPO_URL }}:latest
         environment-variables: |
-          SPRING_DATASOURCE_URL=${{ secrets.DB_URL }}
-          SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}
-          SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_URL=${{ secrets.DB_URL }}
+          DB_USERNAME=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}
+          JWT_PRIVATE_KEY=${{ secrets.JWT_PRIVATE_KEY }}
           SPRING_JPA_HIBERNATE_DDL_AUTO=validate
           SPRING_FLYWAY_ENABLED=true
 
