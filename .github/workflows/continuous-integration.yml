@@ -25,13 +25,10 @@ jobs:
           distribution: 'adopt'
           cache: maven
 
-      - name: Create RSA Keys from Secrets
-        run: |
-          mkdir -p src/main/resources/certs
-          echo "${{ secrets.JWT_PUBLIC_KEY }}" > src/main/resources/certs/public.key
-          echo "${{ secrets.JWT_PRIVATE_KEY }}" > src/main/resources/certs/private.key
-
-      - name: Build Application JAR
+      - name: Build Application JAR and Test
+        env:
+          JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+          JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
         run: mvn clean package
 
       - name: Build Docker Image
