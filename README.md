@@ -250,4 +250,6 @@ Após isso, os endpoints protegidos poderão ser acessados normalmente.
 
 ## 👤 Autor
 - Asafe Orneles
--  🔗 <a href="https://www.linkedin.com/in/asafeorneles">LinkedIn</a>
+-  [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?logo=linkedin)](https://www.linkedin.com/in/asafeorneles)
+
+
