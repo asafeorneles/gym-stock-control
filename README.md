@@ -186,7 +186,7 @@ docker compose up -d
 #### Opção B: Sem clonar o repositório (Apenas rodar)
 1. Crie um arquivo chamado docker-compose.yml em qualquer pasta do seu computador com o seguinte conteúdo:
 
-```
+```yaml
 services:
   mysql:
     image: mysql:8.0.36
