@@ -36,7 +36,7 @@ public class TokenService {
     private final String refreshType = "refresh";
     private final String accessType = "access";
 
-    private String generateToken(Authentication authentication, Long expiration, String tokenType) {
+    private String generateToken(Authentication authentication, Long expiration, String tokenType, String jti) {
 
         String scopes = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -49,25 +49,29 @@ public class TokenService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found creating JWT accessToken"));
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder claimsBuilder = JwtClaimsSet.builder()
                 .issuer("gym-stock-api")
                 .subject(user.getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiration))
                 .claim("scopes", scopes)
                 .claim("username", username)
-                .claim("type", tokenType)
-                .build();
+                .claim("type", tokenType);
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+        if (jti != null){
+            claimsBuilder.id(jti);
+        }
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claimsBuilder.build())).getTokenValue();
     }
 
     public String getAccessToken(Authentication authentication){
-        return generateToken(authentication, accessTokenExpiration, accessType);
+        return generateToken(authentication, accessTokenExpiration, accessType, null);
     }
 
-    public String getRefreshToken(Authentication authentication){
-        return generateToken(authentication, refreshTokenExpiration, refreshType);
+    public String getRefreshToken(Authentication authentication, String jti){
+        return generateToken(authentication, refreshTokenExpiration, refreshType, jti);
     }
 
 }

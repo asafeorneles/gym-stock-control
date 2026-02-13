@@ -80,6 +80,8 @@ class TokenServiceTest {
         Collection<GrantedAuthority> authorities =
                 List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
+        String jti = UUID.randomUUID().toString();
+
         Authentication authentication = mock(Authentication.class);
         when(authentication.getName()).thenReturn("asafe");
         doReturn(authorities).when(authentication).getAuthorities();
@@ -93,7 +95,7 @@ class TokenServiceTest {
         when(jwtEncoder.encode(any(JwtEncoderParameters.class)))
                 .thenReturn(jwt);
 
-        String token = tokenService.getRefreshToken(authentication);
+        String token = tokenService.getRefreshToken(authentication, jti);
 
         assertNotNull(token);
         assertEquals("fake-jwt-accessToken", token);

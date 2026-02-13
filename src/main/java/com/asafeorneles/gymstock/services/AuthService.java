@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -99,13 +100,15 @@ public class AuthService {
     @Transactional
     public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
         String oldRefreshTokenString = refreshTokenRequestDto.refreshToken();
-        validateRefreshToken(oldRefreshTokenString);
 
-        RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshTokenString)
+        Jwt jwt = validateRefreshToken(oldRefreshTokenString);
+        String jti = jwt.getId();
+
+        RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByJti(jti)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
         if (oldRefreshTokenEntity.isRevoked()) {
-            throw new UnauthorizedException("Refresh accessToken is revoked.");
+            throw new UnauthorizedException("Refresh Token is revoked.");
         }
 
         oldRefreshTokenEntity.setRevoked(true);
@@ -130,40 +133,46 @@ public class AuthService {
     @Transactional
     public void logout(RefreshTokenRequestDto refreshTokenRequestDto) {
         String refreshTokenString = refreshTokenRequestDto.refreshToken();
-        validateRefreshToken(refreshTokenString);
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshTokenString)
-                .orElseThrow(() -> new ResourceNotFoundException("Refresh accessToken not found"));
+        Jwt jwt = validateRefreshToken(refreshTokenString);
+        String jti = jwt.getId();
+
+        RefreshToken refreshTokenEntity = refreshTokenRepository.findByJti(jti)
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
         if (refreshTokenEntity.isRevoked()) {
-            throw new UnauthorizedException("Refresh accessToken is revoked.");
+            throw new UnauthorizedException("Refresh Token is revoked.");
         }
 
         refreshTokenEntity.setRevoked(true);
         refreshTokenRepository.save(refreshTokenEntity);
     }
 
-    private void validateRefreshToken(String refreshTokenString) {
+    private Jwt validateRefreshToken(String refreshTokenString) {
         try {
             Jwt jwt = jwtDecoder.decode(refreshTokenString);
             if (!"refresh".equals(jwt.getClaim("type"))) {
-                throw new UnauthorizedException("Invalid accessToken type");
+                throw new UnauthorizedException("Invalid Token type");
             }
+            return jwt;
         } catch (JwtException e) {
-            throw new UnauthorizedException("Invalid or expired refresh accessToken");
+            throw new UnauthorizedException("Invalid or expired refresh token");
         }
     }
 
     private String generateRefreshToken(Authentication authentication, User user) {
-        String newRefreshTokenString = tokenService.getRefreshToken(authentication);
+        String jti = UUID.randomUUID().toString();
+
+        String newRefreshTokenString = tokenService.getRefreshToken(authentication, jti);
+
         RefreshToken newRefreshTokenEntity = RefreshToken.builder()
-                .token(newRefreshTokenString)
+                .jti(jti)
                 .revoked(false)
                 .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
                 .user(user)
                 .build();
 
         refreshTokenRepository.save(newRefreshTokenEntity);
-        return newRefreshTokenEntity.getToken();
+        return newRefreshTokenString;
     }
 }

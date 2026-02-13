@@ -22,8 +22,8 @@ public class RefreshToken {
     @Column(name = "refresh_token_id")
     private UUID refreshTokenId;
 
-    @Column(nullable = false)
-    private String token;
+    @Column(nullable = false, unique = true)
+    private String jti;
 
     @Column(nullable = false)
     private boolean revoked;
@@ -37,12 +37,12 @@ public class RefreshToken {
 
     @Builder
     public RefreshToken(
-            String token,
+            String jti,
             boolean revoked,
             Instant expiresDate,
             User user) {
 
-        this.token = token;
+        this.jti = jti;
         this.revoked = revoked;
         this.expiresDate = expiresDate;
         this.user = user;
