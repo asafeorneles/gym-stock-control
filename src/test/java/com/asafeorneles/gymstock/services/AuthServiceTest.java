@@ -122,7 +122,12 @@ class AuthServiceTest {
         assertEquals(authAccessToken, loginResponseDto.accessToken());
         assertEquals(authRefreshToken, loginResponseDto.refreshToken());
         assertEquals(300L, loginResponseDto.expiresIn());
-        verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
+
+        verify(refreshTokenRepository, times(1)).save(refreshTokenArgumentCaptor.capture());
+        String jti = refreshTokenArgumentCaptor.getValue().getJti();
+        assertNotNull(jti);
+        assertFalse(jti.isEmpty());
+
     }
 
     @Nested
