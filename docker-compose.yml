@@ -31,6 +31,20 @@ services:
       - mysql
     networks:
       - gym-stock-network
+  redis:
+    image: redis:7.2
+    container_name: redis_gymstock
+    restart: always
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gym-stock-network
+
 networks:
   gym-stock-network:
     driver: bridge
+volumes:
+  redis_data:
