@@ -149,7 +149,6 @@ public class AuthService {
             }
             return jwt;
         } catch (JwtException e) {
-            log.info("JwrException in validateRefreshToken method");
             throw new UnauthorizedException("Invalid or expired refresh token");
         }
     }
