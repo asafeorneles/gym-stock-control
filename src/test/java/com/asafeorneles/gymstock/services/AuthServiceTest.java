@@ -17,8 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +28,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,43 +38,30 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
-
     @Mock
     AuthenticationManager authenticationManager;
-
     @Mock
     TokenService tokenService;
-
     @Mock
     UserRepository userRepository;
-
     @Mock
     RoleRepository roleRepository;
-
     @Mock
     PasswordEncoder passwordEncoder;
-
-    @Mock
-    RefreshTokenRepository refreshTokenRepository;
-
     @Mock
     JwtDecoder jwtDecoder;
-
     @Mock
     CustomUserDetailsService customUserDetailsService;
-
+    @Mock
+    RefreshTokenRedisService refreshTokenRedisService;
     @InjectMocks
     AuthService authService;
-
     private LoginRequestDto loginRequestDto;
     private RegisterRequestDto registerRequestDto;
     private RefreshTokenRequestDto refreshTokenRequestDto;
     private Role role;
     private User user;
-    private RefreshToken oldRefreshToken;
-
-    @Captor
-    ArgumentCaptor<RefreshToken> refreshTokenArgumentCaptor;
+    private String jti;
 
     @BeforeEach
     void setUp() {
@@ -85,20 +69,8 @@ class AuthServiceTest {
         registerRequestDto = new RegisterRequestDto("zafin", "123", "ROLE_BASIC");
         refreshTokenRequestDto = new RefreshTokenRequestDto("old-refresh-accessToken");
         role = new Role(2L, "BASIC");
-        user = User.builder()
-                .userId(UUID.randomUUID())
-                .username(loginRequestDto.username())
-                .password(passwordEncoder.encode(loginRequestDto.password()))
-                .build();
-
-        String jti = "test jti";
-
-        oldRefreshToken = RefreshToken.builder()
-                .revoked(false)
-                .expiresDate(Instant.now().plusSeconds(28800L))
-                .jti(jti)
-                .user(user)
-                .build();
+        user = User.builder().userId(UUID.randomUUID()).username(loginRequestDto.username()).password(passwordEncoder.encode(loginRequestDto.password())).build();
+        jti = "test jti";
     }
 
     @Test
@@ -108,11 +80,10 @@ class AuthServiceTest {
 
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(userRepository.findByUsername(loginRequestDto.username())).thenReturn(Optional.of(user));
         when(tokenService.getAccessToken(authentication)).thenReturn(authAccessToken);
         when(tokenService.getRefreshToken(eq(authentication), anyString())).thenReturn(authRefreshToken);
-        when(userRepository.findByUsername(loginRequestDto.username())).thenReturn(Optional.of(user));
         when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
-        when(refreshTokenRepository.save(any(RefreshToken.class))).thenReturn(any(RefreshToken.class));
 
         LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
 
@@ -121,11 +92,7 @@ class AuthServiceTest {
         assertEquals(authRefreshToken, loginResponseDto.refreshToken());
         assertEquals(300L, loginResponseDto.expiresIn());
 
-        verify(refreshTokenRepository, times(1)).save(refreshTokenArgumentCaptor.capture());
-        String jti = refreshTokenArgumentCaptor.getValue().getJti();
-        assertNotNull(jti);
-        assertFalse(jti.isEmpty());
-
+        verify(refreshTokenRedisService, times(1)).save(anyString(), anyString(), anyLong());
     }
 
     @Nested
@@ -143,25 +110,17 @@ class AuthServiceTest {
 
         @Test
         void shouldThrowExceptionWhenUsernameAlreadyExists() {
-            when(userRepository.existsByUsername("zafin"))
-                    .thenReturn(true);
+            when(userRepository.existsByUsername("zafin")).thenReturn(true);
 
-            assertThrows(BusinessConflictException.class, () ->
-                    authService.register(registerRequestDto)
-            );
+            assertThrows(BusinessConflictException.class, () -> authService.register(registerRequestDto));
         }
 
         @Test
         void shouldThrowExceptionWhenRoleNotFound() {
-            when(userRepository.existsByUsername("zafin"))
-                    .thenReturn(false);
+            when(userRepository.existsByUsername("zafin")).thenReturn(false);
+            when(roleRepository.findByName("ROLE_BASIC")).thenReturn(Optional.empty());
 
-            when(roleRepository.findByName("ROLE_BASIC"))
-                    .thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class, () ->
-                    authService.register(registerRequestDto)
-            );
+            assertThrows(ResourceNotFoundException.class, () -> authService.register(registerRequestDto));
         }
     }
 
@@ -172,20 +131,19 @@ class AuthServiceTest {
             String newAccessToken = "test-accessToken";
             String newRefreshToken = "test-refreshToken";
 
-
             Jwt jwt = mock(Jwt.class);
             when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
-            when(jwt.getId()).thenReturn(oldRefreshToken.getJti());
-            when(refreshTokenRepository.findByJti(oldRefreshToken.getJti())).thenReturn(Optional.of(oldRefreshToken));
-
+            when(jwt.getId()).thenReturn(jti);
+            when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(true);
+            when(jwt.getSubject()).thenReturn(user.getUserId().toString());
+            when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
             UserDetails userDetails = mock(UserDetails.class);
             when(userDetails.getUsername()).thenReturn("asafe");
             when(userDetails.getAuthorities()).thenReturn(List.of());
+
             when(customUserDetailsService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
-
-
             when(tokenService.getAccessToken(any())).thenReturn(newAccessToken);
             when(tokenService.getRefreshToken(any(), anyString())).thenReturn(newRefreshToken);
             when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
@@ -197,50 +155,35 @@ class AuthServiceTest {
             assertEquals(newRefreshToken, loginResponseDto.refreshToken());
             assertEquals(newAccessToken, loginResponseDto.accessToken());
 
-            assertTrue(oldRefreshToken.isRevoked());
-            verify(refreshTokenRepository, times(2)).save(any());
-
+            verify(refreshTokenRedisService, times(1)).delete(jti);
+            verify(refreshTokenRedisService, times(1)).save(anyString(), anyString(), anyLong());
         }
 
         @Test
         void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
             String token = "invalid refreshToken";
-
             Jwt jwt = mock(Jwt.class);
-            when(jwt.getClaim("type")).thenReturn("access");
             when(jwtDecoder.decode(token)).thenReturn(jwt);
+            when(jwt.getClaim("type")).thenReturn("access");
 
             assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
 
-            verify(refreshTokenRepository, never()).save(any());
+            verify(refreshTokenRedisService, never()).existsInRedis(any());
+            verify(refreshTokenRedisService, never()).delete(any());
+            verify(userRepository, never()).findById(any());
+            verify(jwt, never()).getSubject();
+            verify(refreshTokenRedisService, never()).save(anyString(), anyString(), anyLong());
         }
 
         @Test
-        void shouldThrowExceptionWhenRefreshTokenNotFound() {
-            String token = "non-existent token";
-            String jti = "non-existent jti";
-
-            Jwt jwt = mock(Jwt.class);
-            when(jwt.getClaim("type")).thenReturn("refresh");
-            when(jwtDecoder.decode(token)).thenReturn(jwt);
-            when(jwt.getId()).thenReturn(oldRefreshToken.getJti());
-
-            when(refreshTokenRepository.findByJti(oldRefreshToken.getJti())).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
-        }
-
-        @Test
-        void shouldThrowExceptionWhenRefreshTokenIsRevoked() {
+        void shouldThrowExceptionWhenRefreshTokenNotFoundInRedis() {
             String token = "tokenTest";
+
             Jwt jwt = mock(Jwt.class);
             when(jwtDecoder.decode(token)).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
-            when(jwt.getId()).thenReturn(oldRefreshToken.getJti());
-
-            oldRefreshToken.setRevoked(true);
-
-            when(refreshTokenRepository.findByJti(oldRefreshToken.getJti())).thenReturn(Optional.of(oldRefreshToken));
+            when(jwt.getId()).thenReturn(jti);
+            when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(false);
 
             assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
         }
@@ -249,18 +192,16 @@ class AuthServiceTest {
     @Nested
     class logout {
         @Test
-        void shouldLogoutSuccessfully(){
+        void shouldLogoutSuccessfully() {
             Jwt jwt = mock(Jwt.class);
             when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
-            when(jwt.getId()).thenReturn(oldRefreshToken.getJti());
-            when(refreshTokenRepository.findByJti(oldRefreshToken.getJti())).thenReturn(Optional.of(oldRefreshToken));
+            when(jwt.getId()).thenReturn(jti);
+            when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(true);
 
             authService.logout(refreshTokenRequestDto);
-            verify(refreshTokenRepository, times(1)).save(refreshTokenArgumentCaptor.capture());
-            RefreshToken refreshTokenCaptured = refreshTokenArgumentCaptor.getValue();
 
-            assertTrue(refreshTokenCaptured.isRevoked());
+            verify(refreshTokenRedisService, times(1)).delete(jti);
         }
 
         @Test
@@ -269,32 +210,24 @@ class AuthServiceTest {
 
             assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequestDto));
 
-            verify(refreshTokenRepository, never()).findByJti(any());
-            verify(refreshTokenRepository, never()).save(any());
+            verify(refreshTokenRedisService, never()).existsInRedis(any());
+            verify(refreshTokenRedisService, never()).delete(any());
         }
 
         @Test
         void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
+            String token = "invalid refreshToken";
             Jwt jwt = mock(Jwt.class);
+            when(jwtDecoder.decode(token)).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("access");
-            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
 
-            assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequestDto));
+            assertThrows(UnauthorizedException.class, () -> authService.logout(new RefreshTokenRequestDto(token)));
 
-            verify(refreshTokenRepository, never()).findByJti(any());
-        }
-        @Test
-        void shouldThrowExceptionWhenRefreshTokenNotFound() {
-            String jti = "invalid-jti";
-            Jwt jwt = mock(Jwt.class);
-            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
-            when(jwt.getClaim("type")).thenReturn("refresh");
-            when(jwt.getId()).thenReturn(jti);
-
-            when(refreshTokenRepository.findByJti(jti)).thenReturn(Optional.empty());
-
-            assertThrows(ResourceNotFoundException.class, () -> authService.logout(refreshTokenRequestDto));
+            verify(refreshTokenRedisService, never()).existsInRedis(any());
+            verify(refreshTokenRedisService, never()).delete(any());
+            verify(userRepository, never()).findById(any());
+            verify(jwt, never()).getSubject();
+            verify(refreshTokenRedisService, never()).save(anyString(), anyString(), anyLong());
         }
     }
-
 }
