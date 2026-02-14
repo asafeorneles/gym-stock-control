@@ -4,17 +4,16 @@ import com.asafeorneles.gymstock.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gymstock.dtos.auth.LoginResponseDto;
 import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequestDto;
 import com.asafeorneles.gymstock.dtos.auth.RegisterRequestDto;
-import com.asafeorneles.gymstock.entities.RefreshToken;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.exceptions.UnauthorizedException;
-import com.asafeorneles.gymstock.repositories.RefreshTokenRepository;
 import com.asafeorneles.gymstock.repositories.RoleRepository;
 import com.asafeorneles.gymstock.repositories.UserRepository;
 import com.asafeorneles.gymstock.security.CustomUserDetailsService;
 import com.asafeorneles.gymstock.security.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,10 +26,10 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -47,10 +46,10 @@ public class AuthService {
     RoleRepository roleRepository;
 
     @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    RefreshTokenRedisService refreshTokenRedisService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -104,17 +103,15 @@ public class AuthService {
         Jwt jwt = validateRefreshToken(oldRefreshTokenString);
         String jti = jwt.getId();
 
-        RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByJti(jti)
-                .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
-
-        if (oldRefreshTokenEntity.isRevoked()) {
-            throw new UnauthorizedException("Refresh Token is revoked.");
+        if (!refreshTokenRedisService.existsInRedis(jti)){
+            throw new UnauthorizedException("Refresh Token invalid or expired");
         }
 
-        oldRefreshTokenEntity.setRevoked(true);
-        refreshTokenRepository.save(oldRefreshTokenEntity);
+        refreshTokenRedisService.delete(jti);
 
-        User user = oldRefreshTokenEntity.getUser();
+        User user = userRepository.findById(UUID.fromString(jwt.getSubject()))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found in the refresh token"));
+
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
 
@@ -137,15 +134,11 @@ public class AuthService {
         Jwt jwt = validateRefreshToken(refreshTokenString);
         String jti = jwt.getId();
 
-        RefreshToken refreshTokenEntity = refreshTokenRepository.findByJti(jti)
-                .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
-
-        if (refreshTokenEntity.isRevoked()) {
-            throw new UnauthorizedException("Refresh Token is revoked.");
+        if (!refreshTokenRedisService.existsInRedis(jti)){
+            throw new UnauthorizedException("Refresh Token invalid or expired");
         }
 
-        refreshTokenEntity.setRevoked(true);
-        refreshTokenRepository.save(refreshTokenEntity);
+        refreshTokenRedisService.delete(jti);
     }
 
     private Jwt validateRefreshToken(String refreshTokenString) {
@@ -156,6 +149,7 @@ public class AuthService {
             }
             return jwt;
         } catch (JwtException e) {
+            log.info("JwrException in validateRefreshToken method");
             throw new UnauthorizedException("Invalid or expired refresh token");
         }
     }
@@ -165,14 +159,7 @@ public class AuthService {
 
         String newRefreshTokenString = tokenService.getRefreshToken(authentication, jti);
 
-        RefreshToken newRefreshTokenEntity = RefreshToken.builder()
-                .jti(jti)
-                .revoked(false)
-                .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
-                .user(user)
-                .build();
-
-        refreshTokenRepository.save(newRefreshTokenEntity);
+        refreshTokenRedisService.save(jti, user.getUserId().toString(), tokenService.getRefreshTokenExpiration());
         return newRefreshTokenString;
     }
 }
