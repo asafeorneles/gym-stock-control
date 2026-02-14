@@ -129,7 +129,7 @@ GET         /products        product:read
 *Obs: Lista resumida. A documentação completa está disponível via Swagger.*
 
 ## 🧪 Testes
-- O projeto conta atualmente com 108 testes unitários
+- O projeto conta atualmente com +100 testes unitários
 - Foco principal na camada de Service
 - Testes escritos com JUnit 5 e Mockito
 - Cobertura das principais regras de negócio
@@ -167,21 +167,26 @@ Este projeto está totalmente containerizado e pode ser executado sem a necessid
 #### **Pré-requisitos:**
 - Docker e Docker Compose instalados.
 
-#### Opção A: Via Repositório (Mais fácil)
+---
+
+#### Opção A: Via Repositório
 1. Clone o repositório:
 ```
 git clone https://github.com/asafeorneles/gymstock.git
 ```
+---
 
 2. Entre na pasta gymstock:
 ```
 cd gymstock
 ```
+---
 
 3. Execute a aplicação:
 ```
 docker compose up -d
 ```
+---
 
 #### Opção B: Sem clonar o repositório (Apenas rodar)
 1. Crie um arquivo chamado docker-compose.yml em qualquer pasta do seu computador com o seguinte conteúdo:
@@ -225,10 +230,33 @@ networks:
     driver: bridge
 ```
 
+### 🔴 Redis (Importante)
+
+Este projeto utiliza Redis para controle de refresh tokens (armazenamento do jti com TTL).
+
+#### Se estiver rodando tudo via Docker Compose:
+
+O spring.data.redis.host deve estar configurado como:
+
+```ini
+spring.data.redis.host=redis
+```
+
+#### Se estiver rodando a aplicação localmente (Spring Boot fora do container):
+
+```ini
+spring.data.redis.host=localhost
+```
+Nesse caso, o Redis deve estar rodando localmente ou via Docker na porta 6379.
+
+---
+
 2. Execute a aplicação:
 ```
 docker compose up -d
 ```
+
+---
 
 3. Aguarde o banco de dados subir:
 - Após o comando docker compose up -d, o MySQL pode levar cerca de 30-60 segundos para inicializar completamente. A API só estará disponível no Swagger após o banco estar pronto.
