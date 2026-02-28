@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDto;
@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface ProductInventoryMapperStruct {
+public interface ProductInventoryMapper {
     @Mapping(target = "productId", source = "product.productId")
     @Mapping(target = "productName", source = "product.name")
     ResponseProductInventoryDetailDto toResponseDetail(ProductInventory productInventory);

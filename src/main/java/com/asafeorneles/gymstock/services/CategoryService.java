@@ -6,7 +6,7 @@ import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gymstock.entities.Category;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.mapper.mapStruct.CategoryMapperStruct;
+import com.asafeorneles.gymstock.mapper.CategoryMapper;
 import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +24,26 @@ public class CategoryService {
     @Autowired
     private ProductRepository productRepository;
     @Autowired
-    CategoryMapperStruct categoryMapperStruct;
+    CategoryMapper categoryMapper;
 
     @Transactional
     public ResponseCategoryDetailsDto createCategory(CreateCategoryDto createCategoryDto) {
-        Category category = categoryMapperStruct.toEntity(createCategoryDto);
+        Category category = categoryMapper.toEntity(createCategoryDto);
         category.activity();
         categoryRepository.save(category);
-        return categoryMapperStruct.toResponseDetails(category);
+        return categoryMapper.toResponseDetails(category);
     }
 
     public List<ResponseCategoryDetailsDto> getAllCategories(Specification<Category> specification) {
         return categoryRepository.findAll(specification)
                 .stream()
-                .map(category -> categoryMapperStruct.toResponseDetails(category))
+                .map(category -> categoryMapper.toResponseDetails(category))
                 .toList();
     }
 
     public ResponseCategoryDetailsDto getCategoryById(UUID id) {
         return categoryRepository.findById(id)
-                .map(category -> categoryMapperStruct.toResponseDetails(category))
+                .map(category -> categoryMapper.toResponseDetails(category))
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
     }
 
@@ -54,11 +54,11 @@ public class CategoryService {
 
         checkCategoryIsActiveBeforeUpdate(category.isActivity(), "This category is inactive. You can only update active categories.");
 
-        categoryMapperStruct.updateEntity(updateCategoryDto, category);
+        categoryMapper.updateEntity(updateCategoryDto, category);
 
         categoryRepository.save(category);
 
-        return categoryMapperStruct.toResponseDetails(category);
+        return categoryMapper.toResponseDetails(category);
     }
 
     @Transactional
@@ -82,7 +82,7 @@ public class CategoryService {
 
         categoryRepository.save(category);
 
-        return categoryMapperStruct.toResponseDetails(category);
+        return categoryMapper.toResponseDetails(category);
     }
 
     @Transactional
@@ -94,7 +94,7 @@ public class CategoryService {
 
         categoryRepository.save(category);
 
-        return categoryMapperStruct.toResponseDetails(category);
+        return categoryMapper.toResponseDetails(category);
     }
 
     public static void checkCategoryIsActiveBeforeUpdate(boolean isActive, String error) {

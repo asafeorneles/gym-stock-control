@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.coupon.CreateCouponDto;
 import com.asafeorneles.gymstock.dtos.coupon.ResponseCouponDto;
@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface CouponMapperStruct {
+public interface CouponMapper {
     @Mapping(target = "couponId", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)

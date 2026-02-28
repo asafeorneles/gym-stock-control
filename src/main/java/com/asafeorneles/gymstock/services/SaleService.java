@@ -7,7 +7,7 @@ import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gymstock.entities.*;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.mapper.mapStruct.SaleMapperStruct;
+import com.asafeorneles.gymstock.mapper.SaleMapper;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
@@ -46,7 +46,7 @@ public class SaleService {
     UserRepository userRepository;
 
     @Autowired
-    SaleMapperStruct saleMapperStruct;
+    SaleMapper saleMapper;
 
     @Transactional
     public ResponseSaleDto createSale(CreateSaleDto createSaleDto, JwtAuthenticationToken token) {
@@ -76,7 +76,7 @@ public class SaleService {
         }
 
         saleRepository.save(sale);
-        return saleMapperStruct.toResponse(sale);
+        return saleMapper.toResponse(sale);
     }
 
     public static List<SaleItem> newSaleItemList(List<CreateSaleItemDto> createSaleItemDtoList, ProductRepository productRepository, ProductInventoryService productInventoryService, Sale sale) {
@@ -111,12 +111,12 @@ public class SaleService {
 
     public Page<ResponseSaleDto> getAllSales(Specification<Sale> specification, Pageable pageable) {
         return saleRepository.findAll(specification, pageable)
-                .map(sale -> saleMapperStruct.toResponse(sale));
+                .map(sale -> saleMapper.toResponse(sale));
     }
 
     public ResponseSaleDto getSaleById(UUID id) {
         return saleRepository.findById(id)
-                .map(sale -> saleMapperStruct.toResponse(sale))
+                .map(sale -> saleMapper.toResponse(sale))
                 .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
     }
 
@@ -136,6 +136,6 @@ public class SaleService {
         sale.setPaymentMethod(patchPaymentMethod.paymentMethod());
         saleRepository.save(sale);
 
-        return saleMapperStruct.toResponse(sale);
+        return saleMapper.toResponse(sale);
     }
 }

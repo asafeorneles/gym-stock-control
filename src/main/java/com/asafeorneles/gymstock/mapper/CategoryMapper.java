@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
-public interface CategoryMapperStruct {
+public interface CategoryMapper {
     @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "activityStatus", ignore = true)
     @Mapping(target = "createdDate", ignore = true)

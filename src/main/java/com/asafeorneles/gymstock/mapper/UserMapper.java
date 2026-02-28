@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.user.SoldByUserDto;
 import com.asafeorneles.gymstock.dtos.user.UserResponseDto;
@@ -7,7 +7,7 @@ import com.asafeorneles.gymstock.entities.User;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface UserMapperStruct {
+public interface UserMapper {
     UserResponseDto toResponse(User user);
 
     SoldByUserDto soldByUser(User user);

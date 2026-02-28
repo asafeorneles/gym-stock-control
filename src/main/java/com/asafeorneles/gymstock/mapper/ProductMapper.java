@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.product.CreateProductDto;
 import com.asafeorneles.gymstock.dtos.product.ResponseProductDetailDto;
@@ -9,8 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapperStruct.class, ProductInventoryMapperStruct.class})
-public interface ProductMapperStruct {
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class, ProductInventoryMapper.class})
+public interface ProductMapper {
     @Mapping(target = "productId", ignore = true)
     @Mapping(target = "inventory", ignore = true)
     @Mapping(target = "activityStatus", ignore = true)

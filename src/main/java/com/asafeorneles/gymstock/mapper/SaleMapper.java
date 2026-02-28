@@ -1,4 +1,4 @@
-package com.asafeorneles.gymstock.mapper.mapStruct;
+package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.coupon.CouponAppliedDto;
 import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
@@ -7,8 +7,8 @@ import com.asafeorneles.gymstock.entities.Sale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {UserMapperStruct.class, SaleItemMapperStruct.class})
-public interface SaleMapperStruct {
+@Mapper(componentModel = "spring", uses = {UserMapper.class, SaleItemMapper.class})
+public interface SaleMapper {
 
     @Mapping(target = "saleId", ignore = true)
     @Mapping(target = "discountAmount", ignore = true)
