@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = CategoryMapperStruct.class)
+@Mapper(componentModel = "spring", uses = {CategoryMapperStruct.class, ProductInventoryMapperStruct.class})
 public interface ProductMapperStruct {
     @Mapping(target = "productId", ignore = true)
     @Mapping(target = "inventory", ignore = true)
