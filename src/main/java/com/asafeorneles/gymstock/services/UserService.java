@@ -4,7 +4,7 @@ import com.asafeorneles.gymstock.dtos.user.UserResponseDto;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.mapper.UserMapper;
+import com.asafeorneles.gymstock.mapper.mapStruct.UserMapperStruct;
 import com.asafeorneles.gymstock.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -19,15 +19,18 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserMapperStruct userMapperStruct;
+
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(UserMapper::userToUserResponse)
+                .map(user -> userMapperStruct.toResponse(user))
                 .toList();
     }
 
     public UserResponseDto getUserById(UUID id) {
         return userRepository.findById(id)
-                .map(UserMapper::userToUserResponse)
+                .map(user -> userMapperStruct.toResponse(user))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
     }
 
