@@ -10,7 +10,7 @@ import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.InvalidCouponException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.mapper.CouponMapper;
+import com.asafeorneles.gymstock.mapper.mapStruct.CouponMapperStruct;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +31,20 @@ public class CouponService {
     @Autowired
     SaleRepository saleRepository;
 
+    @Autowired
+    CouponMapperStruct couponMapperStruct;
+
     @Transactional
     public ResponseCouponDto createCoupon(CreateCouponDto createCouponDto) {
         validateCouponToCreate(createCouponDto);
 
-        Coupon coupon = CouponMapper.RespcreateCouponToCoupon(createCouponDto);
+        Coupon coupon = couponMapperStruct.toEntity(createCouponDto);
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapperStruct.toResponse(coupon);
     }
 
     public List<ResponseCouponDto> getAllCoupons(Specification<Coupon> specification) {
-        return couponRepository.findAll(specification).stream().map(CouponMapper::couponToResponseCoupon).toList();
+        return couponRepository.findAll(specification).stream().map(coupon -> couponMapperStruct.toResponse(coupon)).toList();
     }
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {
@@ -79,7 +82,7 @@ public class CouponService {
 
     public ResponseCouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
-                .map(CouponMapper::couponToResponseCoupon)
+                .map(coupon -> couponMapperStruct.toResponse(coupon))
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
     }
@@ -102,7 +105,7 @@ public class CouponService {
 
         coupon.inactivity();
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapperStruct.toResponse(coupon);
     }
 
     public ResponseCouponDto activateCoupon(UUID id) {
@@ -111,7 +114,7 @@ public class CouponService {
 
         coupon.activity();
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapperStruct.toResponse(coupon);
     }
 
 
