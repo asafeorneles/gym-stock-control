@@ -13,7 +13,7 @@ public class UserMapper {
                 user.getUserId(),
                 user.getUsername(),
                 user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
-                user.getActivityStatus().name()
+                user.getActivityStatus()
         );
     }
 }
