@@ -17,6 +17,6 @@ public record ResponseProductDetailDto(
         ResponseCategoryDetailsDto category,
         ResponseProductInventoryDto inventory,
         ActivityStatus activityStatus,
-        String InactivityReason
+        String inactivityReason
 ) {
 }
