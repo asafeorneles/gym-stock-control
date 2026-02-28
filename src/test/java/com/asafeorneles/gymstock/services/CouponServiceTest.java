@@ -106,7 +106,7 @@ class CouponServiceTest {
             assertEquals(createCouponDto.code(), responseCouponDto.code());
             assertEquals(createCouponDto.description(), responseCouponDto.description());
             assertEquals(createCouponDto.activityStatus(), responseCouponDto.activityStatus());
-            assertEquals(createCouponDto.unlimited(), responseCouponDto.isUnlimited());
+            assertEquals(createCouponDto.unlimited(), responseCouponDto.unlimited());
             assertEquals(createCouponDto.quantity(), responseCouponDto.quantity());
             assertEquals(createCouponDto.discountValue(), responseCouponDto.discountValue());
             assertEquals(createCouponDto.discountType(), responseCouponDto.discountType());
@@ -224,7 +224,7 @@ class CouponServiceTest {
             assertEquals(coupon.getCode(), couponsFound.get(0).code());
             assertEquals(coupon.getDescription(), couponsFound.get(0).description());
             assertEquals(coupon.getActivityStatus(), couponsFound.get(0).activityStatus());
-            assertEquals(coupon.isUnlimited(), couponsFound.get(0).isUnlimited());
+            assertEquals(coupon.isUnlimited(), couponsFound.get(0).unlimited());
             assertEquals(coupon.getQuantity(), couponsFound.get(0).quantity());
             assertEquals(coupon.getDiscountValue(), couponsFound.get(0).discountValue());
             assertEquals(coupon.getDiscountType(), couponsFound.get(0).discountType());
@@ -254,7 +254,7 @@ class CouponServiceTest {
             assertEquals(coupon.getCode(), responseCouponDto.code());
             assertEquals(coupon.getDescription(), responseCouponDto.description());
             assertEquals(coupon.getActivityStatus(), responseCouponDto.activityStatus());
-            assertEquals(coupon.isUnlimited(), responseCouponDto.isUnlimited());
+            assertEquals(coupon.isUnlimited(), responseCouponDto.unlimited());
             assertEquals(coupon.getQuantity(), responseCouponDto.quantity());
             assertEquals(coupon.getDiscountValue(), responseCouponDto.discountValue());
             assertEquals(coupon.getDiscountType(), responseCouponDto.discountType());
