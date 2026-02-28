@@ -22,7 +22,7 @@ public class ProductInventory {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "product_id") // The column name is defined here
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")
@@ -35,11 +35,11 @@ public class ProductInventory {
     private InventoryStatus inventoryStatus;
 
     @Column(name = "updated_date")
-    private LocalDateTime updated_date;
+    private LocalDateTime updatedDate;
 
     @PreUpdate
     public void preUpdate() {
-        this.updated_date = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
     }
 
     @Builder
