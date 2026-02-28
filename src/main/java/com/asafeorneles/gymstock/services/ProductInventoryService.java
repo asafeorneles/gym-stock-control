@@ -9,9 +9,8 @@ import com.asafeorneles.gymstock.entities.SaleItem;
 import com.asafeorneles.gymstock.enums.InventoryStatus;
 import com.asafeorneles.gymstock.exceptions.InsufficientProductQuantityException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
+import com.asafeorneles.gymstock.mapper.mapStruct.ProductInventoryMapperStruct;
 import com.asafeorneles.gymstock.repositories.ProductInventoryRepository;
-import com.asafeorneles.gymstock.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,18 +25,18 @@ public class ProductInventoryService {
     ProductInventoryRepository productInventoryRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    ProductInventoryMapperStruct productInventoryMapperStruct;
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         return productInventoryRepository.findAll()
                 .stream()
-                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
+                .map(productInventory -> productInventoryMapperStruct.toResponseDetail(productInventory))
                 .toList();
     }
 
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
         return productInventoryRepository.findById(id)
-                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
+                .map(productInventory -> productInventoryMapperStruct.toResponseDetail(productInventory))
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
     }
 
@@ -56,7 +55,7 @@ public class ProductInventoryService {
 
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
+        return productInventoryMapperStruct.toResponseDetail(productInventoryFound);
     }
 
     @Transactional
@@ -74,7 +73,7 @@ public class ProductInventoryService {
 
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
+        return productInventoryMapperStruct.toResponseDetail(productInventoryFound);
     }
 
     @Transactional
