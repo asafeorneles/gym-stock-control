@@ -4,10 +4,15 @@ import com.asafeorneles.gymstock.dtos.coupon.CouponAppliedDto;
 import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gymstock.entities.Sale;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, SaleItemMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {UserMapper.class, SaleItemMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+
+)
 public interface SaleMapper {
 
     @Mapping(target = "saleId", ignore = true)

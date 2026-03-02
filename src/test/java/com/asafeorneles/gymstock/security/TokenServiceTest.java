@@ -30,13 +30,13 @@ import static org.mockito.Mockito.*;
 class TokenServiceTest {
 
     @Mock
-    JwtEncoder jwtEncoder;
+    private JwtEncoder jwtEncoder;
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @InjectMocks
-    TokenService tokenService;
+    private TokenService tokenService;
 
     private User user;
 

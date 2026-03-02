@@ -8,6 +8,10 @@ import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gymstock.mapper.CategoryMapper;
+import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
+import com.asafeorneles.gymstock.mapper.ProductMapper;
+import com.asafeorneles.gymstock.mapper.ProductMapperImpl;
 import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import com.asafeorneles.gymstock.repositories.SaleItemRepository;
@@ -15,10 +19,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mapstruct.factory.Mappers;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -36,16 +38,23 @@ import static org.mockito.Mockito.*;
 class ProductServiceTest {
 
     @Mock
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Mock
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Mock
-    SaleItemRepository saleItemRepository;
+    private SaleItemRepository saleItemRepository;
+
+    private final CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
+    private final ProductInventoryMapper productInventoryMapper = Mappers.getMapper(ProductInventoryMapper.class);
+
+    @Spy
+    private ProductMapper productMapper = new ProductMapperImpl(categoryMapper, productInventoryMapper);
+
 
     @InjectMocks
-    ProductService productService;
+    private ProductService productService;
 
     private Product product;
     private Product productLowStock;

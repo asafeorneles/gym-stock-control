@@ -5,11 +5,12 @@ import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gymstock.entities.Category;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface CategoryMapper {
     @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "activityStatus", ignore = true)

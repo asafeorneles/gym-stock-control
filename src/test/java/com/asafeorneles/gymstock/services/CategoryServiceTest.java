@@ -2,22 +2,22 @@ package com.asafeorneles.gymstock.services;
 
 import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
+import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gymstock.entities.Category;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gymstock.mapper.CategoryMapper;
 import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mapstruct.factory.Mappers;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -32,13 +32,16 @@ import static org.mockito.Mockito.*;
 class CategoryServiceTest {
 
     @Mock
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Mock
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
+
+    @Spy
+    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
 
     @InjectMocks
-    CategoryService categoryService;
+    private CategoryService categoryService;
 
     private Category category;
     private CreateCategoryDto createCategoryDto;
@@ -52,6 +55,7 @@ class CategoryServiceTest {
 
     @BeforeEach
     void setUp() {
+
         category = Category.builder()
                 .categoryId(UUID.randomUUID())
                 .name("Suplementos")

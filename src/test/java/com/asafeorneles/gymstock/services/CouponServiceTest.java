@@ -10,16 +10,15 @@ import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.InvalidCouponException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gymstock.mapper.CouponMapper;
+import com.asafeorneles.gymstock.mapper.CouponMapperImpl;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -37,13 +36,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
     @Mock
-    CouponRepository couponRepository;
+    private CouponRepository couponRepository;
 
     @Mock
-    SaleRepository saleRepository;
+    private SaleRepository saleRepository;
 
     @InjectMocks
-    CouponService couponService;
+    private CouponService couponService;
+
+    @Spy
+    private CouponMapper couponMapper = new CouponMapperImpl();
 
     private Coupon coupon;
     private Sale sale;

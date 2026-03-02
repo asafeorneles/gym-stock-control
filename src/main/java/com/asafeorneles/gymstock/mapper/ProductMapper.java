@@ -5,11 +5,15 @@ import com.asafeorneles.gymstock.dtos.product.ResponseProductDetailDto;
 import com.asafeorneles.gymstock.dtos.product.ResponseProductDto;
 import com.asafeorneles.gymstock.dtos.product.UpdateProductDto;
 import com.asafeorneles.gymstock.entities.Product;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {CategoryMapper.class, ProductInventoryMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {CategoryMapper.class, ProductInventoryMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
+)
 public interface ProductMapper {
     @Mapping(target = "productId", ignore = true)
     @Mapping(target = "inventory", ignore = true)

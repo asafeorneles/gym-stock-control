@@ -5,16 +5,15 @@ import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryQuan
 import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
 import com.asafeorneles.gymstock.entities.*;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
+import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
+import com.asafeorneles.gymstock.mapper.ProductInventoryMapperImpl;
 import com.asafeorneles.gymstock.repositories.ProductInventoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -29,13 +28,16 @@ import static org.mockito.Mockito.*;
 class ProductInventoryServiceTest {
 
     @Mock
-    ProductInventoryRepository productInventoryRepository;
+    private ProductInventoryRepository productInventoryRepository;
 
     @Mock
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @InjectMocks
-    ProductInventoryService productInventoryService;
+    private ProductInventoryService productInventoryService;
+
+    @Spy
+    private ProductInventoryMapper productInventoryMapper = new ProductInventoryMapperImpl();
 
     private Product product;
     private ProductInventory productInventory;
@@ -44,7 +46,7 @@ class ProductInventoryServiceTest {
     private PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold;
 
     @Captor
-    ArgumentCaptor<ProductInventory> productInventoryArgumentCaptor;
+    private ArgumentCaptor<ProductInventory> productInventoryArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -122,7 +124,6 @@ class ProductInventoryServiceTest {
         void shouldUpdateQuantityOfInventorySuccessfully(){
             // ARRANGE
             product.activity();
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
@@ -145,7 +146,6 @@ class ProductInventoryServiceTest {
         void shouldThrowExceptionWhenProductsInventoriesQuantityIsNotUpdated(){
             // ARRANGE
             product.activity();
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenThrow(new RuntimeException());
 
@@ -158,13 +158,11 @@ class ProductInventoryServiceTest {
         void shouldThrowExceptionWhenProductsIsInactive(){
             // ARRANGE
             product.inactivity("teste");
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
 
             // ASSERT
             assertThrows(BusinessConflictException.class, ()-> productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity));
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
-            verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
 
@@ -174,7 +172,6 @@ class ProductInventoryServiceTest {
         void shouldUpdateLowStockThresholdOfInventorySuccessfully(){
             // ARRANGE
             product.activity();
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
@@ -197,7 +194,6 @@ class ProductInventoryServiceTest {
         void shouldThrowExceptionWhenProductsInventoriesLowStockThresholdIsNotUpdated(){
             // ARRANGE
             product.activity();
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
             when(productInventoryRepository.save(any(ProductInventory.class))).thenThrow(new RuntimeException());
 
@@ -210,13 +206,11 @@ class ProductInventoryServiceTest {
         void shouldThrowExceptionWhenProductsIsInactive(){
             // ARRANGE
             product.inactivity("teste");
-            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             when(productInventoryRepository.findById(productInventory.getProductInventoryId())).thenReturn(Optional.of(productInventory));
 
             // ASSERT
             assertThrows(BusinessConflictException.class, ()-> productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold));
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
-            verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
 

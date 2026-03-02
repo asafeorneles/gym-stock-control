@@ -10,6 +10,7 @@ import com.asafeorneles.gymstock.enums.DiscountType;
 import com.asafeorneles.gymstock.enums.PaymentMethod;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gymstock.mapper.*;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
@@ -18,10 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -42,28 +40,34 @@ import static org.mockito.Mockito.*;
 class SaleServiceTest {
 
     @Mock
-    SaleRepository saleRepository;
+    private SaleRepository saleRepository;
 
     @Mock
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Mock
-    CouponRepository couponRepository;
+    private CouponRepository couponRepository;
 
     @Mock
-    CouponService couponService;
+    private CouponService couponService;
 
     @Mock
-    ProductInventoryService productInventoryService;
+    private ProductInventoryService productInventoryService;
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Mock
-    JwtAuthenticationToken token;
+    private JwtAuthenticationToken token;
 
     @InjectMocks
-    SaleService saleService;
+    private SaleService saleService;
+
+    private final UserMapper userMapper = new UserMapperImpl();
+    private final SaleItemMapper saleItemMapper = new SaleItemMapperImpl();
+
+    @Spy
+    private SaleMapper saleMapper = new SaleMapperImpl(userMapper, saleItemMapper);
 
     private User user;
     private Product product;
