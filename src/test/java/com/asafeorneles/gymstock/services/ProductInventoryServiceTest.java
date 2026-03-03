@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryQuantityDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryDetailResponse;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryLowStockThresholdRequest;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryQuantityRequest;
 import com.asafeorneles.gymstock.entities.*;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
@@ -42,8 +42,8 @@ class ProductInventoryServiceTest {
     private Product product;
     private ProductInventory productInventory;
     private SaleItem saleItem;
-    private PatchProductInventoryQuantityDto patchProductInventoryQuantity;
-    private PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold;
+    private ProductInventoryQuantityRequest patchProductInventoryQuantity;
+    private ProductInventoryLowStockThresholdRequest patchProductInventoryLowStockThreshold;
 
     @Captor
     private ArgumentCaptor<ProductInventory> productInventoryArgumentCaptor;
@@ -83,8 +83,8 @@ class ProductInventoryServiceTest {
                 .totalPrice(product.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
-        patchProductInventoryQuantity = new PatchProductInventoryQuantityDto(25);
-        patchProductInventoryLowStockThreshold = new PatchProductInventoryLowStockThresholdDto(7);
+        patchProductInventoryQuantity = new ProductInventoryQuantityRequest(25);
+        patchProductInventoryLowStockThreshold = new ProductInventoryLowStockThresholdRequest(7);
 
     }
 
@@ -96,7 +96,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.findAll()).thenReturn(List.of(productInventory));
 
             //ACT
-            List<ResponseProductInventoryDetailDto> inventoriesFound = productInventoryService.findProductsInventories();
+            List<ProductInventoryDetailResponse> inventoriesFound = productInventoryService.findProductsInventories();
 
             //ASSERT
             assertNotNull(inventoriesFound);
@@ -110,7 +110,7 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.findAll()).thenReturn(List.of());
 
             // ACT
-            List<ResponseProductInventoryDetailDto> productsInventoriesFound = productInventoryService.findProductsInventories();
+            List<ProductInventoryDetailResponse> productsInventoriesFound = productInventoryService.findProductsInventories();
 
             // ASSERT
             assertTrue(productsInventoriesFound.isEmpty());
@@ -128,17 +128,17 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
             //ACT
-            ResponseProductInventoryDetailDto responseProductInventory = productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity);
+            ProductInventoryDetailResponse responseProductInventory = productInventoryService.updateQuantity(productInventory.getProductInventoryId(), patchProductInventoryQuantity);
 
             //ASSERT
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
             verify(productInventoryRepository).save(productInventoryArgumentCaptor.capture());
             ProductInventory inventoryCaptured = productInventoryArgumentCaptor.getValue();
 
-            // PatchProductInventoryQuantityDto -> inventorySaved
+            // ProductInventoryQuantityRequest -> inventorySaved
             assertEquals(patchProductInventoryQuantity.quantity(), inventoryCaptured.getQuantity());
 
-            // PatchProductInventoryQuantityDto -> ResponseProductInventoryDto
+            // ProductInventoryQuantityRequest -> ProductInventoryResponse
             assertEquals(patchProductInventoryQuantity.quantity(), responseProductInventory.quantity());
         }
 
@@ -176,17 +176,17 @@ class ProductInventoryServiceTest {
             when(productInventoryRepository.save(any(ProductInventory.class))).thenReturn(productInventory);
 
             //ACT
-            ResponseProductInventoryDetailDto responseProductInventory = productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold);
+            ProductInventoryDetailResponse responseProductInventory = productInventoryService.updateLowStockThreshold(productInventory.getProductInventoryId(), patchProductInventoryLowStockThreshold);
 
             //ASSERT
             verify(productInventoryRepository, times(1)).findById(productInventory.getProductInventoryId());
             verify(productInventoryRepository).save(productInventoryArgumentCaptor.capture());
             ProductInventory inventoryCaptured = productInventoryArgumentCaptor.getValue();
 
-            // PatchProductInventoryQuantityDto -> inventorySaved
+            // ProductInventoryQuantityRequest -> inventorySaved
             assertEquals(patchProductInventoryLowStockThreshold.lowStockThreshold(), inventoryCaptured.getLowStockThreshold());
 
-            // PatchProductInventoryQuantityDto -> ResponseProductInventoryDto
+            // ProductInventoryQuantityRequest -> ProductInventoryResponse
             assertEquals(patchProductInventoryLowStockThreshold.lowStockThreshold(), responseProductInventory.lowStockThreshold());
         }
 

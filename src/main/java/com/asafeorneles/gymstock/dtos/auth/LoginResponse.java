@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.dtos.auth;
 
-public record LoginResponseDto(
+public record LoginResponse(
         String accessToken,
         String refreshToken,
         Long expiresIn

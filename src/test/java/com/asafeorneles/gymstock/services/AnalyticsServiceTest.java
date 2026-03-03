@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsDto;
+import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsResponse;
 import com.asafeorneles.gymstock.entities.Product;
 import com.asafeorneles.gymstock.entities.SaleItem;
 import com.asafeorneles.gymstock.repositories.AnalyticsRepository;
@@ -30,8 +30,8 @@ class AnalyticsServiceTest {
     @InjectMocks
     private AnalyticsService analyticsService;
 
-    private TopSellingProductsDto topSellingProductsDto1;
-    private TopSellingProductsDto topSellingProductsDto2;
+    private TopSellingProductsResponse topSellingProductsResponse1;
+    private TopSellingProductsResponse topSellingProductsResponse2;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -72,13 +72,13 @@ class AnalyticsServiceTest {
                 .totalPrice(product2.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
-        topSellingProductsDto1 = new TopSellingProductsDto(
+        topSellingProductsResponse1 = new TopSellingProductsResponse(
                 product1.getProductId().toString(),
                 product1.getName(),
                 BigDecimal.valueOf(saleItem1.getQuantity())
         );
 
-        topSellingProductsDto2 = new TopSellingProductsDto(
+        topSellingProductsResponse2 = new TopSellingProductsResponse(
                 product2.getProductId().toString(),
                 product2.getName(),
                 BigDecimal.valueOf(saleItem2.getQuantity())
@@ -95,14 +95,14 @@ class AnalyticsServiceTest {
         @Test
         void shouldReturnListOfTopSellingProductsSuccessfully() {
             int limit = 2;
-            when(analyticsRepository.findTopSellingProducts(limit)).thenReturn(List.of(topSellingProductsDto1, topSellingProductsDto2));
+            when(analyticsRepository.findTopSellingProducts(limit)).thenReturn(List.of(topSellingProductsResponse1, topSellingProductsResponse2));
 
-            List<TopSellingProductsDto> topSellingProducts = analyticsService.getTopSellingProducts(limit);
+            List<TopSellingProductsResponse> topSellingProducts = analyticsService.getTopSellingProducts(limit);
 
             assertFalse(topSellingProducts.isEmpty());
             assertEquals(2, topSellingProducts.size());
-            assertEquals(topSellingProductsDto1.productName(), topSellingProducts.get(0).productName());
-            assertEquals(topSellingProductsDto2.productName(), topSellingProducts.get(1).productName());
+            assertEquals(topSellingProductsResponse1.productName(), topSellingProducts.get(0).productName());
+            assertEquals(topSellingProductsResponse2.productName(), topSellingProducts.get(1).productName());
             verify(analyticsRepository, times(1)).findTopSellingProducts(limit);
             verify(analyticsRepository).findTopSellingProducts(2);
         }
@@ -112,7 +112,7 @@ class AnalyticsServiceTest {
             int limit = 2;
             when(analyticsRepository.findTopSellingProducts(limit)).thenReturn(List.of());
 
-            List<TopSellingProductsDto> topSellingProducts = analyticsService.getTopSellingProducts(limit);
+            List<TopSellingProductsResponse> topSellingProducts = analyticsService.getTopSellingProducts(limit);
 
             assertTrue(topSellingProducts.isEmpty());
             verify(analyticsRepository, times(1)).findTopSellingProducts(limit);

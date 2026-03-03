@@ -39,8 +39,8 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('product:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductDetailDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(createProductDto));
+    public ResponseEntity<ProductDetailResponse> createProduct(@RequestBody @Valid ProductCreateRequest productCreateRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productCreateRequest));
     }
 
     @Operation(summary = "Get all products")
@@ -54,7 +54,7 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('product:read')")
     @GetMapping
-    public ResponseEntity<List<ResponseProductDto>> getAllProducts(@ParameterObject ProductQueryFilters filters) {
+    public ResponseEntity<List<ProductResponse>> getAllProducts(@ParameterObject ProductQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts(filters.toSpecification()));
     }
 
@@ -69,7 +69,7 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('productDetails:read')")
     @GetMapping("/details")
-    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductDetailsQueryFilters filters) {
+    public ResponseEntity<List<ProductDetailResponse>> getAllProductsDetails(@ParameterObject ProductDetailsQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsDetails(filters.toSpecification()));
     }
 
@@ -84,7 +84,7 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('product:read')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ResponseProductDto> getProductById(@PathVariable(name = "id") UUID id){
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(id));
     }
 
@@ -98,7 +98,7 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('productLowStock:read')")
     @GetMapping("/low-stock")
-    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsWithLowStock(){
+    public ResponseEntity<List<ProductDetailResponse>> getAllProductsWithLowStock(){
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsWithLowStock());
     }
 
@@ -114,8 +114,8 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('product:update')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductDetailDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
+    public ResponseEntity<ProductDetailResponse> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid ProductUpdateRequest productUpdateRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, productUpdateRequest));
     }
 
     @Operation(summary = "Deactivate a product")
@@ -129,9 +129,9 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('product:deactivate')")
-    @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductDetailDto> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid DeactivateProductDto deactivateProductDto){
-        return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
+    @PatchMapping(value = "/deactivate/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ProductDetailResponse> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid ProductDeactivateRequest productDeactivateRequest){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, productDeactivateRequest));
     }
 
     @Operation(summary = "Activate a product")
@@ -145,8 +145,8 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('product:activate')")
-    @PatchMapping(value = "/{id}/activate")
-    public ResponseEntity<ResponseProductDetailDto> activateProduct(@PathVariable(name = "id") UUID id){
+    @PatchMapping(value = "/activate/{id}")
+    public ResponseEntity<ProductDetailResponse> activateProduct(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.activateProduct(id));
     }
 

@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
-import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
+import com.asafeorneles.gymstock.dtos.category.CategoryDetailsResponse;
+import com.asafeorneles.gymstock.dtos.category.CategoryCreateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryUpdateRequest;
 import com.asafeorneles.gymstock.queryFilters.CategoryQueryFilters;
 import com.asafeorneles.gymstock.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,8 +39,8 @@ public class CategoryController {
     })
     @PreAuthorize("hasAuthority('category:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseCategoryDetailsDto> createCategory(@RequestBody @Valid CreateCategoryDto createCategoryDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(createCategoryDto));
+    public ResponseEntity<CategoryDetailsResponse> createCategory(@RequestBody @Valid CategoryCreateRequest categoryCreateRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(categoryCreateRequest));
     }
 
     @Operation(summary = "Get all categories")
@@ -53,7 +53,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasAuthority('category:read')")
     @GetMapping
-    public ResponseEntity<List<ResponseCategoryDetailsDto>> getAllCategories(@ParameterObject CategoryQueryFilters filters) {
+    public ResponseEntity<List<CategoryDetailsResponse>> getAllCategories(@ParameterObject CategoryQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAllCategories(filters.toSpecification()));
     }
 
@@ -68,7 +68,7 @@ public class CategoryController {
     })
     @PreAuthorize("hasAuthority('category:read')")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseCategoryDetailsDto> getCategoryById(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<CategoryDetailsResponse> getCategoryById(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategoryById(id));
     }
 
@@ -84,8 +84,8 @@ public class CategoryController {
     })
     @PreAuthorize("hasAuthority('category:update')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseCategoryDetailsDto> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateCategoryDto updateCategoryDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, updateCategoryDto));
+    public ResponseEntity<CategoryDetailsResponse> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, categoryUpdateRequest));
     }
 
 
@@ -99,8 +99,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('category:activate')")
-    @PatchMapping("/{id}/activate")
-    public ResponseEntity<ResponseCategoryDetailsDto> activateCategory(@PathVariable(value = "id") UUID id){
+    @PatchMapping("/activate/{id}")
+    public ResponseEntity<CategoryDetailsResponse> activateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.activateCategory(id));
     }
 
@@ -114,8 +114,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('category:deactivate')")
-    @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<ResponseCategoryDetailsDto> deactivateCategory(@PathVariable(value = "id") UUID id){
+    @PatchMapping("/deactivate/{id}")
+    public ResponseEntity<CategoryDetailsResponse> deactivateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.deactivateCategory(id));
     }
 

@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.dtos.sale;
 
-import com.asafeorneles.gymstock.dtos.SaleItem.ResponseSaleItemDto;
-import com.asafeorneles.gymstock.dtos.coupon.CouponAppliedDto;
-import com.asafeorneles.gymstock.dtos.user.SoldByUserDto;
+import com.asafeorneles.gymstock.dtos.SaleItem.SaleItemResponse;
+import com.asafeorneles.gymstock.dtos.coupon.CouponAppliedResponse;
+import com.asafeorneles.gymstock.dtos.user.UserSoldByResponse;
 import com.asafeorneles.gymstock.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record ResponseSaleDto(
+public record SaleResponse(
         UUID saleId,
-        List<ResponseSaleItemDto> saleItems,
-        CouponAppliedDto couponApplied,
+        List<SaleItemResponse> saleItems,
+        CouponAppliedResponse couponApplied,
         BigDecimal totalPrice,
         PaymentMethod paymentMethod,
-        SoldByUserDto soldBy,
+        UserSoldByResponse soldBy,
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime createdDate
 ) {

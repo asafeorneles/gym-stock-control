@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
-import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
+import com.asafeorneles.gymstock.dtos.category.CategoryCreateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryUpdateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryDetailsResponse;
 import com.asafeorneles.gymstock.entities.Category;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
@@ -26,34 +26,34 @@ public class CategoryService {
     final CategoryMapper categoryMapper;
 
     @Transactional
-    public ResponseCategoryDetailsDto createCategory(CreateCategoryDto createCategoryDto) {
-        Category category = categoryMapper.toEntity(createCategoryDto);
+    public CategoryDetailsResponse createCategory(CategoryCreateRequest categoryCreateRequest) {
+        Category category = categoryMapper.toEntity(categoryCreateRequest);
         category.activity();
         categoryRepository.save(category);
         return categoryMapper.toResponseDetails(category);
     }
 
-    public List<ResponseCategoryDetailsDto> getAllCategories(Specification<Category> specification) {
+    public List<CategoryDetailsResponse> getAllCategories(Specification<Category> specification) {
         return categoryRepository.findAll(specification)
                 .stream()
                 .map(categoryMapper::toResponseDetails)
                 .toList();
     }
 
-    public ResponseCategoryDetailsDto getCategoryById(UUID id) {
+    public CategoryDetailsResponse getCategoryById(UUID id) {
         return categoryRepository.findById(id)
                 .map(categoryMapper::toResponseDetails)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
     }
 
     @Transactional
-    public ResponseCategoryDetailsDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
+    public CategoryDetailsResponse updateCategory(UUID id, CategoryUpdateRequest categoryUpdateRequest) {
         Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
         checkCategoryIsActiveBeforeUpdate(category.isActivity(), "This category is inactive. You can only update active categories.");
 
-        categoryMapper.updateEntity(updateCategoryDto, category);
+        categoryMapper.updateEntity(categoryUpdateRequest, category);
 
         categoryRepository.save(category);
 
@@ -73,7 +73,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public ResponseCategoryDetailsDto activateCategory(UUID id) {
+    public CategoryDetailsResponse activateCategory(UUID id) {
         Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
@@ -85,7 +85,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public ResponseCategoryDetailsDto deactivateCategory(UUID id) {
+    public CategoryDetailsResponse deactivateCategory(UUID id) {
         Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 

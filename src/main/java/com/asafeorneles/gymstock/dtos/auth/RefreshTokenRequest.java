@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.dtos.auth;
 
-public record RefreshTokenRequestDto(
+public record RefreshTokenRequest(
         String refreshToken
 ) {
 }

@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryQuantityDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryDetailResponse;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryLowStockThresholdRequest;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryQuantityRequest;
 import com.asafeorneles.gymstock.services.ProductInventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +36,7 @@ public class InventoryController {
     })
     @PreAuthorize("hasAuthority('inventory:read')")
     @GetMapping
-    public ResponseEntity<List<ResponseProductInventoryDetailDto>> findProductsInventories(){
+    public ResponseEntity<List<ProductInventoryDetailResponse>> findProductsInventories(){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductsInventories());
     }
 
@@ -51,7 +51,7 @@ public class InventoryController {
     })
     @PreAuthorize("hasAuthority('inventory:read')")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseProductInventoryDetailDto> findProductsInventories(@PathVariable(name = "id") UUID id){
+    public ResponseEntity<ProductInventoryDetailResponse> findProductsInventories(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductInventoryById(id));
     }
 
@@ -67,7 +67,7 @@ public class InventoryController {
     })
     @PreAuthorize("hasAuthority('inventory:updateQuantity')")
     @PatchMapping(value = "/quantity/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductInventoryDetailDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryQuantityDto patchProductInventoryQuantity){
+    public ResponseEntity<ProductInventoryDetailResponse> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody ProductInventoryQuantityRequest patchProductInventoryQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
     }
 
@@ -83,7 +83,7 @@ public class InventoryController {
     })
     @PreAuthorize("hasAuthority('inventory:updateLowStock')")
     @PatchMapping(value = "/low-stock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseProductInventoryDetailDto> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold){
+    public ResponseEntity<ProductInventoryDetailResponse> updateQuantity(@PathVariable(name = "id") UUID id, @RequestBody ProductInventoryLowStockThresholdRequest patchProductInventoryLowStockThreshold){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateLowStockThreshold(id, patchProductInventoryLowStockThreshold));
     }
 }

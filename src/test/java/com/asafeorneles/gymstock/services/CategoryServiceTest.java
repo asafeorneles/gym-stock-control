@@ -1,9 +1,8 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
+import com.asafeorneles.gymstock.dtos.category.CategoryDetailsResponse;
+import com.asafeorneles.gymstock.dtos.category.CategoryCreateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryUpdateRequest;
 import com.asafeorneles.gymstock.entities.Category;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
@@ -44,8 +43,8 @@ class CategoryServiceTest {
     private CategoryService categoryService;
 
     private Category category;
-    private CreateCategoryDto createCategoryDto;
-    private UpdateCategoryDto updateCategoryDto;
+    private CategoryCreateRequest categoryCreateRequest;
+    private CategoryUpdateRequest categoryUpdateRequest;
 
     @Captor
     ArgumentCaptor<Category> categoryArgumentCaptor;
@@ -63,12 +62,12 @@ class CategoryServiceTest {
                 .build();
         category.activity();
 
-        createCategoryDto = new CreateCategoryDto(
+        categoryCreateRequest = new CategoryCreateRequest(
                 "Suplementos",
                 "Alimento em pó para maior eficiência"
         );
 
-        updateCategoryDto = new UpdateCategoryDto(
+        categoryUpdateRequest = new CategoryUpdateRequest(
                 "Suplementos",
                 "Alimento em pó para maior eficiência"
         );
@@ -83,7 +82,7 @@ class CategoryServiceTest {
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
             // ACT
-            ResponseCategoryDetailsDto responseCategory = categoryService.createCategory(createCategoryDto);
+            CategoryDetailsResponse responseCategory = categoryService.createCategory(categoryCreateRequest);
 
             // ASSERT
             verify(categoryRepository).save(categoryArgumentCaptor.capture());
@@ -91,13 +90,13 @@ class CategoryServiceTest {
 
             assertNotNull(responseCategory);
 
-            // CreateCategoryDto -> ResponseCategoryDetailsDto
-            assertEquals(createCategoryDto.name(), responseCategory.name());
-            assertEquals(createCategoryDto.description(), responseCategory.description());
+            // CategoryCreateRequest -> CategoryDetailsResponse
+            assertEquals(categoryCreateRequest.name(), responseCategory.name());
+            assertEquals(categoryCreateRequest.description(), responseCategory.description());
 
-            // CreateCategoryDto -> Category
-            assertEquals(createCategoryDto.name(), categoryCaptured.getName());
-            assertEquals(createCategoryDto.description(), categoryCaptured.getDescription());
+            // CategoryCreateRequest -> Category
+            assertEquals(categoryCreateRequest.name(), categoryCaptured.getName());
+            assertEquals(categoryCreateRequest.description(), categoryCaptured.getDescription());
         }
 
         @Test
@@ -106,7 +105,7 @@ class CategoryServiceTest {
             when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException());
 
             //ASSERT
-            assertThrows(RuntimeException.class, () -> categoryService.createCategory(createCategoryDto));
+            assertThrows(RuntimeException.class, () -> categoryService.createCategory(categoryCreateRequest));
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
     }
@@ -119,7 +118,7 @@ class CategoryServiceTest {
             when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of(category));
 
             // ACT
-            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.getAllCategories(Specification.unrestricted());
+            List<CategoryDetailsResponse> responseCategoriesFound = categoryService.getAllCategories(Specification.unrestricted());
 
             // ASSERT
             assertFalse(responseCategoriesFound.isEmpty());
@@ -135,7 +134,7 @@ class CategoryServiceTest {
             when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ACT
-            List<ResponseCategoryDetailsDto> categoryFound = categoryService.getAllCategories(Specification.unrestricted());
+            List<CategoryDetailsResponse> categoryFound = categoryService.getAllCategories(Specification.unrestricted());
 
             // ASSERT
             assertTrue(categoryFound.isEmpty());
@@ -152,7 +151,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
 
             // ACT
-            ResponseCategoryDetailsDto responseCategory = categoryService.getCategoryById(category.getCategoryId());
+            CategoryDetailsResponse responseCategory = categoryService.getCategoryById(category.getCategoryId());
 
             // ASSERT
             verify(categoryRepository).findById(categoryIdArgumentCaptor.capture());
@@ -182,22 +181,22 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-            ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.updateCategory(category.getCategoryId(), updateCategoryDto);
+            CategoryDetailsResponse categoryDetailsResponse = categoryService.updateCategory(category.getCategoryId(), categoryUpdateRequest);
 
             // ASSERT
-            assertNotNull(responseCategoryDetailsDto);
-            assertEquals(category.getCategoryId(), responseCategoryDetailsDto.categoryId());
+            assertNotNull(categoryDetailsResponse);
+            assertEquals(category.getCategoryId(), categoryDetailsResponse.categoryId());
 
             verify(categoryRepository).save(categoryArgumentCaptor.capture());
             Category categoryCaptured = categoryArgumentCaptor.getValue();
 
-            // UpdateCategoryDto -> Category
-            assertEquals(updateCategoryDto.name(), categoryCaptured.getName());
-            assertEquals(updateCategoryDto.description(), categoryCaptured.getDescription());
+            // CategoryUpdateRequest -> Category
+            assertEquals(categoryUpdateRequest.name(), categoryCaptured.getName());
+            assertEquals(categoryUpdateRequest.description(), categoryCaptured.getDescription());
 
-            // UpdateCategoryDto -> ResponseCategoryDetailsDto
-            assertEquals(updateCategoryDto.name(), responseCategoryDetailsDto.name());
-            assertEquals(updateCategoryDto.description(), responseCategoryDetailsDto.description());
+            // CategoryUpdateRequest -> CategoryDetailsResponse
+            assertEquals(categoryUpdateRequest.name(), categoryDetailsResponse.name());
+            assertEquals(categoryUpdateRequest.description(), categoryDetailsResponse.description());
         }
 
         @Test
@@ -206,7 +205,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(ResourceNotFoundException.class, () -> categoryService.updateCategory(category.getCategoryId(), categoryUpdateRequest));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
@@ -217,7 +216,7 @@ class CategoryServiceTest {
             when(categoryRepository.save(any(Category.class))).thenThrow(RuntimeException.class);
 
             // ASSERT
-            assertThrows(RuntimeException.class, () -> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(RuntimeException.class, () -> categoryService.updateCategory(category.getCategoryId(), categoryUpdateRequest));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
             verify(categoryRepository, times(1)).save(any(Category.class));
         }
@@ -274,10 +273,10 @@ class CategoryServiceTest {
                 when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
                 // ACT
-                ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.activateCategory(category.getCategoryId());
+                CategoryDetailsResponse categoryDetailsResponse = categoryService.activateCategory(category.getCategoryId());
 
                 // ASSERT
-                assertNotNull(responseCategoryDetailsDto);
+                assertNotNull(categoryDetailsResponse);
                 assertTrue(category.isActivity());
             }
 
@@ -302,10 +301,10 @@ class CategoryServiceTest {
                 when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
                 // ACT
-                ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.deactivateCategory(category.getCategoryId());
+                CategoryDetailsResponse categoryDetailsResponse = categoryService.deactivateCategory(category.getCategoryId());
 
                 // ASSERT
-                assertNotNull(responseCategoryDetailsDto);
+                assertNotNull(categoryDetailsResponse);
                 assertFalse(category.isActivity());
             }
 

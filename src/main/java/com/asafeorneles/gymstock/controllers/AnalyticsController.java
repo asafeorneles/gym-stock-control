@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsDto;
+import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsResponse;
 import com.asafeorneles.gymstock.services.AnalyticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,7 +42,7 @@ public class AnalyticsController {
     })
 
     @GetMapping("/top-products-best-selling")
-    public ResponseEntity<List<TopSellingProductsDto>> getTopSellingProducts(@RequestParam(required = false) @Min(1)@Max(30)Integer limit){
+    public ResponseEntity<List<TopSellingProductsResponse>> getTopSellingProducts(@RequestParam(required = false) @Min(1)@Max(30)Integer limit){
         return ResponseEntity.status(HttpStatus.OK).body(analyticsService.getTopSellingProducts(limit));
     }
 
@@ -56,7 +56,7 @@ public class AnalyticsController {
     })
     @PreAuthorize("hasAuthority('analytics:read')")
     @GetMapping("/top-products-best-selling-by-period")
-    public ResponseEntity<List<TopSellingProductsDto>> getTopSellingProductsByPeriod(@RequestParam(required = false) @Min(1)@Max(30)Integer limit, @RequestParam @NotNull LocalDate startDate, @RequestParam @NotNull LocalDate endDate){
+    public ResponseEntity<List<TopSellingProductsResponse>> getTopSellingProductsByPeriod(@RequestParam(required = false) @Min(1)@Max(30)Integer limit, @RequestParam @NotNull LocalDate startDate, @RequestParam @NotNull LocalDate endDate){
         return ResponseEntity.status(HttpStatus.OK).body(analyticsService.getTopSellingProductsByPeriod(limit, startDate, endDate));
     }
 }

@@ -4,7 +4,7 @@ import com.asafeorneles.gymstock.enums.ActivityStatus;
 
 import java.util.UUID;
 
-public record ResponseCategoryDetailsDto(
+public record CategoryDetailsResponse(
         UUID categoryId,
         String name,
         String description,

@@ -4,7 +4,7 @@ import com.asafeorneles.gymstock.enums.InventoryStatus;
 
 import java.util.UUID;
 
-public record ResponseProductInventoryDetailDto(
+public record ProductInventoryDetailResponse(
         UUID productId,
         String productName,
         int quantity,

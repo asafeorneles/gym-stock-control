@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.mapper;
 
-import com.asafeorneles.gymstock.dtos.product.CreateProductDto;
-import com.asafeorneles.gymstock.dtos.product.ResponseProductDetailDto;
-import com.asafeorneles.gymstock.dtos.product.ResponseProductDto;
-import com.asafeorneles.gymstock.dtos.product.UpdateProductDto;
+import com.asafeorneles.gymstock.dtos.product.ProductCreateRequest;
+import com.asafeorneles.gymstock.dtos.product.ProductDetailResponse;
+import com.asafeorneles.gymstock.dtos.product.ProductResponse;
+import com.asafeorneles.gymstock.dtos.product.ProductUpdateRequest;
 import com.asafeorneles.gymstock.entities.Product;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -22,7 +22,7 @@ public interface ProductMapper {
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
     @Mapping(target = "category", ignore = true)
-    Product toEntity(CreateProductDto createProductDto);
+    Product toEntity(ProductCreateRequest productCreateRequest);
 
     @Mapping(target = "productId", ignore = true)
     @Mapping(target = "inventory", ignore = true)
@@ -31,9 +31,9 @@ public interface ProductMapper {
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
     @Mapping(target = "category", ignore = true)
-    void updateEntity(UpdateProductDto updateProductDto, @MappingTarget Product product);
+    void updateEntity(ProductUpdateRequest productUpdateRequest, @MappingTarget Product product);
 
-    ResponseProductDetailDto toResponseDetails(Product product);
+    ProductDetailResponse toResponseDetails(Product product);
 
-    ResponseProductDto toResponse(Product product);
+    ProductResponse toResponse(Product product);
 }
