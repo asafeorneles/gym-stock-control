@@ -129,7 +129,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('product:deactivate')")
-    @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/deactivate/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDetailDto> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid DeactivateProductDto deactivateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
     }
@@ -145,7 +145,7 @@ public class ProductController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('product:activate')")
-    @PatchMapping(value = "/{id}/activate")
+    @PatchMapping(value = "/activate/{id}")
     public ResponseEntity<ResponseProductDetailDto> activateProduct(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.activateProduct(id));
     }

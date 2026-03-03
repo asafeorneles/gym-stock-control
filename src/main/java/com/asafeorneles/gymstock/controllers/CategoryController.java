@@ -99,7 +99,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('category:activate')")
-    @PatchMapping("/{id}/activate")
+    @PatchMapping("/activate/{id}")
     public ResponseEntity<ResponseCategoryDetailsDto> activateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.activateCategory(id));
     }
@@ -114,7 +114,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('category:deactivate')")
-    @PatchMapping("/{id}/deactivate")
+    @PatchMapping("/deactivate/{id}")
     public ResponseEntity<ResponseCategoryDetailsDto> deactivateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.deactivateCategory(id));
     }

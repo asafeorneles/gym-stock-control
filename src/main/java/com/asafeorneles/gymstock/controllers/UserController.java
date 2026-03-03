@@ -59,7 +59,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('user:deactivate')")
-    @PatchMapping("/{id}/deactivate")
+    @PatchMapping("/deactivate/{id}")
     public ResponseEntity<String> deactivateUser(@PathVariable(name = "id") UUID id, JwtAuthenticationToken token){
         userService.deactivateUser(id, token);
         return ResponseEntity.status(HttpStatus.OK).body("User deactivated successfully");
@@ -74,7 +74,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('user:activate')")
-    @PatchMapping("/{id}/activate")
+    @PatchMapping("/activate/{id}")
     public ResponseEntity<String> activateUser(@PathVariable(name = "id") UUID id){
         userService.activityUser(id);
         return ResponseEntity.status(HttpStatus.OK).body("User activate successfully");

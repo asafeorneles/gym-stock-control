@@ -83,7 +83,7 @@ public class CouponController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('coupon:deactivate')")
-    @PatchMapping("/{id}/deactivate")
+    @PatchMapping("/deactivate/{id}")
     public ResponseEntity<ResponseCouponDto> deactivateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.deactivateCoupon(id));
     }
@@ -99,7 +99,7 @@ public class CouponController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('coupon:activate')")
-    @PatchMapping("/{id}/activate")
+    @PatchMapping("/activate/{id}")
     public ResponseEntity<ResponseCouponDto> activateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.activateCoupon(id));
     }
