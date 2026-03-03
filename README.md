@@ -16,6 +16,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java.
 - MySQL
 - Maven
 - Swagger / OpenAPI
+- MapStruct
 - JUnit 5
 - Mockito
 - Lombok
