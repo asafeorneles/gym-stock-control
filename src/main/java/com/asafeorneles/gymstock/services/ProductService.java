@@ -4,9 +4,9 @@ import com.asafeorneles.gymstock.dtos.product.*;
 import com.asafeorneles.gymstock.entities.Category;
 import com.asafeorneles.gymstock.entities.Product;
 import com.asafeorneles.gymstock.entities.ProductInventory;
+import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
-import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.mapper.ProductMapper;
 import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
@@ -29,6 +29,8 @@ public class ProductService {
     CategoryRepository categoryRepository;
     @Autowired
     SaleItemRepository saleItemRepository;
+    @Autowired
+    ProductMapper productMapper;
 
     @Transactional
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
@@ -44,41 +46,45 @@ public class ProductService {
             throw new BusinessConflictException("Product already exists");
         }
 
-        Product product = ProductMapper.createProductToProduct(createProductDto, category);
+        Product product = productMapper.toEntity(createProductDto);
 
         ProductInventory productInventory = ProductInventoryFactory
                 .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
 
         product.setInventory(productInventory);
+        product.setCategory(category);
         product.activity();
 
         productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(product);
+        return productMapper.toResponseDetails(product);
     }
 
     public List<ResponseProductDto> getAllProducts(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
-                .map(ProductMapper::productToResponseProduct)
+                .map(product -> productMapper.toResponse(product))
                 .toList();
     }
 
     public List<ResponseProductDetailDto> getAllProductsDetails(Specification<Product> specification) {
-        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseDetailsProduct).toList();
+        return productRepository.findAll(specification)
+                .stream()
+                .map(product -> productMapper.toResponseDetails(product))
+                .toList();
     }
 
     public ResponseProductDto getProductById(UUID id) {
         return productRepository.findById(id)
                 .filter(Product::isActivity)
-                .map(ProductMapper::productToResponseProduct)
+                .map(product -> productMapper.toResponse(product))
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
     }
 
     public List<ResponseProductDetailDto> getAllProductsWithLowStock() {
         return productRepository.findProductWithLowStock()
                 .stream()
-                .map(ProductMapper::productToResponseDetailsProduct)
+                .map(product -> productMapper.toResponseDetails(product))
                 .toList();
     }
 
@@ -93,11 +99,12 @@ public class ProductService {
         Category category = categoryRepository.findById(updateCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
-        ProductMapper.updateProductToProduct(updateProductDto, product, category);
+        productMapper.updateEntity(updateProductDto, product);
+        product.setCategory(category);
 
         productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(product);
+        return productMapper.toResponseDetails(product);
     }
 
     @Transactional
@@ -122,7 +129,7 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(product);
+        return productMapper.toResponseDetails(product);
     }
 
     @Transactional
@@ -134,7 +141,7 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(product);
+        return productMapper.toResponseDetails(product);
     }
 
     public static void checkProductIsActiveBeforeUpdate(boolean isActivity, String error) {

@@ -10,16 +10,15 @@ import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.InvalidCouponException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gymstock.mapper.CouponMapper;
+import com.asafeorneles.gymstock.mapper.CouponMapperImpl;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -37,13 +36,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
     @Mock
-    CouponRepository couponRepository;
+    private CouponRepository couponRepository;
 
     @Mock
-    SaleRepository saleRepository;
+    private SaleRepository saleRepository;
 
     @InjectMocks
-    CouponService couponService;
+    private CouponService couponService;
+
+    @Spy
+    private CouponMapper couponMapper = new CouponMapperImpl();
 
     private Coupon coupon;
     private Sale sale;
@@ -106,7 +108,7 @@ class CouponServiceTest {
             assertEquals(createCouponDto.code(), responseCouponDto.code());
             assertEquals(createCouponDto.description(), responseCouponDto.description());
             assertEquals(createCouponDto.activityStatus(), responseCouponDto.activityStatus());
-            assertEquals(createCouponDto.unlimited(), responseCouponDto.isUnlimited());
+            assertEquals(createCouponDto.unlimited(), responseCouponDto.unlimited());
             assertEquals(createCouponDto.quantity(), responseCouponDto.quantity());
             assertEquals(createCouponDto.discountValue(), responseCouponDto.discountValue());
             assertEquals(createCouponDto.discountType(), responseCouponDto.discountType());
@@ -224,7 +226,7 @@ class CouponServiceTest {
             assertEquals(coupon.getCode(), couponsFound.get(0).code());
             assertEquals(coupon.getDescription(), couponsFound.get(0).description());
             assertEquals(coupon.getActivityStatus(), couponsFound.get(0).activityStatus());
-            assertEquals(coupon.isUnlimited(), couponsFound.get(0).isUnlimited());
+            assertEquals(coupon.isUnlimited(), couponsFound.get(0).unlimited());
             assertEquals(coupon.getQuantity(), couponsFound.get(0).quantity());
             assertEquals(coupon.getDiscountValue(), couponsFound.get(0).discountValue());
             assertEquals(coupon.getDiscountType(), couponsFound.get(0).discountType());
@@ -254,7 +256,7 @@ class CouponServiceTest {
             assertEquals(coupon.getCode(), responseCouponDto.code());
             assertEquals(coupon.getDescription(), responseCouponDto.description());
             assertEquals(coupon.getActivityStatus(), responseCouponDto.activityStatus());
-            assertEquals(coupon.isUnlimited(), responseCouponDto.isUnlimited());
+            assertEquals(coupon.isUnlimited(), responseCouponDto.unlimited());
             assertEquals(coupon.getQuantity(), responseCouponDto.quantity());
             assertEquals(coupon.getDiscountValue(), responseCouponDto.discountValue());
             assertEquals(coupon.getDiscountType(), responseCouponDto.discountType());

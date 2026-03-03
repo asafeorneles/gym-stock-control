@@ -23,37 +23,42 @@ public class CategoryService {
     CategoryRepository categoryRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    CategoryMapper categoryMapper;
 
     @Transactional
     public ResponseCategoryDetailsDto createCategory(CreateCategoryDto createCategoryDto) {
-        Category category = CategoryMapper.createCategoryToCategory(createCategoryDto);
+        Category category = categoryMapper.toEntity(createCategoryDto);
         category.activity();
         categoryRepository.save(category);
-        return CategoryMapper.categoryToResponseCategoryDetails(category);
+        return categoryMapper.toResponseDetails(category);
     }
 
     public List<ResponseCategoryDetailsDto> getAllCategories(Specification<Category> specification) {
-        return categoryRepository.findAll(specification).stream().map(CategoryMapper::categoryToResponseCategoryDetails).toList();
+        return categoryRepository.findAll(specification)
+                .stream()
+                .map(category -> categoryMapper.toResponseDetails(category))
+                .toList();
     }
 
     public ResponseCategoryDetailsDto getCategoryById(UUID id) {
         return categoryRepository.findById(id)
-                .map(CategoryMapper::categoryToResponseCategoryDetails)
+                .map(category -> categoryMapper.toResponseDetails(category))
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
     }
 
     @Transactional
     public ResponseCategoryDetailsDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
-        Category categoryFound = categoryRepository
+        Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
-        checkCategoryIsActiveBeforeUpdate(categoryFound.isActivity(), "This category is inactive. You can only update active categories.");
+        checkCategoryIsActiveBeforeUpdate(category.isActivity(), "This category is inactive. You can only update active categories.");
 
-        CategoryMapper.updateCategoryToCategory(categoryFound, updateCategoryDto);
+        categoryMapper.updateEntity(updateCategoryDto, category);
 
-        categoryRepository.save(categoryFound);
+        categoryRepository.save(category);
 
-        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
+        return categoryMapper.toResponseDetails(category);
     }
 
     @Transactional
@@ -62,34 +67,34 @@ public class CategoryService {
             throw new BusinessConflictException("This category has already been used in a product. Please use the deactivate option.");
         }
 
-        Category categoryFound = categoryRepository
+        Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
-        categoryRepository.delete(categoryFound);
+        categoryRepository.delete(category);
     }
 
     @Transactional
     public ResponseCategoryDetailsDto activateCategory(UUID id) {
-        Category categoryFound = categoryRepository
+        Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
-        categoryFound.activity();
+        category.activity();
 
-        categoryRepository.save(categoryFound);
+        categoryRepository.save(category);
 
-        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
+        return categoryMapper.toResponseDetails(category);
     }
 
     @Transactional
     public ResponseCategoryDetailsDto deactivateCategory(UUID id) {
-        Category categoryFound = categoryRepository
+        Category category = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
-        categoryFound.inactivity();
+        category.inactivity();
 
-        categoryRepository.save(categoryFound);
+        categoryRepository.save(category);
 
-        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
+        return categoryMapper.toResponseDetails(category);
     }
 
     public static void checkCategoryIsActiveBeforeUpdate(boolean isActive, String error) {

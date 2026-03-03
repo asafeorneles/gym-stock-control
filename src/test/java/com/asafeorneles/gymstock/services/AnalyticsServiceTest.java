@@ -25,18 +25,18 @@ import static org.mockito.Mockito.*;
 class AnalyticsServiceTest {
 
     @Mock
-    AnalyticsRepository analyticsRepository;
+    private AnalyticsRepository analyticsRepository;
 
     @InjectMocks
-    AnalyticsService analyticsService;
+    private AnalyticsService analyticsService;
 
-    TopSellingProductsDto topSellingProductsDto1;
-    TopSellingProductsDto topSellingProductsDto2;
-    LocalDate startDate;
-    LocalDate endDate;
+    private TopSellingProductsDto topSellingProductsDto1;
+    private TopSellingProductsDto topSellingProductsDto2;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
-    LocalDateTime expectedStartDateTime;
-    LocalDateTime expectedEndDateTime;
+    private LocalDateTime expectedStartDateTime;
+    private LocalDateTime expectedEndDateTime;
 
     @BeforeEach
     void setUp() {

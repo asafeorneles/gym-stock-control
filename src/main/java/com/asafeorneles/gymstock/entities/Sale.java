@@ -2,10 +2,7 @@ package com.asafeorneles.gymstock.entities;
 
 import com.asafeorneles.gymstock.enums.PaymentMethod;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +14,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Sale {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -49,10 +48,6 @@ public class Sale {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
-
     @PrePersist
     public void prePersist() {
         this.createdDate = LocalDateTime.now();
@@ -63,23 +58,6 @@ public class Sale {
         this.updatedDate = LocalDateTime.now();
     }
 
-    @Builder
-    public Sale(
-            UUID saleId,
-            List<SaleItem> saleItems,
-            BigDecimal totalPrice,
-            PaymentMethod paymentMethod,
-            Coupon coupon,
-            User user
-    ) {
-
-        this.saleId = saleId;
-        this.saleItems = saleItems;
-        this.totalPrice = totalPrice;
-        this.paymentMethod = paymentMethod;
-        this.coupon = coupon;
-        this.user = user;
-    }
     public Boolean containsCoupon(){
         return this.getCoupon() != null;
     }

@@ -1,27 +1,17 @@
 package com.asafeorneles.gymstock.mapper;
 
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryQuantityDto;
 import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDto;
 import com.asafeorneles.gymstock.entities.ProductInventory;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class ProductInventoryMapper {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface ProductInventoryMapper {
+    @Mapping(target = "productId", source = "product.productId")
+    @Mapping(target = "productName", source = "product.name")
+    ResponseProductInventoryDetailDto toResponseDetail(ProductInventory productInventory);
 
-    public static ResponseProductInventoryDetailDto productInventoryToResponseProductInventoryDetail(ProductInventory productInventory){
-        return new ResponseProductInventoryDetailDto(
-                productInventory.getProductInventoryId(),
-                productInventory.getProduct().getName(),
-                productInventory.getQuantity(),
-                productInventory.getLowStockThreshold(),
-                productInventory.getInventoryStatus()
-        );
-    }
-
-    public static void patchProductInventoryQuantity(ProductInventory productInventory, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
-        productInventory.setQuantity(patchProductInventoryQuantity.quantity());
-    }
-
-    public static void patchProductInventoryLowStockThreshold(ProductInventory productInventory, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold){
-        productInventory.setLowStockThreshold(patchProductInventoryLowStockThreshold.lowStockThreshold());
-    }
+    ResponseProductInventoryDto toResponse(ProductInventory productInventory);
 }

@@ -3,10 +3,7 @@ package com.asafeorneles.gymstock.entities;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -18,6 +15,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -67,13 +66,5 @@ public class User {
 
     public Boolean isActivity(){
         return this.activityStatus == ActivityStatus.ACTIVE;
-    }
-
-    @Builder
-    public User(UUID userId, String username, String password, Set<Role> roles) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.roles = roles;
     }
 }

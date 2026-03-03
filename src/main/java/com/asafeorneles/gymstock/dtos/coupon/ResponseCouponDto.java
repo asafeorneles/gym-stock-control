@@ -14,7 +14,7 @@ public record ResponseCouponDto(
         String description,
         BigDecimal discountValue,
         DiscountType discountType,
-        boolean isUnlimited,
+        boolean unlimited,
         int quantity,
         ActivityStatus activityStatus,
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")

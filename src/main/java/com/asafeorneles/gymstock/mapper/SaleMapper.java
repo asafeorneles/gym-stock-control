@@ -3,40 +3,40 @@ package com.asafeorneles.gymstock.mapper;
 import com.asafeorneles.gymstock.dtos.coupon.CouponAppliedDto;
 import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
-import com.asafeorneles.gymstock.dtos.user.SoldByUserDto;
 import com.asafeorneles.gymstock.entities.Sale;
-import com.asafeorneles.gymstock.entities.User;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-public class SaleMapper {
-    public static Sale createSaleToSale(CreateSaleDto createSaleDto, User user) {
-        return Sale.builder()
-                .paymentMethod(createSaleDto.paymentMethod())
-                .user(user)
-                .build();
-    }
+@Mapper(componentModel = "spring",
+        uses = {UserMapper.class, SaleItemMapper.class},
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR
 
-    public static ResponseSaleDto saleToResponseSale(Sale sale) {
-        if (sale.containsCoupon()) {
-            return new ResponseSaleDto(
-                    sale.getSaleId(),
-                    SaleItemMapper.saleItemsToResponseSaleItems(sale.getSaleItems()),
-                    new CouponAppliedDto(sale.getCoupon().getCode(), sale.getDiscountAmount()),
-                    sale.getTotalPrice(),
-                    sale.getPaymentMethod(),
-                    new SoldByUserDto(sale.getUser().getUsername(), sale.getUser().getUserId()),
-                    sale.getCreatedDate()
-            );
+)
+public interface SaleMapper {
+
+    @Mapping(target = "saleId", ignore = true)
+    @Mapping(target = "discountAmount", ignore = true)
+    @Mapping(target = "totalPrice", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    @Mapping(target = "coupon", ignore = true)
+    @Mapping(target = "saleItems", ignore = true)
+    Sale toEntity(CreateSaleDto createSaleDto);
+
+    @Mapping(target = "soldBy", source = "user")
+    @Mapping(target = "couponApplied", expression = "java(mapCoupon(sale))")
+    ResponseSaleDto toResponse(Sale sale);
+
+    default CouponAppliedDto mapCoupon(Sale sale) {
+        if (sale.getCoupon() == null) {
+            return null;
         }
 
-        return new ResponseSaleDto(
-                sale.getSaleId(),
-                SaleItemMapper.saleItemsToResponseSaleItems(sale.getSaleItems()),
-                null,
-                sale.getTotalPrice(),
-                sale.getPaymentMethod(),
-                new SoldByUserDto(sale.getUser().getUsername(), sale.getUser().getUserId()),
-                sale.getCreatedDate()
+        return new CouponAppliedDto(
+                sale.getCoupon().getCode(),
+                sale.getDiscountAmount()
         );
     }
 }
-

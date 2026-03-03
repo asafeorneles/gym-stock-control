@@ -2,10 +2,7 @@ package com.asafeorneles.gymstock.entities;
 
 import com.asafeorneles.gymstock.enums.InventoryStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,6 +12,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductInventory {
     @Id
     @Column(name = "product_id")
@@ -22,7 +21,7 @@ public class ProductInventory {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "product_id") // The column name is defined here
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")
@@ -35,25 +34,10 @@ public class ProductInventory {
     private InventoryStatus inventoryStatus;
 
     @Column(name = "updated_date")
-    private LocalDateTime updated_date;
+    private LocalDateTime updatedDate;
 
     @PreUpdate
     public void preUpdate() {
-        this.updated_date = LocalDateTime.now();
-    }
-
-    @Builder
-    public ProductInventory(
-            UUID productInventoryId,
-            Product product,
-            int quantity,
-            int lowStockThreshold,
-            InventoryStatus inventoryStatus) {
-
-        this.productInventoryId = productInventoryId;
-        this.product = product;
-        this.quantity = quantity;
-        this.lowStockThreshold = lowStockThreshold;
-        this.inventoryStatus = inventoryStatus;
+        this.updatedDate = LocalDateTime.now();
     }
 }

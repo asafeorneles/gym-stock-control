@@ -24,16 +24,16 @@ import static org.mockito.Mockito.*;
 class SetupServiceTest {
 
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Mock
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     @Mock
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    SetupService setupService;
+    private SetupService setupService;
 
     private Role role;
     private FirstAdminDto firstAdminDto;

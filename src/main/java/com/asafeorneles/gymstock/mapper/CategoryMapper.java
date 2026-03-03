@@ -2,29 +2,29 @@ package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
+import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gymstock.entities.Category;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-public class CategoryMapper {
-    public static Category createCategoryToCategory(CreateCategoryDto createCategoryDto){
-        return Category.builder()
-                .name(createCategoryDto.name())
-                .description(createCategoryDto.description())
-                .build();
-    }
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface CategoryMapper {
+    @Mapping(target = "categoryId", ignore = true)
+    @Mapping(target = "activityStatus", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    Category toEntity(CreateCategoryDto createCategoryDto);
 
-    public static void updateCategoryToCategory(Category category, UpdateCategoryDto updateCategoryDto){
-        category.setName(updateCategoryDto.name());
-        category.setDescription(updateCategoryDto.description());
-    }
+    @Mapping(target = "categoryId", ignore = true)
+    @Mapping(target = "activityStatus", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "updatedDate", ignore = true)
+    void updateEntity(UpdateCategoryDto updateCategoryDto, @MappingTarget Category category);
 
-    public static ResponseCategoryDetailsDto categoryToResponseCategoryDetails(Category category){
-        return new ResponseCategoryDetailsDto(
-                category.getCategoryId(),
-                category.getName(),
-                category.getDescription(),
-                category.getActivityStatus()
-        );
-    }
+    ResponseCategoryDetailsDto toResponseDetails(Category category);
 
+    ResponseCategoryDto toResponse(Category category);
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/coupon", produces = {"application/json"})
+@RequestMapping(value = "/coupons", produces = {"application/json"})
 @Tag(name = "Coupons")
 public class CouponController {
     @Autowired
@@ -53,7 +53,7 @@ public class CouponController {
     @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping
     public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(@ParameterObject CouponQueryFilters filters){
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons(filters.toSpecification()));
+        return ResponseEntity.status(HttpStatus.OK).body(couponService.getAllCoupons(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a coupon by id")
@@ -68,7 +68,7 @@ public class CouponController {
     @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseCouponDto> getCouponById(@PathVariable(value = "id") UUID id){
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getCouponById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(couponService.getCouponById(id));
     }
 
     @Operation(summary = "Deactivate a product")

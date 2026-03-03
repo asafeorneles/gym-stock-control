@@ -39,23 +39,32 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
     @Mock
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+
     @Mock
-    TokenService tokenService;
+    private TokenService tokenService;
+
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
     @Mock
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
+
     @Mock
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
+
     @Mock
-    JwtDecoder jwtDecoder;
+    private JwtDecoder jwtDecoder;
+
     @Mock
-    CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
+
     @Mock
-    RefreshTokenRedisService refreshTokenRedisService;
+    private RefreshTokenRedisService refreshTokenRedisService;
+
     @InjectMocks
-    AuthService authService;
+    private AuthService authService;
+
     private LoginRequestDto loginRequestDto;
     private RegisterRequestDto registerRequestDto;
     private RefreshTokenRequestDto refreshTokenRequestDto;

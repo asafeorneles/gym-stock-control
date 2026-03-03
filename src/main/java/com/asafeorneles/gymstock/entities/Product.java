@@ -3,10 +3,7 @@ package com.asafeorneles.gymstock.entities;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,6 +16,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
 
     @Id
@@ -90,25 +89,5 @@ public class Product {
 
     public boolean isActivity(){
         return this.activityStatus == ActivityStatus.ACTIVE;
-    }
-
-    @Builder
-    private Product(UUID productId,
-                    String name,
-                    String brand,
-                    String description,
-                    BigDecimal price,
-                    BigDecimal costPrice,
-                    Category category,
-                    ProductInventory inventory) {
-
-        this.productId = productId;
-        this.name = name;
-        this.brand = brand;
-        this.description = description;
-        this.price = price;
-        this.costPrice = costPrice;
-        this.category = category;
-        this.inventory = inventory;
     }
 }

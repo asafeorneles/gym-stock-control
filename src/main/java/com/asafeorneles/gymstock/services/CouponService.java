@@ -31,17 +31,20 @@ public class CouponService {
     @Autowired
     SaleRepository saleRepository;
 
+    @Autowired
+    CouponMapper couponMapper;
+
     @Transactional
     public ResponseCouponDto createCoupon(CreateCouponDto createCouponDto) {
         validateCouponToCreate(createCouponDto);
 
-        Coupon coupon = CouponMapper.RespcreateCouponToCoupon(createCouponDto);
+        Coupon coupon = couponMapper.toEntity(createCouponDto);
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapper.toResponse(coupon);
     }
 
     public List<ResponseCouponDto> getAllCoupons(Specification<Coupon> specification) {
-        return couponRepository.findAll(specification).stream().map(CouponMapper::couponToResponseCoupon).toList();
+        return couponRepository.findAll(specification).stream().map(coupon -> couponMapper.toResponse(coupon)).toList();
     }
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {
@@ -79,7 +82,7 @@ public class CouponService {
 
     public ResponseCouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
-                .map(CouponMapper::couponToResponseCoupon)
+                .map(coupon -> couponMapper.toResponse(coupon))
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
     }
@@ -102,7 +105,7 @@ public class CouponService {
 
         coupon.inactivity();
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapper.toResponse(coupon);
     }
 
     public ResponseCouponDto activateCoupon(UUID id) {
@@ -111,7 +114,7 @@ public class CouponService {
 
         coupon.activity();
         couponRepository.save(coupon);
-        return CouponMapper.couponToResponseCoupon(coupon);
+        return couponMapper.toResponse(coupon);
     }
 
 

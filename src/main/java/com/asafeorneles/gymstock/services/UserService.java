@@ -19,15 +19,18 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    UserMapper userMapper;
+
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(UserMapper::userToUserResponse)
+                .map(user -> userMapper.toResponse(user))
                 .toList();
     }
 
     public UserResponseDto getUserById(UUID id) {
         return userRepository.findById(id)
-                .map(UserMapper::userToUserResponse)
+                .map(user -> userMapper.toResponse(user))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
     }
 

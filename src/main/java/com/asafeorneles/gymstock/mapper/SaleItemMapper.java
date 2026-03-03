@@ -2,24 +2,14 @@ package com.asafeorneles.gymstock.mapper;
 
 import com.asafeorneles.gymstock.dtos.SaleItem.ResponseSaleItemDto;
 import com.asafeorneles.gymstock.entities.SaleItem;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import java.util.ArrayList;
-import java.util.List;
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface SaleItemMapper {
 
-public class SaleItemMapper {
-    public static List<ResponseSaleItemDto> saleItemsToResponseSaleItems(List<SaleItem> saleItems) {
-        List<ResponseSaleItemDto> responseSaleItemsDto = new ArrayList<>();
-        for (SaleItem saleItem : saleItems) {
-            var responseSaleItemDto = new ResponseSaleItemDto(
-                    saleItem.getSaleItemId(),
-                    saleItem.getProduct().getProductId(),
-                    saleItem.getProduct().getName(),
-                    saleItem.getQuantity(),
-                    saleItem.getUnityPrice(),
-                    saleItem.getTotalPrice()
-            );
-            responseSaleItemsDto.add(responseSaleItemDto);
-        }
-        return responseSaleItemsDto;
-    }
+    @Mapping(target = "productName", source = "product.name")
+    @Mapping(target = "productId", source = "product.productId")
+    ResponseSaleItemDto toResponse(SaleItem saleItem);
 }

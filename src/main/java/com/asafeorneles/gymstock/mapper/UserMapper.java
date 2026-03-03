@@ -1,19 +1,19 @@
 package com.asafeorneles.gymstock.mapper;
 
+import com.asafeorneles.gymstock.dtos.user.SoldByUserDto;
 import com.asafeorneles.gymstock.dtos.user.UserResponseDto;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
+import org.mapstruct.InjectionStrategy;
+import org.mapstruct.Mapper;
 
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface UserMapper {
+    UserResponseDto toResponse(User user);
 
-public class UserMapper {
+    SoldByUserDto soldByUser(User user);
 
-    public static UserResponseDto userToUserResponse(User user) {
-        return new UserResponseDto(
-                user.getUserId(),
-                user.getUsername(),
-                user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()),
-                user.getActivityStatus().name()
-        );
+    default String map(Role role){
+        return role.getName();
     }
 }

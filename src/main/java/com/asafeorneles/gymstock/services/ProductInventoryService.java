@@ -11,7 +11,6 @@ import com.asafeorneles.gymstock.exceptions.InsufficientProductQuantityException
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
 import com.asafeorneles.gymstock.repositories.ProductInventoryRepository;
-import com.asafeorneles.gymstock.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,18 +25,18 @@ public class ProductInventoryService {
     ProductInventoryRepository productInventoryRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    ProductInventoryMapper productInventoryMapper;
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         return productInventoryRepository.findAll()
                 .stream()
-                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
+                .map(productInventory -> productInventoryMapper.toResponseDetail(productInventory))
                 .toList();
     }
 
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
         return productInventoryRepository.findById(id)
-                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
+                .map(productInventory -> productInventoryMapper.toResponseDetail(productInventory))
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
     }
 
@@ -46,18 +45,17 @@ public class ProductInventoryService {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
-        Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
+        Product product = productInventoryFound.getProduct();
 
         ProductService.checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
 
-        ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
+        productInventoryFound.setQuantity(patchProductInventoryQuantity.quantity());
 
         assignInventoryStatus(productInventoryFound);
 
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
+        return productInventoryMapper.toResponseDetail(productInventoryFound);
     }
 
     @Transactional
@@ -65,18 +63,17 @@ public class ProductInventoryService {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
-        Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
+        Product product = productInventoryFound.getProduct();
 
         ProductService.checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
 
-        ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
+        productInventoryFound.setLowStockThreshold(patchProductInventoryLowStockThreshold.lowStockThreshold());
 
         assignInventoryStatus(productInventoryFound);
 
         productInventoryRepository.save(productInventoryFound);
 
-        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
+        return productInventoryMapper.toResponseDetail(productInventoryFound);
     }
 
     @Transactional
