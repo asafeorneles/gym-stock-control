@@ -8,7 +8,7 @@ import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.repositories.RoleRepository;
 import com.asafeorneles.gymstock.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class SetupService {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    final UserRepository userRepository;
+    final RoleRepository roleRepository;
+    final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void createFirstAdmin(FirstAdminDto firstAdminDto) {

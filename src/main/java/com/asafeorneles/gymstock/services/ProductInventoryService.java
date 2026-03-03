@@ -11,7 +11,7 @@ import com.asafeorneles.gymstock.exceptions.InsufficientProductQuantityException
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.mapper.ProductInventoryMapper;
 import com.asafeorneles.gymstock.repositories.ProductInventoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,24 +19,22 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ProductInventoryService {
 
-    @Autowired
-    ProductInventoryRepository productInventoryRepository;
-
-    @Autowired
-    ProductInventoryMapper productInventoryMapper;
+    final ProductInventoryRepository productInventoryRepository;
+    final ProductInventoryMapper productInventoryMapper;
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         return productInventoryRepository.findAll()
                 .stream()
-                .map(productInventory -> productInventoryMapper.toResponseDetail(productInventory))
+                .map(productInventoryMapper::toResponseDetail)
                 .toList();
     }
 
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
         return productInventoryRepository.findById(id)
-                .map(productInventory -> productInventoryMapper.toResponseDetail(productInventory))
+                .map(productInventoryMapper::toResponseDetail)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
     }
 

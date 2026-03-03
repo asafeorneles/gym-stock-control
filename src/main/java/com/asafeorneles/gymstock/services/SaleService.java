@@ -12,7 +12,7 @@ import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
 import com.asafeorneles.gymstock.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,27 +26,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SaleService {
-    @Autowired
-    SaleRepository saleRepository;
-
-    @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
-    ProductInventoryService productInventoryService;
-
-    @Autowired
-    CouponRepository couponRepository;
-
-    @Autowired
-    CouponService couponService;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    SaleMapper saleMapper;
+    final SaleRepository saleRepository;
+    final ProductRepository productRepository;
+    final ProductInventoryService productInventoryService;
+    final CouponRepository couponRepository;
+    final CouponService couponService;
+    final UserRepository userRepository;
+    final SaleMapper saleMapper;
 
     @Transactional
     public ResponseSaleDto createSale(CreateSaleDto createSaleDto, JwtAuthenticationToken token) {
@@ -111,12 +99,12 @@ public class SaleService {
 
     public Page<ResponseSaleDto> getAllSales(Specification<Sale> specification, Pageable pageable) {
         return saleRepository.findAll(specification, pageable)
-                .map(sale -> saleMapper.toResponse(sale));
+                .map(saleMapper::toResponse);
     }
 
     public ResponseSaleDto getSaleById(UUID id) {
         return saleRepository.findById(id)
-                .map(sale -> saleMapper.toResponse(sale))
+                .map(saleMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
     }
 

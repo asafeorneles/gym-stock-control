@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,10 +27,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/sales", produces = {"application/json"})
 @Tag(name = "Sales")
+@RequiredArgsConstructor
 public class SaleController {
 
-    @Autowired
-    SaleService saleService;
+    final SaleService saleService;
 
     @Operation(summary = "Create a Sale")
     @ApiResponses(value = {

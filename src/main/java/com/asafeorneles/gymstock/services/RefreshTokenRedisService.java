@@ -1,16 +1,16 @@
 package com.asafeorneles.gymstock.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenRedisService {
 
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+    final private StringRedisTemplate redisTemplate;
 
     private String buildKey(String jti){
         return "refresh:" + jti;

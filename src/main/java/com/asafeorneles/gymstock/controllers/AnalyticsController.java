@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,11 +25,11 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/analytics", produces = {"application/json"})
 @Tag(name = "Analytics")
+@RequiredArgsConstructor
 @Validated
 public class AnalyticsController {
 
-    @Autowired
-    AnalyticsService analyticsService;
+    final AnalyticsService analyticsService;
 
     @Operation(summary = "Get top n best-selling products")
     @PreAuthorize("hasAuthority('analytics:read')")

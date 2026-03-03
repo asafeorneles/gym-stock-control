@@ -2,7 +2,7 @@ package com.asafeorneles.gymstock.services;
 
 import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsDto;
 import com.asafeorneles.gymstock.repositories.AnalyticsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AnalyticsService {
 
-    @Autowired
-    AnalyticsRepository analyticsRepository;
+    final AnalyticsRepository analyticsRepository;
 
     public List<TopSellingProductsDto> getTopSellingProducts(Integer limit) {
         int finalLimit = limit == null ? 10 : limit;

@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +23,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/coupons", produces = {"application/json"})
 @Tag(name = "Coupons")
+@RequiredArgsConstructor
 public class CouponController {
-    @Autowired
-    CouponService couponService;
+
+    final CouponService couponService;
 
     @Operation(summary = "Create a coupon")
     @ApiResponses(value = {

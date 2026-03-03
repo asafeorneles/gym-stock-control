@@ -13,7 +13,7 @@ import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.mapper.CouponMapper;
 import com.asafeorneles.gymstock.repositories.CouponRepository;
 import com.asafeorneles.gymstock.repositories.SaleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,15 +24,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CouponService {
-    @Autowired
-    CouponRepository couponRepository;
+    final CouponRepository couponRepository;
 
-    @Autowired
-    SaleRepository saleRepository;
+    final SaleRepository saleRepository;
 
-    @Autowired
-    CouponMapper couponMapper;
+    final CouponMapper couponMapper;
 
     @Transactional
     public ResponseCouponDto createCoupon(CreateCouponDto createCouponDto) {
@@ -44,7 +42,7 @@ public class CouponService {
     }
 
     public List<ResponseCouponDto> getAllCoupons(Specification<Coupon> specification) {
-        return couponRepository.findAll(specification).stream().map(coupon -> couponMapper.toResponse(coupon)).toList();
+        return couponRepository.findAll(specification).stream().map(couponMapper::toResponse).toList();
     }
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {
@@ -82,7 +80,7 @@ public class CouponService {
 
     public ResponseCouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
-                .map(coupon -> couponMapper.toResponse(coupon))
+                .map(couponMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
     }
