@@ -9,7 +9,7 @@ import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.mapper.CategoryMapper;
 import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +18,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
-    @Autowired
-    CategoryRepository categoryRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    CategoryMapper categoryMapper;
+
+    final CategoryRepository categoryRepository;
+    final  ProductRepository productRepository;
+    final CategoryMapper categoryMapper;
 
     @Transactional
     public ResponseCategoryDetailsDto createCategory(CreateCategoryDto createCategoryDto) {
@@ -37,13 +36,13 @@ public class CategoryService {
     public List<ResponseCategoryDetailsDto> getAllCategories(Specification<Category> specification) {
         return categoryRepository.findAll(specification)
                 .stream()
-                .map(category -> categoryMapper.toResponseDetails(category))
+                .map(categoryMapper::toResponseDetails)
                 .toList();
     }
 
     public ResponseCategoryDetailsDto getCategoryById(UUID id) {
         return categoryRepository.findById(id)
-                .map(category -> categoryMapper.toResponseDetails(category))
+                .map(categoryMapper::toResponseDetails)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
     }
 

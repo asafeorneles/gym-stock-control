@@ -13,8 +13,8 @@ import com.asafeorneles.gymstock.repositories.RoleRepository;
 import com.asafeorneles.gymstock.repositories.UserRepository;
 import com.asafeorneles.gymstock.security.CustomUserDetailsService;
 import com.asafeorneles.gymstock.security.TokenService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,31 +31,17 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    TokenService tokenService;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    CustomUserDetailsService customUserDetailsService;
-
-    @Autowired
-    RefreshTokenRedisService refreshTokenRedisService;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtDecoder jwtDecoder;
+    final AuthenticationManager authenticationManager;
+    final TokenService tokenService;
+    final UserRepository userRepository;
+    final RoleRepository roleRepository;
+    final CustomUserDetailsService customUserDetailsService;
+    final RefreshTokenRedisService refreshTokenRedisService;
+    final PasswordEncoder passwordEncoder;
+    final private JwtDecoder jwtDecoder;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 

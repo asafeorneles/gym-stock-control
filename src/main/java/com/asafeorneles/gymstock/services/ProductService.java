@@ -12,7 +12,7 @@ import com.asafeorneles.gymstock.repositories.CategoryRepository;
 import com.asafeorneles.gymstock.repositories.ProductRepository;
 import com.asafeorneles.gymstock.repositories.SaleItemRepository;
 import com.asafeorneles.gymstock.services.factory.ProductInventoryFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +22,12 @@ import java.util.UUID;
 
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
-    @Autowired
-    ProductRepository productRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
-    @Autowired
-    SaleItemRepository saleItemRepository;
-    @Autowired
-    ProductMapper productMapper;
+    final ProductRepository productRepository;
+    final CategoryRepository categoryRepository;
+    final SaleItemRepository saleItemRepository;
+    final ProductMapper productMapper;
 
     @Transactional
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
@@ -63,28 +60,28 @@ public class ProductService {
     public List<ResponseProductDto> getAllProducts(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
-                .map(product -> productMapper.toResponse(product))
+                .map(productMapper::toResponse)
                 .toList();
     }
 
     public List<ResponseProductDetailDto> getAllProductsDetails(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
-                .map(product -> productMapper.toResponseDetails(product))
+                .map(productMapper::toResponseDetails)
                 .toList();
     }
 
     public ResponseProductDto getProductById(UUID id) {
         return productRepository.findById(id)
                 .filter(Product::isActivity)
-                .map(product -> productMapper.toResponse(product))
+                .map(productMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
     }
 
     public List<ResponseProductDetailDto> getAllProductsWithLowStock() {
         return productRepository.findProductWithLowStock()
                 .stream()
-                .map(product -> productMapper.toResponseDetails(product))
+                .map(productMapper::toResponseDetails)
                 .toList();
     }
 

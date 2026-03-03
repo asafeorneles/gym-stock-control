@@ -4,7 +4,7 @@ import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gymstock.repositories.UserRepository;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,13 +17,11 @@ import java.time.Instant;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
-    @Autowired
-    JwtEncoder jwtEncoder;
-
-    @Autowired
-    UserRepository userRepository;
+    final JwtEncoder jwtEncoder;
+    final UserRepository userRepository;
 
     @Getter
     @Value("${jwt.expiration}")

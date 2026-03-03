@@ -3,7 +3,7 @@ package com.asafeorneles.gymstock.security;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.enums.Permission;
 import com.asafeorneles.gymstock.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,9 +15,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-    @Autowired
-    UserRepository userRepository;
+
+    final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
