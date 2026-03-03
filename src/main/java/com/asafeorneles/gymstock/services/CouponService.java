@@ -1,7 +1,7 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.coupon.CreateCouponDto;
-import com.asafeorneles.gymstock.dtos.coupon.ResponseCouponDto;
+import com.asafeorneles.gymstock.dtos.coupon.CouponResponse;
+import com.asafeorneles.gymstock.dtos.coupon.CreateCouponRequest;
 import com.asafeorneles.gymstock.entities.Coupon;
 import com.asafeorneles.gymstock.entities.Sale;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
@@ -33,33 +33,33 @@ public class CouponService {
     final CouponMapper couponMapper;
 
     @Transactional
-    public ResponseCouponDto createCoupon(CreateCouponDto createCouponDto) {
-        validateCouponToCreate(createCouponDto);
+    public CouponResponse createCoupon(CreateCouponRequest createCouponRequest) {
+        validateCouponToCreate(createCouponRequest);
 
-        Coupon coupon = couponMapper.toEntity(createCouponDto);
+        Coupon coupon = couponMapper.toEntity(createCouponRequest);
         couponRepository.save(coupon);
         return couponMapper.toResponse(coupon);
     }
 
-    public List<ResponseCouponDto> getAllCoupons(Specification<Coupon> specification) {
+    public List<CouponResponse> getAllCoupons(Specification<Coupon> specification) {
         return couponRepository.findAll(specification).stream().map(couponMapper::toResponse).toList();
     }
 
-    public void validateCouponToCreate(CreateCouponDto createCouponDto) {
-        if (couponRepository.existsByCode(createCouponDto.code())) {
+    public void validateCouponToCreate(CreateCouponRequest createCouponRequest) {
+        if (couponRepository.existsByCode(createCouponRequest.code())) {
             throw new BusinessConflictException("This coupon already exist!");
         }
 
-        if (!createCouponDto.unlimited() && createCouponDto.quantity() <= 0) {
+        if (!createCouponRequest.unlimited() && createCouponRequest.quantity() <= 0) {
             throw new InvalidCouponException("Coupon must have quantity when not unlimited");
         }
 
-        if (createCouponDto.discountType() == DiscountType.PERCENTAGE && createCouponDto.discountValue().compareTo(BigDecimal.valueOf(100)) > 0) {
+        if (createCouponRequest.discountType() == DiscountType.PERCENTAGE && createCouponRequest.discountValue().compareTo(BigDecimal.valueOf(100)) > 0) {
             throw new InvalidCouponException("Percentage discount cannot exceed 100%");
         }
 
-        if (createCouponDto.expirationDate() != null &&
-            createCouponDto.expirationDate().isBefore(LocalDateTime.now())) {
+        if (createCouponRequest.expirationDate() != null &&
+            createCouponRequest.expirationDate().isBefore(LocalDateTime.now())) {
             throw new InvalidCouponException("Expiration date cannot be in the past");
         }
     }
@@ -78,7 +78,7 @@ public class CouponService {
         }
     }
 
-    public ResponseCouponDto getCouponById(UUID id) {
+    public CouponResponse getCouponById(UUID id) {
         return couponRepository.findById(id)
                 .map(couponMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
@@ -97,7 +97,7 @@ public class CouponService {
         couponRepository.delete(coupon);
     }
 
-    public ResponseCouponDto deactivateCoupon(UUID id) {
+    public CouponResponse deactivateCoupon(UUID id) {
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
@@ -106,7 +106,7 @@ public class CouponService {
         return couponMapper.toResponse(coupon);
     }
 
-    public ResponseCouponDto activateCoupon(UUID id) {
+    public CouponResponse activateCoupon(UUID id) {
         Coupon coupon = couponRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 

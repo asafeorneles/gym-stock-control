@@ -3,7 +3,7 @@ package com.asafeorneles.gymstock.dtos.SaleItem;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record ResponseSaleItemDto(
+public record SaleItemResponse(
         UUID saleItemId,
         UUID productId,
         String productName,

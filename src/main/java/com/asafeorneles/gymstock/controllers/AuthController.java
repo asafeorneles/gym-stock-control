@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.auth.LoginRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.LoginResponseDto;
-import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gymstock.dtos.auth.LoginRequest;
+import com.asafeorneles.gymstock.dtos.auth.LoginResponse;
+import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequest;
+import com.asafeorneles.gymstock.dtos.auth.RegisterRequest;
 import com.asafeorneles.gymstock.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,9 +34,9 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto){
-        LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
+        LoginResponse loginResponse = authService.login(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
     @Operation(summary = "Refresh accessToken")
@@ -47,9 +47,9 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping("/refresh-token")
-    public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
-        LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
+    public ResponseEntity<LoginResponse> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+        LoginResponse loginResponse = authService.refreshToken(refreshTokenRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 
     @Operation(summary = "Logout the system")
@@ -60,8 +60,8 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
-        authService.logout(refreshTokenRequestDto);
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequest refreshTokenRequest){
+        authService.logout(refreshTokenRequest);
         return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
     }
 
@@ -76,8 +76,8 @@ public class AuthController {
     })
     @PreAuthorize("hasAuthority('user:register')")
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
-        authService.register(registerRequestDto);
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest registerRequest){
+        authService.register(registerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 

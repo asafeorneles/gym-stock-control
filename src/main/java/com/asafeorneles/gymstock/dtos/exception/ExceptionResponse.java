@@ -2,7 +2,7 @@ package com.asafeorneles.gymstock.dtos.exception;
 
 import java.time.LocalDateTime;
 
-public record ResponseException (
+public record ExceptionResponse(
         int code,
         String error,
         String message,

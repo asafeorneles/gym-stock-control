@@ -5,7 +5,7 @@ import com.asafeorneles.gymstock.enums.ActivityStatus;
 import java.util.Set;
 import java.util.UUID;
 
-public record UserResponseDto(
+public record UserResponse(
         UUID userId,
         String username,
         Set<String> roles,

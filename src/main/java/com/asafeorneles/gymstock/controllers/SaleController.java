@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
-import com.asafeorneles.gymstock.dtos.sale.PatchPaymentMethodDto;
-import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gymstock.dtos.sale.SaleCreateRequest;
+import com.asafeorneles.gymstock.dtos.sale.SalePaymentMethodRequest;
+import com.asafeorneles.gymstock.dtos.sale.SaleResponse;
 import com.asafeorneles.gymstock.queryFilters.SaleQueryFilters;
 import com.asafeorneles.gymstock.services.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,8 +43,8 @@ public class SaleController {
     })
     @PreAuthorize("hasAuthority('sale:create')")
     @PostMapping
-    public ResponseEntity<ResponseSaleDto> createSale(@RequestBody @Valid CreateSaleDto createSaleDto, JwtAuthenticationToken token){
-        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.createSale(createSaleDto, token));
+    public ResponseEntity<SaleResponse> createSale(@RequestBody @Valid SaleCreateRequest saleCreateRequest, JwtAuthenticationToken token){
+        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.createSale(saleCreateRequest, token));
     }
 
     @Operation(summary = "Get all sales")
@@ -57,7 +57,7 @@ public class SaleController {
     })
     @PreAuthorize("hasAuthority('sale:read')")
     @GetMapping
-    public ResponseEntity<Page<ResponseSaleDto>> getAllSales(@ParameterObject SaleQueryFilters filters, @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
+    public ResponseEntity<Page<SaleResponse>> getAllSales(@ParameterObject SaleQueryFilters filters, @PageableDefault(size = 5, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getAllSales(filters.toSpecification(), pageable));
     }
 
@@ -72,7 +72,7 @@ public class SaleController {
     })
     @PreAuthorize("hasAuthority('sale:read')")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseSaleDto> getSaleById(@PathVariable(name = "id") UUID id){
+    public ResponseEntity<SaleResponse> getSaleById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.getSaleById(id));
     }
 
@@ -88,7 +88,7 @@ public class SaleController {
     })
     @PreAuthorize("hasAuthority('sale:update')")
     @PatchMapping("/payment-method/{id}")
-    public ResponseEntity<ResponseSaleDto> updatePaymentMethod(@PathVariable(name = "id") UUID id, PatchPaymentMethodDto patchPaymentMethod){
+    public ResponseEntity<SaleResponse> updatePaymentMethod(@PathVariable(name = "id") UUID id, SalePaymentMethodRequest patchPaymentMethod){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.updatePaymentMethod(id, patchPaymentMethod));
     }
 

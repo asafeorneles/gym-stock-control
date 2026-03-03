@@ -1,8 +1,8 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryLowStockThresholdDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.PatchProductInventoryQuantityDto;
-import com.asafeorneles.gymstock.dtos.ProductInventory.ResponseProductInventoryDetailDto;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryDetailResponse;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryLowStockThresholdRequest;
+import com.asafeorneles.gymstock.dtos.ProductInventory.ProductInventoryQuantityRequest;
 import com.asafeorneles.gymstock.entities.Product;
 import com.asafeorneles.gymstock.entities.ProductInventory;
 import com.asafeorneles.gymstock.entities.SaleItem;
@@ -25,21 +25,21 @@ public class ProductInventoryService {
     final ProductInventoryRepository productInventoryRepository;
     final ProductInventoryMapper productInventoryMapper;
 
-    public List<ResponseProductInventoryDetailDto> findProductsInventories() {
+    public List<ProductInventoryDetailResponse> findProductsInventories() {
         return productInventoryRepository.findAll()
                 .stream()
                 .map(productInventoryMapper::toResponseDetail)
                 .toList();
     }
 
-    public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
+    public ProductInventoryDetailResponse findProductInventoryById(UUID id) {
         return productInventoryRepository.findById(id)
                 .map(productInventoryMapper::toResponseDetail)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
     }
 
     @Transactional
-    public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity) {
+    public ProductInventoryDetailResponse updateQuantity(UUID id, ProductInventoryQuantityRequest patchProductInventoryQuantity) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
@@ -57,7 +57,7 @@ public class ProductInventoryService {
     }
 
     @Transactional
-    public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
+    public ProductInventoryDetailResponse updateLowStockThreshold(UUID id, ProductInventoryLowStockThresholdRequest patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 

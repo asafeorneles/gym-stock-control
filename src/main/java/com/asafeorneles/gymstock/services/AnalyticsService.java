@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsDto;
+import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsResponse;
 import com.asafeorneles.gymstock.repositories.AnalyticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,13 @@ public class AnalyticsService {
 
     final AnalyticsRepository analyticsRepository;
 
-    public List<TopSellingProductsDto> getTopSellingProducts(Integer limit) {
+    public List<TopSellingProductsResponse> getTopSellingProducts(Integer limit) {
         int finalLimit = limit == null ? 10 : limit;
 
         return analyticsRepository.findTopSellingProducts(finalLimit);
     }
 
-    public List<TopSellingProductsDto> getTopSellingProductsByPeriod(Integer limit, LocalDate startDate, LocalDate endDate) {
+    public List<TopSellingProductsResponse> getTopSellingProductsByPeriod(Integer limit, LocalDate startDate, LocalDate endDate) {
         int finalLimit = limit == null ? 10 : limit;
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);

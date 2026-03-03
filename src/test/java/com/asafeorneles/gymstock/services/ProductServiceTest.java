@@ -58,9 +58,9 @@ class ProductServiceTest {
 
     private Product product;
     private Product productLowStock;
-    private CreateProductDto createProductDto;
-    private UpdateProductDto updateProductDto;
-    private DeactivateProductDto deactivateProductDto;
+    private ProductCreateRequest productCreateRequest;
+    private ProductUpdateRequest productUpdateRequest;
+    private ProductDeactivateRequest productDeactivateRequest;
     private Category category;
 
     @Captor
@@ -112,7 +112,7 @@ class ProductServiceTest {
                 .build();
         productLowStock.setInventory(inventoryLowStock);
 
-        createProductDto = new CreateProductDto(
+        productCreateRequest = new ProductCreateRequest(
                 "Whey",
                 "Growth",
                 "test",
@@ -123,7 +123,7 @@ class ProductServiceTest {
                 8
         );
 
-        updateProductDto = new UpdateProductDto(
+        productUpdateRequest = new ProductUpdateRequest(
                 "Whey de Baunilha",
                 "Growth",
                 "test",
@@ -132,7 +132,7 @@ class ProductServiceTest {
                 category.getCategoryId()
         );
 
-        deactivateProductDto = new DeactivateProductDto("test");
+        productDeactivateRequest = new ProductDeactivateRequest("test");
 
     }
 
@@ -141,82 +141,82 @@ class ProductServiceTest {
         @Test
         void shouldCreateAProductSuccessfully() {
             // ARRANGE
-            when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
+            when(categoryRepository.findById(productCreateRequest.categoryId())).thenReturn(Optional.of(category));
             when(productRepository.save(any(Product.class))).thenReturn(product);
-            when(productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())).thenReturn(false);
+            when(productRepository.existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand())).thenReturn(false);
             // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.createProduct(createProductDto);
+            ProductDetailResponse productDetailResponse = productService.createProduct(productCreateRequest);
             // ASSERTS
             verify(productRepository).save(productArgumentCaptor.capture());
-            verify(productRepository, times(1)).existsByNameAndBrand(createProductDto.name(), createProductDto.brand());
+            verify(productRepository, times(1)).existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand());
             Product productCaptured = productArgumentCaptor.getValue();
-            assertNotNull(responseProductDetailDto);
+            assertNotNull(productDetailResponse);
 
             assertEquals(category, productCaptured.getCategory());
 
-            // CreateProductDto -> Product
-            assertEquals(createProductDto.name(), productCaptured.getName());
-            assertEquals(createProductDto.brand(), productCaptured.getBrand());
-            assertEquals(createProductDto.description(), productCaptured.getDescription());
-            assertEquals(createProductDto.price(), productCaptured.getPrice());
-            assertEquals(createProductDto.costPrice(), productCaptured.getCostPrice());
-            assertEquals(createProductDto.categoryId(), productCaptured.getCategory().getCategoryId());
-            assertEquals(createProductDto.quantity(), productCaptured.getInventory().getQuantity());
-            assertEquals(createProductDto.lowStockThreshold(), productCaptured.getInventory().getLowStockThreshold());
+            // ProductCreateRequest -> Product
+            assertEquals(productCreateRequest.name(), productCaptured.getName());
+            assertEquals(productCreateRequest.brand(), productCaptured.getBrand());
+            assertEquals(productCreateRequest.description(), productCaptured.getDescription());
+            assertEquals(productCreateRequest.price(), productCaptured.getPrice());
+            assertEquals(productCreateRequest.costPrice(), productCaptured.getCostPrice());
+            assertEquals(productCreateRequest.categoryId(), productCaptured.getCategory().getCategoryId());
+            assertEquals(productCreateRequest.quantity(), productCaptured.getInventory().getQuantity());
+            assertEquals(productCreateRequest.lowStockThreshold(), productCaptured.getInventory().getLowStockThreshold());
 
-            // CreateProductDto -> ResponseProductDetailDto
-            assertEquals(createProductDto.name(), responseProductDetailDto.name());
-            assertEquals(createProductDto.brand(), responseProductDetailDto.brand());
-            assertEquals(createProductDto.description(), responseProductDetailDto.description());
-            assertEquals(createProductDto.price(), responseProductDetailDto.price());
-            assertEquals(createProductDto.costPrice(), responseProductDetailDto.costPrice());
-            assertEquals(createProductDto.categoryId(), responseProductDetailDto.category().categoryId());
-            assertEquals(createProductDto.quantity(), responseProductDetailDto.inventory().quantity());
-            assertEquals(createProductDto.lowStockThreshold(), responseProductDetailDto.inventory().lowStockThreshold());
+            // ProductCreateRequest -> ProductDetailResponse
+            assertEquals(productCreateRequest.name(), productDetailResponse.name());
+            assertEquals(productCreateRequest.brand(), productDetailResponse.brand());
+            assertEquals(productCreateRequest.description(), productDetailResponse.description());
+            assertEquals(productCreateRequest.price(), productDetailResponse.price());
+            assertEquals(productCreateRequest.costPrice(), productDetailResponse.costPrice());
+            assertEquals(productCreateRequest.categoryId(), productDetailResponse.category().categoryId());
+            assertEquals(productCreateRequest.quantity(), productDetailResponse.inventory().quantity());
+            assertEquals(productCreateRequest.lowStockThreshold(), productDetailResponse.inventory().lowStockThreshold());
         }
 
         @Test
         void shouldThrowAExceptionWhenCategoryDoesNotExist() {
             // ARRANGE
-            when(categoryRepository.findById(createProductDto.categoryId())).thenThrow(new ErrorResponseException(HttpStatus.NOT_FOUND));
+            when(categoryRepository.findById(productCreateRequest.categoryId())).thenThrow(new ErrorResponseException(HttpStatus.NOT_FOUND));
 
             // ASSERTS
-            assertThrows(ErrorResponseException.class, () -> productService.createProduct(createProductDto));
-            verify(categoryRepository, times(1)).findById(createProductDto.categoryId());
+            assertThrows(ErrorResponseException.class, () -> productService.createProduct(productCreateRequest));
+            verify(categoryRepository, times(1)).findById(productCreateRequest.categoryId());
         }
 
         @Test
         void shouldThrowAExceptionWhenProductIsNotCreate() {
             // ARRANGE
             when(productRepository.save(any(Product.class))).thenThrow(new RuntimeException());
-            when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
-            when(productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())).thenReturn(false);
+            when(categoryRepository.findById(productCreateRequest.categoryId())).thenReturn(Optional.of(category));
+            when(productRepository.existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand())).thenReturn(false);
             // ASSERTS
-            assertThrows(RuntimeException.class, () -> productService.createProduct(createProductDto));
+            assertThrows(RuntimeException.class, () -> productService.createProduct(productCreateRequest));
             verify(productRepository, times(1)).save(any(Product.class));
-            verify(categoryRepository, times(1)).findById(createProductDto.categoryId());
-            verify(productRepository, times(1)).existsByNameAndBrand(createProductDto.name(), createProductDto.brand());
+            verify(categoryRepository, times(1)).findById(productCreateRequest.categoryId());
+            verify(productRepository, times(1)).existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand());
 
         }
 
         @Test
         void shouldThrowAExceptionWhenPetAlreadyExists() {
             // ARRANGE
-            when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
-            when(productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())).thenReturn(true);
+            when(categoryRepository.findById(productCreateRequest.categoryId())).thenReturn(Optional.of(category));
+            when(productRepository.existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand())).thenReturn(true);
 
             // ASSERTS
-            assertThrows(BusinessConflictException.class, () -> productService.createProduct(createProductDto));
+            assertThrows(BusinessConflictException.class, () -> productService.createProduct(productCreateRequest));
         }
 
         @Test
         void shouldThrowAExceptionWhenCategoryIsNotActivity() {
             // ARRANGE
             category.inactivity();
-            when(categoryRepository.findById(createProductDto.categoryId())).thenReturn(Optional.of(category));
+            when(categoryRepository.findById(productCreateRequest.categoryId())).thenReturn(Optional.of(category));
 
             // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> productService.createProduct(createProductDto));
+            assertThrows(ActivityStatusException.class, () -> productService.createProduct(productCreateRequest));
         }
     }
 
@@ -227,7 +227,7 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findAll(any(Specification.class))).thenReturn(List.of(product));
             // ACT
-            List<ResponseProductDto> productsFound = productService.getAllProducts(Specification.unrestricted());
+            List<ProductResponse> productsFound = productService.getAllProducts(Specification.unrestricted());
             // ASSERT
             assertFalse(productsFound.isEmpty());
             verify(productRepository, times(1)).findAll(any(Specification.class));
@@ -241,7 +241,7 @@ class ProductServiceTest {
             when(productRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ACT
-            List<ResponseProductDto> productsFound = productService.getAllProducts(Specification.unrestricted());
+            List<ProductResponse> productsFound = productService.getAllProducts(Specification.unrestricted());
 
             // ASSERT
             verify(productRepository, times(1)).findAll(any(Specification.class));
@@ -257,7 +257,7 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
             // ACT
-            ResponseProductDto responseProduct = productService.getProductById(product.getProductId());
+            ProductResponse responseProduct = productService.getProductById(product.getProductId());
             // ASSERT
             verify(productRepository, times(1)).findById(productIdArgumentCaptor.capture());
             UUID productIdCaptured = productIdArgumentCaptor.getValue();
@@ -296,18 +296,18 @@ class ProductServiceTest {
             // ARRANGE
             when(productRepository.findProductWithLowStock()).thenReturn(List.of(productLowStock));
             // ACT
-            List<ResponseProductDetailDto> productsWithLowStockFound = productService.getAllProductsWithLowStock();
+            List<ProductDetailResponse> productsWithLowStockFound = productService.getAllProductsWithLowStock();
             // ASSERT
             verify(productRepository, times(1)).findProductWithLowStock();
             assertFalse(productsWithLowStockFound.isEmpty());
             assertEquals(1, productsWithLowStockFound.size());
 
-            ResponseProductDetailDto responseProductDetailDto = productsWithLowStockFound.get(0);
+            ProductDetailResponse productDetailResponse = productsWithLowStockFound.get(0);
 
-            assertEquals(productLowStock.getProductId(), responseProductDetailDto.productId());
-            assertEquals(productLowStock.getName(), responseProductDetailDto.name());
-            assertEquals(productLowStock.getInventory().getQuantity(), responseProductDetailDto.inventory().quantity());
-            assertEquals(productLowStock.getInventory().getLowStockThreshold(), responseProductDetailDto.inventory().lowStockThreshold());
+            assertEquals(productLowStock.getProductId(), productDetailResponse.productId());
+            assertEquals(productLowStock.getName(), productDetailResponse.name());
+            assertEquals(productLowStock.getInventory().getQuantity(), productDetailResponse.inventory().quantity());
+            assertEquals(productLowStock.getInventory().getLowStockThreshold(), productDetailResponse.inventory().lowStockThreshold());
 
         }
 
@@ -317,7 +317,7 @@ class ProductServiceTest {
             when(productRepository.findProductWithLowStock()).thenReturn(List.of());
 
             // ACT
-            List<ResponseProductDetailDto> productsFound = productService.getAllProductsWithLowStock();
+            List<ProductDetailResponse> productsFound = productService.getAllProductsWithLowStock();
 
             // ASSERT
             verify(productRepository, times(1)).findProductWithLowStock();
@@ -335,28 +335,28 @@ class ProductServiceTest {
             when(productRepository.save(any(Product.class))).thenReturn(new Product());
 
             // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.updateProduct(product.getProductId(), updateProductDto);
+            ProductDetailResponse productDetailResponse = productService.updateProduct(product.getProductId(), productUpdateRequest);
 
             // ASSERT
             verify(productRepository).save(productArgumentCaptor.capture());
             Product productCaptured = productArgumentCaptor.getValue();
 
-            assertNotNull(responseProductDetailDto);
+            assertNotNull(productDetailResponse);
             assertEquals(product.getProductId(), productCaptured.getProductId());
 
             //Product -> ProductUpdated
-            assertEquals(updateProductDto.name(), productCaptured.getName());
-            assertEquals(updateProductDto.brand(), productCaptured.getBrand());
-            assertEquals(updateProductDto.price(), productCaptured.getPrice());
-            assertEquals(updateProductDto.costPrice(), productCaptured.getCostPrice());
-            assertEquals(updateProductDto.categoryId(), productCaptured.getCategory().getCategoryId());
+            assertEquals(productUpdateRequest.name(), productCaptured.getName());
+            assertEquals(productUpdateRequest.brand(), productCaptured.getBrand());
+            assertEquals(productUpdateRequest.price(), productCaptured.getPrice());
+            assertEquals(productUpdateRequest.costPrice(), productCaptured.getCostPrice());
+            assertEquals(productUpdateRequest.categoryId(), productCaptured.getCategory().getCategoryId());
 
             //UpdateProduct -> RespondeProductDto
-            assertEquals(updateProductDto.name(), responseProductDetailDto.name());
-            assertEquals(updateProductDto.brand(), responseProductDetailDto.brand());
-            assertEquals(updateProductDto.price(), responseProductDetailDto.price());
-            assertEquals(updateProductDto.costPrice(), responseProductDetailDto.costPrice());
-            assertEquals(updateProductDto.categoryId(), responseProductDetailDto.category().categoryId());
+            assertEquals(productUpdateRequest.name(), productDetailResponse.name());
+            assertEquals(productUpdateRequest.brand(), productDetailResponse.brand());
+            assertEquals(productUpdateRequest.price(), productDetailResponse.price());
+            assertEquals(productUpdateRequest.costPrice(), productDetailResponse.costPrice());
+            assertEquals(productUpdateRequest.categoryId(), productDetailResponse.category().categoryId());
         }
 
         @Test
@@ -365,7 +365,7 @@ class ProductServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ResourceNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(ResourceNotFoundException.class, () -> productService.updateProduct(product.getProductId(), productUpdateRequest));
             verify(productRepository, times(1)).findById(product.getProductId());
         }
 
@@ -376,7 +376,7 @@ class ProductServiceTest {
             when(categoryRepository.findById((product.getCategory().getCategoryId()))).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ResourceNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(ResourceNotFoundException.class, () -> productService.updateProduct(product.getProductId(), productUpdateRequest));
             verify(productRepository, times(1)).findById(product.getProductId());
             verify(categoryRepository, times(1)).findById(product.getCategory().getCategoryId());
         }
@@ -389,7 +389,7 @@ class ProductServiceTest {
             when(productRepository.save(any(Product.class))).thenThrow(new RuntimeException());
 
             // ASSERTS
-            assertThrows(RuntimeException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(RuntimeException.class, () -> productService.updateProduct(product.getProductId(), productUpdateRequest));
             verify(productRepository, times(1)).findById(product.getProductId());
             verify(categoryRepository, times(1)).findById(product.getCategory().getCategoryId());
         }
@@ -450,10 +450,10 @@ class ProductServiceTest {
             when(productRepository.save(any(Product.class))).thenReturn(product);
 
             // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.deactivateProduct(product.getProductId(), deactivateProductDto);
+            ProductDetailResponse productDetailResponse = productService.deactivateProduct(product.getProductId(), productDeactivateRequest);
 
             // ASSERT
-            assertNotNull(responseProductDetailDto);
+            assertNotNull(productDetailResponse);
             assertFalse(product.isActivity());
 
         }
@@ -465,7 +465,7 @@ class ProductServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
 
             // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> productService.deactivateProduct(product.getProductId(), deactivateProductDto));
+            assertThrows(ActivityStatusException.class, () -> productService.deactivateProduct(product.getProductId(), productDeactivateRequest));
             verify(productRepository, times(1)).findById(product.getProductId());
             verify(productRepository, never()).save(any(Product.class));
         }
@@ -481,10 +481,10 @@ class ProductServiceTest {
             when(productRepository.save(any(Product.class))).thenReturn(product);
 
             // ACT
-            ResponseProductDetailDto responseProductDetailDto = productService.activateProduct(product.getProductId());
+            ProductDetailResponse productDetailResponse = productService.activateProduct(product.getProductId());
 
             // ASSERT
-            assertNotNull(responseProductDetailDto);
+            assertNotNull(productDetailResponse);
             assertTrue(product.isActivity());
         }
 

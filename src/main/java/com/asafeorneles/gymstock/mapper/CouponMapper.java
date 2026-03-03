@@ -1,7 +1,7 @@
 package com.asafeorneles.gymstock.mapper;
 
-import com.asafeorneles.gymstock.dtos.coupon.CreateCouponDto;
-import com.asafeorneles.gymstock.dtos.coupon.ResponseCouponDto;
+import com.asafeorneles.gymstock.dtos.coupon.CreateCouponRequest;
+import com.asafeorneles.gymstock.dtos.coupon.CouponResponse;
 import com.asafeorneles.gymstock.entities.Coupon;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -12,7 +12,7 @@ public interface CouponMapper {
     @Mapping(target = "couponId", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
-    Coupon toEntity(CreateCouponDto createCouponDto);
+    Coupon toEntity(CreateCouponRequest createCouponRequest);
 
-    ResponseCouponDto toResponse(Coupon coupon);
+    CouponResponse toResponse(Coupon coupon);
 }

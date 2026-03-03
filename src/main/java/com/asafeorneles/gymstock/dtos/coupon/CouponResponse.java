@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record ResponseCouponDto(
+public record CouponResponse(
         UUID couponId,
         String code,
         String description,

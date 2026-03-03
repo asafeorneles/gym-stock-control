@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record CreateCouponDto(
+public record CreateCouponRequest(
         @NotBlank(message = "The code cannot be empty!")
         String code,
         @NotBlank(message = "The description cannot be empty!")

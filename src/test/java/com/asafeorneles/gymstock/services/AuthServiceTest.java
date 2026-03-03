@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.auth.LoginRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.LoginResponseDto;
-import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gymstock.dtos.auth.LoginRequest;
+import com.asafeorneles.gymstock.dtos.auth.LoginResponse;
+import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequest;
+import com.asafeorneles.gymstock.dtos.auth.RegisterRequest;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
@@ -65,20 +65,20 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
-    private LoginRequestDto loginRequestDto;
-    private RegisterRequestDto registerRequestDto;
-    private RefreshTokenRequestDto refreshTokenRequestDto;
+    private LoginRequest loginRequest;
+    private RegisterRequest registerRequest;
+    private RefreshTokenRequest refreshTokenRequest;
     private Role role;
     private User user;
     private String jti;
 
     @BeforeEach
     void setUp() {
-        loginRequestDto = new LoginRequestDto("zafin", "123");
-        registerRequestDto = new RegisterRequestDto("zafin", "123", "ROLE_BASIC");
-        refreshTokenRequestDto = new RefreshTokenRequestDto("old-refresh-accessToken");
+        loginRequest = new LoginRequest("zafin", "123");
+        registerRequest = new RegisterRequest("zafin", "123", "ROLE_BASIC");
+        refreshTokenRequest = new RefreshTokenRequest("old-refresh-accessToken");
         role = new Role(2L, "BASIC");
-        user = User.builder().userId(UUID.randomUUID()).username(loginRequestDto.username()).password(passwordEncoder.encode(loginRequestDto.password())).build();
+        user = User.builder().userId(UUID.randomUUID()).username(loginRequest.username()).password(passwordEncoder.encode(loginRequest.password())).build();
         jti = "test jti";
     }
 
@@ -89,17 +89,17 @@ class AuthServiceTest {
 
         Authentication authentication = mock(Authentication.class);
         when(authenticationManager.authenticate(any())).thenReturn(authentication);
-        when(userRepository.findByUsername(loginRequestDto.username())).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(loginRequest.username())).thenReturn(Optional.of(user));
         when(tokenService.getAccessToken(authentication)).thenReturn(authAccessToken);
         when(tokenService.getRefreshToken(eq(authentication), anyString())).thenReturn(authRefreshToken);
         when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
 
-        LoginResponseDto loginResponseDto = authService.login(loginRequestDto);
+        LoginResponse loginResponse = authService.login(loginRequest);
 
-        assertNotNull(loginResponseDto);
-        assertEquals(authAccessToken, loginResponseDto.accessToken());
-        assertEquals(authRefreshToken, loginResponseDto.refreshToken());
-        assertEquals(300L, loginResponseDto.expiresIn());
+        assertNotNull(loginResponse);
+        assertEquals(authAccessToken, loginResponse.accessToken());
+        assertEquals(authRefreshToken, loginResponse.refreshToken());
+        assertEquals(300L, loginResponse.expiresIn());
 
         verify(refreshTokenRedisService, times(1)).save(anyString(), anyString(), anyLong());
     }
@@ -108,11 +108,11 @@ class AuthServiceTest {
     class register {
         @Test
         void shouldRegisterAUserSuccessfully() {
-            when(userRepository.existsByUsername(registerRequestDto.username())).thenReturn(false);
-            when(roleRepository.findByName(registerRequestDto.role())).thenReturn(Optional.of(role));
+            when(userRepository.existsByUsername(registerRequest.username())).thenReturn(false);
+            when(roleRepository.findByName(registerRequest.role())).thenReturn(Optional.of(role));
             when(passwordEncoder.encode("123")).thenReturn("encoded-password");
 
-            authService.register(registerRequestDto);
+            authService.register(registerRequest);
 
             verify(userRepository).save(any(User.class));
         }
@@ -121,7 +121,7 @@ class AuthServiceTest {
         void shouldThrowExceptionWhenUsernameAlreadyExists() {
             when(userRepository.existsByUsername("zafin")).thenReturn(true);
 
-            assertThrows(BusinessConflictException.class, () -> authService.register(registerRequestDto));
+            assertThrows(BusinessConflictException.class, () -> authService.register(registerRequest));
         }
 
         @Test
@@ -129,7 +129,7 @@ class AuthServiceTest {
             when(userRepository.existsByUsername("zafin")).thenReturn(false);
             when(roleRepository.findByName("ROLE_BASIC")).thenReturn(Optional.empty());
 
-            assertThrows(ResourceNotFoundException.class, () -> authService.register(registerRequestDto));
+            assertThrows(ResourceNotFoundException.class, () -> authService.register(registerRequest));
         }
     }
 
@@ -141,7 +141,7 @@ class AuthServiceTest {
             String newRefreshToken = "test-refreshToken";
 
             Jwt jwt = mock(Jwt.class);
-            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+            when(jwtDecoder.decode(refreshTokenRequest.refreshToken())).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
             when(jwt.getId()).thenReturn(jti);
             when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(true);
@@ -158,11 +158,11 @@ class AuthServiceTest {
             when(tokenService.getAccessTokenExpiration()).thenReturn(300L);
             when(tokenService.getRefreshTokenExpiration()).thenReturn(28800L);
 
-            LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
+            LoginResponse loginResponse = authService.refreshToken(refreshTokenRequest);
 
-            assertNotNull(loginResponseDto);
-            assertEquals(newRefreshToken, loginResponseDto.refreshToken());
-            assertEquals(newAccessToken, loginResponseDto.accessToken());
+            assertNotNull(loginResponse);
+            assertEquals(newRefreshToken, loginResponse.refreshToken());
+            assertEquals(newAccessToken, loginResponse.accessToken());
 
             verify(refreshTokenRedisService, times(1)).delete(jti);
             verify(refreshTokenRedisService, times(1)).save(anyString(), anyString(), anyLong());
@@ -175,7 +175,7 @@ class AuthServiceTest {
             when(jwtDecoder.decode(token)).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("access");
 
-            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
+            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequest(token)));
 
             verify(refreshTokenRedisService, never()).existsInRedis(any());
             verify(refreshTokenRedisService, never()).delete(any());
@@ -194,7 +194,7 @@ class AuthServiceTest {
             when(jwt.getId()).thenReturn(jti);
             when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(false);
 
-            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequestDto(token)));
+            assertThrows(UnauthorizedException.class, () -> authService.refreshToken(new RefreshTokenRequest(token)));
         }
     }
 
@@ -203,21 +203,21 @@ class AuthServiceTest {
         @Test
         void shouldLogoutSuccessfully() {
             Jwt jwt = mock(Jwt.class);
-            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenReturn(jwt);
+            when(jwtDecoder.decode(refreshTokenRequest.refreshToken())).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("refresh");
             when(jwt.getId()).thenReturn(jti);
             when(refreshTokenRedisService.existsInRedis(jti)).thenReturn(true);
 
-            authService.logout(refreshTokenRequestDto);
+            authService.logout(refreshTokenRequest);
 
             verify(refreshTokenRedisService, times(1)).delete(jti);
         }
 
         @Test
         void shouldThrowExceptionWhenJwtIsInvalidOrExpired() {
-            when(jwtDecoder.decode(refreshTokenRequestDto.refreshToken())).thenThrow(new JwtException("Invalid"));
+            when(jwtDecoder.decode(refreshTokenRequest.refreshToken())).thenThrow(new JwtException("Invalid"));
 
-            assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequestDto));
+            assertThrows(UnauthorizedException.class, () -> authService.logout(refreshTokenRequest));
 
             verify(refreshTokenRedisService, never()).existsInRedis(any());
             verify(refreshTokenRedisService, never()).delete(any());
@@ -230,7 +230,7 @@ class AuthServiceTest {
             when(jwtDecoder.decode(token)).thenReturn(jwt);
             when(jwt.getClaim("type")).thenReturn("access");
 
-            assertThrows(UnauthorizedException.class, () -> authService.logout(new RefreshTokenRequestDto(token)));
+            assertThrows(UnauthorizedException.class, () -> authService.logout(new RefreshTokenRequest(token)));
 
             verify(refreshTokenRedisService, never()).existsInRedis(any());
             verify(refreshTokenRedisService, never()).delete(any());

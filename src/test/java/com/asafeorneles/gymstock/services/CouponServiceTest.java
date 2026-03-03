@@ -1,7 +1,7 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.coupon.CreateCouponDto;
-import com.asafeorneles.gymstock.dtos.coupon.ResponseCouponDto;
+import com.asafeorneles.gymstock.dtos.coupon.CouponResponse;
+import com.asafeorneles.gymstock.dtos.coupon.CreateCouponRequest;
 import com.asafeorneles.gymstock.entities.Coupon;
 import com.asafeorneles.gymstock.entities.Sale;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
@@ -49,7 +49,7 @@ class CouponServiceTest {
 
     private Coupon coupon;
     private Sale sale;
-    private CreateCouponDto createCouponDto;
+    private CreateCouponRequest createCouponRequest;
     @Captor
     ArgumentCaptor<Coupon> couponArgumentCaptor;
 
@@ -66,7 +66,7 @@ class CouponServiceTest {
                 .quantity(5)
                 .build();
 
-        createCouponDto = new CreateCouponDto(
+        createCouponRequest = new CreateCouponRequest(
                 "TESTE10",
                 "teste",
                 BigDecimal.valueOf(10),
@@ -90,29 +90,29 @@ class CouponServiceTest {
             when(couponRepository.existsByCode(coupon.getCode())).thenReturn(false);
             when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);
 
-            ResponseCouponDto responseCouponDto = couponService.createCoupon(createCouponDto);
+            CouponResponse couponResponse = couponService.createCoupon(createCouponRequest);
 
             verify(couponRepository).save(couponArgumentCaptor.capture());
             Coupon coupon = couponArgumentCaptor.getValue();
 
-            assertNotNull(responseCouponDto);
-            assertEquals(createCouponDto.code(), coupon.getCode());
-            assertEquals(createCouponDto.description(), coupon.getDescription());
-            assertEquals(createCouponDto.activityStatus(), coupon.getActivityStatus());
-            assertEquals(createCouponDto.unlimited(), coupon.isUnlimited());
-            assertEquals(createCouponDto.quantity(), coupon.getQuantity());
-            assertEquals(createCouponDto.discountValue(), coupon.getDiscountValue());
-            assertEquals(createCouponDto.discountType(), coupon.getDiscountType());
-            assertEquals(createCouponDto.expirationDate(), coupon.getExpirationDate());
+            assertNotNull(couponResponse);
+            assertEquals(createCouponRequest.code(), coupon.getCode());
+            assertEquals(createCouponRequest.description(), coupon.getDescription());
+            assertEquals(createCouponRequest.activityStatus(), coupon.getActivityStatus());
+            assertEquals(createCouponRequest.unlimited(), coupon.isUnlimited());
+            assertEquals(createCouponRequest.quantity(), coupon.getQuantity());
+            assertEquals(createCouponRequest.discountValue(), coupon.getDiscountValue());
+            assertEquals(createCouponRequest.discountType(), coupon.getDiscountType());
+            assertEquals(createCouponRequest.expirationDate(), coupon.getExpirationDate());
 
-            assertEquals(createCouponDto.code(), responseCouponDto.code());
-            assertEquals(createCouponDto.description(), responseCouponDto.description());
-            assertEquals(createCouponDto.activityStatus(), responseCouponDto.activityStatus());
-            assertEquals(createCouponDto.unlimited(), responseCouponDto.unlimited());
-            assertEquals(createCouponDto.quantity(), responseCouponDto.quantity());
-            assertEquals(createCouponDto.discountValue(), responseCouponDto.discountValue());
-            assertEquals(createCouponDto.discountType(), responseCouponDto.discountType());
-            assertEquals(createCouponDto.expirationDate(), responseCouponDto.expirationDate());
+            assertEquals(createCouponRequest.code(), couponResponse.code());
+            assertEquals(createCouponRequest.description(), couponResponse.description());
+            assertEquals(createCouponRequest.activityStatus(), couponResponse.activityStatus());
+            assertEquals(createCouponRequest.unlimited(), couponResponse.unlimited());
+            assertEquals(createCouponRequest.quantity(), couponResponse.quantity());
+            assertEquals(createCouponRequest.discountValue(), couponResponse.discountValue());
+            assertEquals(createCouponRequest.discountType(), couponResponse.discountType());
+            assertEquals(createCouponRequest.expirationDate(), couponResponse.expirationDate());
         }
 
         @Test
@@ -121,7 +121,7 @@ class CouponServiceTest {
             when(couponRepository.save(any(Coupon.class))).thenThrow(new RuntimeException());
 
             // ASSERTS
-            assertThrows(RuntimeException.class, () -> couponService.createCoupon(createCouponDto));
+            assertThrows(RuntimeException.class, () -> couponService.createCoupon(createCouponRequest));
             verify(couponRepository, times(1)).save(any(Coupon.class));
 
         }
@@ -131,15 +131,15 @@ class CouponServiceTest {
     class validateCouponToCreate {
         @Test
         void shouldThrowExceptionWhenCouponAlreadyExist() {
-            when(couponRepository.existsByCode(createCouponDto.code())).thenReturn(true);
+            when(couponRepository.existsByCode(createCouponRequest.code())).thenReturn(true);
 
-            assertThrows(BusinessConflictException.class, () -> couponService.validateCouponToCreate(createCouponDto));
-            verify(couponRepository, times(1)).existsByCode(createCouponDto.code());
+            assertThrows(BusinessConflictException.class, () -> couponService.validateCouponToCreate(createCouponRequest));
+            verify(couponRepository, times(1)).existsByCode(createCouponRequest.code());
         }
 
         @Test
         void shouldThrowExceptionWhenCouponQuantityIsLessOrEqualZero() {
-            CreateCouponDto createCouponDtoLowQuantity = new CreateCouponDto(
+            CreateCouponRequest createCouponRequestLowQuantity = new CreateCouponRequest(
                     "TESTE10",
                     "teste",
                     BigDecimal.valueOf(10),
@@ -150,13 +150,13 @@ class CouponServiceTest {
                     null
             );
 
-            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponDtoLowQuantity));
-            verify(couponRepository, times(1)).existsByCode(createCouponDtoLowQuantity.code());
+            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponRequestLowQuantity));
+            verify(couponRepository, times(1)).existsByCode(createCouponRequestLowQuantity.code());
         }
 
         @Test
         void shouldThrowExceptionWhenPercentageCouponExceed100() {
-            CreateCouponDto createCouponDtoValueExceeded = new CreateCouponDto(
+            CreateCouponRequest createCouponRequestValueExceeded = new CreateCouponRequest(
                     "TESTE10",
                     "teste",
                     BigDecimal.valueOf(105),
@@ -167,13 +167,13 @@ class CouponServiceTest {
                     null
             );
 
-            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponDtoValueExceeded));
-            verify(couponRepository, times(1)).existsByCode(createCouponDtoValueExceeded.code());
+            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponRequestValueExceeded));
+            verify(couponRepository, times(1)).existsByCode(createCouponRequestValueExceeded.code());
         }
 
         @Test
         void shouldThrowExceptionWhenExpirationDateIsInThePast() {
-            CreateCouponDto createCouponDtoExpirationDate = new CreateCouponDto(
+            CreateCouponRequest createCouponRequestExpirationDate = new CreateCouponRequest(
                     "TESTE10",
                     "teste",
                     BigDecimal.valueOf(105),
@@ -184,8 +184,8 @@ class CouponServiceTest {
                     LocalDateTime.of(2020, Month.DECEMBER, 10, 0, 0)
             );
 
-            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponDtoExpirationDate));
-            verify(couponRepository, times(1)).existsByCode(createCouponDtoExpirationDate.code());
+            assertThrows(InvalidCouponException.class, () -> couponService.validateCouponToCreate(createCouponRequestExpirationDate));
+            verify(couponRepository, times(1)).existsByCode(createCouponRequestExpirationDate.code());
         }
     }
 
@@ -219,7 +219,7 @@ class CouponServiceTest {
         void shouldGetAllCouponsWithSuccessfully(){
             when(couponRepository.findAll(any(Specification.class))).thenReturn(List.of(coupon));
 
-            List<ResponseCouponDto> couponsFound = couponService.getAllCoupons(Specification.unrestricted());
+            List<CouponResponse> couponsFound = couponService.getAllCoupons(Specification.unrestricted());
 
             assertFalse(couponsFound.isEmpty());
             assertEquals(1, couponsFound.size());
@@ -250,17 +250,17 @@ class CouponServiceTest {
         void shouldGetCouponsByIdWithSuccessfully(){
             when(couponRepository.findById(coupon.getCouponId())).thenReturn(Optional.of(coupon));
 
-            ResponseCouponDto responseCouponDto = couponService.getCouponById(coupon.getCouponId());
+            CouponResponse couponResponse = couponService.getCouponById(coupon.getCouponId());
 
-            assertNotNull(responseCouponDto);
-            assertEquals(coupon.getCode(), responseCouponDto.code());
-            assertEquals(coupon.getDescription(), responseCouponDto.description());
-            assertEquals(coupon.getActivityStatus(), responseCouponDto.activityStatus());
-            assertEquals(coupon.isUnlimited(), responseCouponDto.unlimited());
-            assertEquals(coupon.getQuantity(), responseCouponDto.quantity());
-            assertEquals(coupon.getDiscountValue(), responseCouponDto.discountValue());
-            assertEquals(coupon.getDiscountType(), responseCouponDto.discountType());
-            assertEquals(coupon.getExpirationDate(), responseCouponDto.expirationDate());
+            assertNotNull(couponResponse);
+            assertEquals(coupon.getCode(), couponResponse.code());
+            assertEquals(coupon.getDescription(), couponResponse.description());
+            assertEquals(coupon.getActivityStatus(), couponResponse.activityStatus());
+            assertEquals(coupon.isUnlimited(), couponResponse.unlimited());
+            assertEquals(coupon.getQuantity(), couponResponse.quantity());
+            assertEquals(coupon.getDiscountValue(), couponResponse.discountValue());
+            assertEquals(coupon.getDiscountType(), couponResponse.discountType());
+            assertEquals(coupon.getExpirationDate(), couponResponse.expirationDate());
             verify(couponRepository, times(1)).findById(coupon.getCouponId());
         }
 
@@ -320,10 +320,10 @@ class CouponServiceTest {
             when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);
 
             // ACT
-            ResponseCouponDto responseCouponDto = couponService.deactivateCoupon(coupon.getCouponId());
+            CouponResponse couponResponse = couponService.deactivateCoupon(coupon.getCouponId());
 
             // ASSERT
-            assertNotNull(responseCouponDto);
+            assertNotNull(couponResponse);
             assertFalse(coupon.isActivity());
 
         }
@@ -350,10 +350,10 @@ class CouponServiceTest {
             when(couponRepository.save(any(Coupon.class))).thenReturn(coupon);
 
             // ACT
-            ResponseCouponDto responseCouponDto = couponService.deactivateCoupon(coupon.getCouponId());
+            CouponResponse couponResponse = couponService.deactivateCoupon(coupon.getCouponId());
 
             // ASSERT
-            assertNotNull(responseCouponDto);
+            assertNotNull(couponResponse);
             assertFalse(coupon.isActivity());
 
         }

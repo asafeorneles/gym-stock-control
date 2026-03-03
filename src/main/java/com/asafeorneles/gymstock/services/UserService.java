@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.user.UserResponseDto;
+import com.asafeorneles.gymstock.dtos.user.UserResponse;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
@@ -21,13 +21,13 @@ public class UserService {
     final UserRepository userRepository;
     final UserMapper userMapper;
 
-    public List<UserResponseDto> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
     }
 
-    public UserResponseDto getUserById(UUID id) {
+    public UserResponse getUserById(UUID id) {
         return userRepository.findById(id)
                 .map(userMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));

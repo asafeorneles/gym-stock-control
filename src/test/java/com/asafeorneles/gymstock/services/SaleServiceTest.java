@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.SaleItem.CreateSaleItemDto;
-import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
-import com.asafeorneles.gymstock.dtos.sale.PatchPaymentMethodDto;
-import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gymstock.dtos.SaleItem.SaleItemCreateRequest;
+import com.asafeorneles.gymstock.dtos.sale.SaleCreateRequest;
+import com.asafeorneles.gymstock.dtos.sale.SalePaymentMethodRequest;
+import com.asafeorneles.gymstock.dtos.sale.SaleResponse;
 import com.asafeorneles.gymstock.entities.*;
 import com.asafeorneles.gymstock.enums.ActivityStatus;
 import com.asafeorneles.gymstock.enums.DiscountType;
@@ -74,9 +74,9 @@ class SaleServiceTest {
     private SaleItem saleItem;
     private Sale sale;
     private Coupon coupon;
-    private CreateSaleDto createSaleDto;
-    private CreateSaleItemDto createSaleItemDto;
-    private PatchPaymentMethodDto patchPaymentMethodDto;
+    private SaleCreateRequest saleCreateRequest;
+    private SaleItemCreateRequest saleItemCreateRequest;
+    private SalePaymentMethodRequest salePaymentMethodRequest;
     private Pageable pageable;
 
     @Captor
@@ -136,9 +136,9 @@ class SaleServiceTest {
 
         sale.calculateTotalPrice();
 
-        createSaleItemDto = new CreateSaleItemDto(product.getProductId(), 5);
-        createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX, coupon.getCouponId());
-        patchPaymentMethodDto = new PatchPaymentMethodDto(PaymentMethod.DEBIT_CARD);
+        saleItemCreateRequest = new SaleItemCreateRequest(product.getProductId(), 5);
+        saleCreateRequest = new SaleCreateRequest(List.of(saleItemCreateRequest), PaymentMethod.PIX, coupon.getCouponId());
+        salePaymentMethodRequest = new SalePaymentMethodRequest(PaymentMethod.DEBIT_CARD);
         pageable = PageRequest.of(0, 10);
     }
 
@@ -154,7 +154,7 @@ class SaleServiceTest {
             when(token.getName()).thenReturn(user.getUserId().toString());
 
             // ACT
-            ResponseSaleDto responseSaleDto = saleService.createSale(createSaleDto, token);
+            SaleResponse saleResponse = saleService.createSale(saleCreateRequest, token);
 
             // ASSERT
             verify(saleRepository).save(saleCaptor.capture());
@@ -164,12 +164,12 @@ class SaleServiceTest {
             assertEquals(PaymentMethod.PIX, saleSaved.getPaymentMethod());
             assertEquals(sale.getTotalPrice(), saleSaved.getTotalPrice());
 
-            assertNotNull(responseSaleDto);
-            assertEquals(sale.getSaleItems().size(), responseSaleDto.saleItems().size());
-            assertEquals(sale.getTotalPrice(), responseSaleDto.totalPrice());
-            assertEquals(sale.getPaymentMethod(), responseSaleDto.paymentMethod());
+            assertNotNull(saleResponse);
+            assertEquals(sale.getSaleItems().size(), saleResponse.saleItems().size());
+            assertEquals(sale.getTotalPrice(), saleResponse.totalPrice());
+            assertEquals(sale.getPaymentMethod(), saleResponse.paymentMethod());
 
-            verify(productRepository).findById(createSaleItemDto.productId());
+            verify(productRepository).findById(saleItemCreateRequest.productId());
             verify(productInventoryService, times(1)).updateQuantityAfterSale(anyList());
             verify(userRepository, times(1)).findById(user.getUserId());
         }
@@ -178,11 +178,11 @@ class SaleServiceTest {
         void shouldThrowExceptionWhenProductIsNotFound() {
             when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
             when(token.getName()).thenReturn(user.getUserId().toString());
-            when(productRepository.findById(createSaleItemDto.productId()))
+            when(productRepository.findById(saleItemCreateRequest.productId()))
                     .thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> saleService.createSale(createSaleDto, token));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.createSale(saleCreateRequest, token));
 
             verify(productInventoryService, never()).updateQuantityAfterSale(any());
 
@@ -194,7 +194,7 @@ class SaleServiceTest {
             // ARRANGE
             when(userRepository.findById(user.getUserId())).thenReturn(Optional.of(user));
             when(token.getName()).thenReturn(user.getUserId().toString());
-            when(productRepository.findById(createSaleItemDto.productId()))
+            when(productRepository.findById(saleItemCreateRequest.productId()))
                     .thenReturn(Optional.of(saleItem.getProduct()));
 
             doThrow(new RuntimeException("Inventory error"))
@@ -202,7 +202,7 @@ class SaleServiceTest {
                     .updateQuantityAfterSale(any());
 
             // ASSERT
-            assertThrows(RuntimeException.class, () -> saleService.createSale(createSaleDto, token));
+            assertThrows(RuntimeException.class, () -> saleService.createSale(saleCreateRequest, token));
 
             verify(saleRepository, never()).save(any());
         }
@@ -216,7 +216,7 @@ class SaleServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
 
             // ASSERTS
-            assertThrows(ActivityStatusException.class, () -> saleService.createSale(createSaleDto, token));
+            assertThrows(ActivityStatusException.class, () -> saleService.createSale(saleCreateRequest, token));
         }
     }
 
@@ -229,15 +229,15 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(salePage);
 
             //ACT
-            Page<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
+            Page<SaleResponse> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
 
             // ASSERT
             assertFalse(salesFound.isEmpty());
             assertEquals(1, salesFound.getTotalElements());
 
-            ResponseSaleDto responseSaleDto = salesFound.getContent().get(0);
-            assertEquals(sale.getTotalPrice(), responseSaleDto.totalPrice());
-            assertEquals(sale.getPaymentMethod(), responseSaleDto.paymentMethod());
+            SaleResponse saleResponse = salesFound.getContent().get(0);
+            assertEquals(sale.getTotalPrice(), saleResponse.totalPrice());
+            assertEquals(sale.getPaymentMethod(), saleResponse.paymentMethod());
 
             verify(saleRepository, times(1)).findAll(any(Specification.class), eq(pageable));
         }
@@ -249,7 +249,7 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(emptyPage);
 
             // ACT
-            Page<ResponseSaleDto> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
+            Page<SaleResponse> salesFound = saleService.getAllSales(Specification.unrestricted(), pageable);
 
             // ASSERT
             assertTrue(salesFound.isEmpty());
@@ -265,7 +265,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.of(sale));
 
             //ACT
-            ResponseSaleDto saleFound = saleService.getSaleById(sale.getSaleId());
+            SaleResponse saleFound = saleService.getSaleById(sale.getSaleId());
 
             // ASSERT
             assertEquals(sale.getTotalPrice(), saleFound.totalPrice());
@@ -327,22 +327,22 @@ class SaleServiceTest {
 
             // ACT
 
-            ResponseSaleDto responseSaleDto = saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto);
+            SaleResponse saleResponse = saleService.updatePaymentMethod(sale.getSaleId(), salePaymentMethodRequest);
 
             // ASSERT
             verify(saleRepository).save(saleCaptor.capture());
             Sale saleCaptured = saleCaptor.getValue();
 
-            assertNotNull(responseSaleDto);
+            assertNotNull(saleResponse);
 
-            assertEquals(sale.getTotalPrice(), responseSaleDto.totalPrice());
+            assertEquals(sale.getTotalPrice(), saleResponse.totalPrice());
             assertEquals(sale.getTotalPrice(), saleCaptured.getTotalPrice());
 
-            assertEquals(saleCaptured.getPaymentMethod(), patchPaymentMethodDto.paymentMethod());
-            assertEquals(responseSaleDto.paymentMethod(), patchPaymentMethodDto.paymentMethod());
+            assertEquals(saleCaptured.getPaymentMethod(), salePaymentMethodRequest.paymentMethod());
+            assertEquals(saleResponse.paymentMethod(), salePaymentMethodRequest.paymentMethod());
 
             assertNotEquals(oldPaymentMethod, saleCaptured.getPaymentMethod());
-            assertNotEquals(oldPaymentMethod, responseSaleDto.paymentMethod());
+            assertNotEquals(oldPaymentMethod, saleResponse.paymentMethod());
         }
 
         @Test
@@ -351,7 +351,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ResourceNotFoundException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(ResourceNotFoundException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), salePaymentMethodRequest));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).save(any(Sale.class));
         }
@@ -364,7 +364,7 @@ class SaleServiceTest {
 
 
             // ASSERT
-            assertThrows(RuntimeException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(RuntimeException.class, () -> saleService.updatePaymentMethod(sale.getSaleId(), salePaymentMethodRequest));
             verify(saleRepository, times(1)).save(any());
         }
 

@@ -1,7 +1,7 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.coupon.CreateCouponDto;
-import com.asafeorneles.gymstock.dtos.coupon.ResponseCouponDto;
+import com.asafeorneles.gymstock.dtos.coupon.CouponResponse;
+import com.asafeorneles.gymstock.dtos.coupon.CreateCouponRequest;
 import com.asafeorneles.gymstock.queryFilters.CouponQueryFilters;
 import com.asafeorneles.gymstock.services.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,8 +39,8 @@ public class CouponController {
     })
     @PreAuthorize("hasAuthority('coupon:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseCouponDto> createCoupon(@RequestBody @Valid CreateCouponDto createCouponDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.createCoupon(createCouponDto));
+    public ResponseEntity<CouponResponse> createCoupon(@RequestBody @Valid CreateCouponRequest createCouponRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.createCoupon(createCouponRequest));
     }
 
     @Operation(summary = "Get all coupons")
@@ -53,7 +53,7 @@ public class CouponController {
     })
     @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping
-    public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(@ParameterObject CouponQueryFilters filters){
+    public ResponseEntity<List<CouponResponse>> getAllCoupons(@ParameterObject CouponQueryFilters filters){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.getAllCoupons(filters.toSpecification()));
     }
 
@@ -68,7 +68,7 @@ public class CouponController {
     })
     @PreAuthorize("hasAuthority('coupon:read')")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseCouponDto> getCouponById(@PathVariable(value = "id") UUID id){
+    public ResponseEntity<CouponResponse> getCouponById(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.getCouponById(id));
     }
 
@@ -84,7 +84,7 @@ public class CouponController {
     })
     @PreAuthorize("hasAuthority('coupon:deactivate')")
     @PatchMapping("/deactivate/{id}")
-    public ResponseEntity<ResponseCouponDto> deactivateCoupon(@PathVariable(value = "id") UUID id){
+    public ResponseEntity<CouponResponse> deactivateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.deactivateCoupon(id));
     }
 
@@ -100,7 +100,7 @@ public class CouponController {
     })
     @PreAuthorize("hasAuthority('coupon:activate')")
     @PatchMapping("/activate/{id}")
-    public ResponseEntity<ResponseCouponDto> activateCoupon(@PathVariable(value = "id") UUID id){
+    public ResponseEntity<CouponResponse> activateCoupon(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(couponService.activateCoupon(id));
     }
 

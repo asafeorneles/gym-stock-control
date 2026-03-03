@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.mapper;
 
-import com.asafeorneles.gymstock.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDetailsDto;
-import com.asafeorneles.gymstock.dtos.category.ResponseCategoryDto;
-import com.asafeorneles.gymstock.dtos.category.UpdateCategoryDto;
+import com.asafeorneles.gymstock.dtos.category.CategoryDetailsResponse;
+import com.asafeorneles.gymstock.dtos.category.CategoryUpdateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryCreateRequest;
+import com.asafeorneles.gymstock.dtos.category.CategoryResponse;
 import com.asafeorneles.gymstock.entities.Category;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -16,15 +16,15 @@ public interface CategoryMapper {
     @Mapping(target = "activityStatus", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
-    Category toEntity(CreateCategoryDto createCategoryDto);
+    Category toEntity(CategoryCreateRequest categoryCreateRequest);
 
     @Mapping(target = "categoryId", ignore = true)
     @Mapping(target = "activityStatus", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "updatedDate", ignore = true)
-    void updateEntity(UpdateCategoryDto updateCategoryDto, @MappingTarget Category category);
+    void updateEntity(CategoryUpdateRequest categoryUpdateRequest, @MappingTarget Category category);
 
-    ResponseCategoryDetailsDto toResponseDetails(Category category);
+    CategoryDetailsResponse toResponseDetails(Category category);
 
-    ResponseCategoryDto toResponse(Category category);
+    CategoryResponse toResponse(Category category);
 }

@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.auth.LoginRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.LoginResponseDto;
-import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequestDto;
-import com.asafeorneles.gymstock.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gymstock.dtos.auth.LoginRequest;
+import com.asafeorneles.gymstock.dtos.auth.LoginResponse;
+import com.asafeorneles.gymstock.dtos.auth.RefreshTokenRequest;
+import com.asafeorneles.gymstock.dtos.auth.RegisterRequest;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
@@ -43,36 +43,36 @@ public class AuthService {
     final PasswordEncoder passwordEncoder;
     final private JwtDecoder jwtDecoder;
 
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public LoginResponse login(LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequestDto.username(),
-                        loginRequestDto.password()
+                        loginRequest.username(),
+                        loginRequest.password()
                 )
         );
 
-        User user = userRepository.findByUsername(loginRequestDto.username())
+        User user = userRepository.findByUsername(loginRequest.username())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh accessToken"));
 
         String token = tokenService.getAccessToken(authentication);
         String refreshTokenString = generateRefreshToken(authentication, user);
 
-        return new LoginResponseDto(token, refreshTokenString, tokenService.getAccessTokenExpiration());
+        return new LoginResponse(token, refreshTokenString, tokenService.getAccessTokenExpiration());
     }
 
     @Transactional
-    public void register(RegisterRequestDto registerRequestDto) {
-        if (userRepository.existsByUsername(registerRequestDto.username())) {
+    public void register(RegisterRequest registerRequest) {
+        if (userRepository.existsByUsername(registerRequest.username())) {
             throw new BusinessConflictException("Username already in use. Please enter another username.");
         }
 
-        Role role = roleRepository.findByName(registerRequestDto.role())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found by this name: " + registerRequestDto.role()));
+        Role role = roleRepository.findByName(registerRequest.role())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found by this name: " + registerRequest.role()));
 
         User user = User.builder()
-                .username(registerRequestDto.username())
-                .password(passwordEncoder.encode(registerRequestDto.password()))
+                .username(registerRequest.username())
+                .password(passwordEncoder.encode(registerRequest.password()))
                 .roles(Set.of(role))
                 .build();
 
@@ -83,8 +83,8 @@ public class AuthService {
 
 
     @Transactional
-    public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
-        String oldRefreshTokenString = refreshTokenRequestDto.refreshToken();
+    public LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+        String oldRefreshTokenString = refreshTokenRequest.refreshToken();
 
         Jwt jwt = validateRefreshToken(oldRefreshTokenString);
         String jti = jwt.getId();
@@ -110,12 +110,12 @@ public class AuthService {
         String token = tokenService.getAccessToken(authentication);
         String newRefreshTokenString = generateRefreshToken(authentication, user);
 
-        return new LoginResponseDto(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
+        return new LoginResponse(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
     }
 
     @Transactional
-    public void logout(RefreshTokenRequestDto refreshTokenRequestDto) {
-        String refreshTokenString = refreshTokenRequestDto.refreshToken();
+    public void logout(RefreshTokenRequest refreshTokenRequest) {
+        String refreshTokenString = refreshTokenRequest.refreshToken();
 
         Jwt jwt = validateRefreshToken(refreshTokenString);
         String jti = jwt.getId();

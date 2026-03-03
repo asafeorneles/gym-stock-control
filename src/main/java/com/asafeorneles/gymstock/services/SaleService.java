@@ -1,9 +1,9 @@
 package com.asafeorneles.gymstock.services;
 
-import com.asafeorneles.gymstock.dtos.SaleItem.CreateSaleItemDto;
-import com.asafeorneles.gymstock.dtos.sale.CreateSaleDto;
-import com.asafeorneles.gymstock.dtos.sale.PatchPaymentMethodDto;
-import com.asafeorneles.gymstock.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gymstock.dtos.SaleItem.SaleItemCreateRequest;
+import com.asafeorneles.gymstock.dtos.sale.SaleCreateRequest;
+import com.asafeorneles.gymstock.dtos.sale.SalePaymentMethodRequest;
+import com.asafeorneles.gymstock.dtos.sale.SaleResponse;
 import com.asafeorneles.gymstock.entities.*;
 import com.asafeorneles.gymstock.exceptions.ActivityStatusException;
 import com.asafeorneles.gymstock.exceptions.ResourceNotFoundException;
@@ -37,24 +37,24 @@ public class SaleService {
     final SaleMapper saleMapper;
 
     @Transactional
-    public ResponseSaleDto createSale(CreateSaleDto createSaleDto, JwtAuthenticationToken token) {
+    public SaleResponse createSale(SaleCreateRequest saleCreateRequest, JwtAuthenticationToken token) {
 
         User user = userRepository.findById(UUID.fromString(token.getName()))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found to create the sale."));
 
         Sale sale = new Sale();
-        List<SaleItem> saleItems = newSaleItemList(createSaleDto.saleItems(), productRepository, productInventoryService, sale);
+        List<SaleItem> saleItems = newSaleItemList(saleCreateRequest.saleItems(), productRepository, productInventoryService, sale);
 
         sale.setUser(user);
         sale.setSaleItems(saleItems);
-        sale.setPaymentMethod(createSaleDto.paymentMethod());
+        sale.setPaymentMethod(saleCreateRequest.paymentMethod());
 
         sale.calculateTotalPrice();
 
         productInventoryService.updateQuantityAfterSale(saleItems);
 
-        if (createSaleDto.couponId() != null){
-            UUID couponId = createSaleDto.couponId();
+        if (saleCreateRequest.couponId() != null){
+            UUID couponId = saleCreateRequest.couponId();
             Coupon coupon = couponRepository.findById(couponId)
                     .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + couponId));
 
@@ -67,10 +67,10 @@ public class SaleService {
         return saleMapper.toResponse(sale);
     }
 
-    public static List<SaleItem> newSaleItemList(List<CreateSaleItemDto> createSaleItemDtoList, ProductRepository productRepository, ProductInventoryService productInventoryService, Sale sale) {
+    public static List<SaleItem> newSaleItemList(List<SaleItemCreateRequest> saleItemCreateRequestList, ProductRepository productRepository, ProductInventoryService productInventoryService, Sale sale) {
         List<SaleItem> saleItems = new ArrayList<>();
 
-        for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
+        for (SaleItemCreateRequest createSaleItem : saleItemCreateRequestList) {
             UUID productId = createSaleItem.productId();
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + productId));
@@ -97,12 +97,12 @@ public class SaleService {
         return saleItems;
     }
 
-    public Page<ResponseSaleDto> getAllSales(Specification<Sale> specification, Pageable pageable) {
+    public Page<SaleResponse> getAllSales(Specification<Sale> specification, Pageable pageable) {
         return saleRepository.findAll(specification, pageable)
                 .map(saleMapper::toResponse);
     }
 
-    public ResponseSaleDto getSaleById(UUID id) {
+    public SaleResponse getSaleById(UUID id) {
         return saleRepository.findById(id)
                 .map(saleMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
@@ -117,7 +117,7 @@ public class SaleService {
     }
 
     @Transactional
-    public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethodDto patchPaymentMethod) {
+    public SaleResponse updatePaymentMethod(UUID id, SalePaymentMethodRequest patchPaymentMethod) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
 

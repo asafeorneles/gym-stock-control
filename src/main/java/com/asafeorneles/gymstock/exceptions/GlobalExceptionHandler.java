@@ -1,7 +1,7 @@
 package com.asafeorneles.gymstock.exceptions;
 
-import com.asafeorneles.gymstock.dtos.exception.ResponseException;
-import com.asafeorneles.gymstock.dtos.exception.ResponseExceptionValidation;
+import com.asafeorneles.gymstock.dtos.exception.ExceptionResponse;
+import com.asafeorneles.gymstock.dtos.exception.ExceptionValidationResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,9 +21,9 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ResponseException> resourceNotFoundExceptionHandler(ResourceNotFoundException e) {
+    public ResponseEntity<ExceptionResponse> resourceNotFoundExceptionHandler(ResourceNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.NOT_FOUND.value(),
                         "NOT_FOUND",
                         e.getMessage(),
@@ -33,9 +33,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ActivityStatusException.class)
-    public ResponseEntity<ResponseException> statusActivityExceptionHandler(ActivityStatusException e) {
+    public ResponseEntity<ExceptionResponse> statusActivityExceptionHandler(ActivityStatusException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.CONFLICT.value(),
                         "CONFLICT",
                         e.getMessage(),
@@ -45,9 +45,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BusinessConflictException.class)
-    public ResponseEntity<ResponseException> businessConflictExceptionHandler(BusinessConflictException e) {
+    public ResponseEntity<ExceptionResponse> businessConflictExceptionHandler(BusinessConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.CONFLICT.value(),
                         "CONFLICT",
                         e.getMessage(),
@@ -57,9 +57,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientProductQuantityException.class)
-    public ResponseEntity<ResponseException> insufficientProductQuantityExceptionHandler(InsufficientProductQuantityException e) {
+    public ResponseEntity<ExceptionResponse> insufficientProductQuantityExceptionHandler(InsufficientProductQuantityException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.CONFLICT.value(),
                         "CONFLICT",
                         e.getMessage(),
@@ -69,9 +69,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCouponException.class)
-    public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e) {
+    public ResponseEntity<ExceptionResponse> invalidCouponExceptionHandler(InvalidCouponException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         "BAD_REQUEST",
                         e.getMessage(),
@@ -90,7 +90,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseExceptionValidation(
+                new ExceptionValidationResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         "BAD_REQUEST",
                         "Validation error in the submitted fields.",
@@ -100,7 +100,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseExceptionValidation> handleConstraintViolation(ConstraintViolationException e) {
+    public ResponseEntity<ExceptionValidationResponse> handleConstraintViolation(ConstraintViolationException e) {
 
         Map<String, String> fieldErrors = new HashMap<>();
 
@@ -109,7 +109,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseExceptionValidation(
+                new ExceptionValidationResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         "BAD_REQUEST",
                         "Validation error in the submitted fields.",
@@ -120,9 +120,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ResponseException> handleUnauthorizedException(UnauthorizedException e) {
+    public ResponseEntity<ExceptionResponse> handleUnauthorizedException(UnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                new ResponseException(
+                new ExceptionResponse(
                         HttpStatus.UNAUTHORIZED.value(),
                         "UNAUTHORIZED",
                         e.getMessage(),

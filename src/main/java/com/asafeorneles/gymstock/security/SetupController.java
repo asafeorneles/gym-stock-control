@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.security;
 
-import com.asafeorneles.gymstock.dtos.auth.FirstAdminDto;
+import com.asafeorneles.gymstock.dtos.auth.FirstAdminRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,8 +32,8 @@ public class SetupController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping("/first-admin")
-    public ResponseEntity<String> createFirstAdmin(@RequestBody @Valid FirstAdminDto firstAdminDto){
-        setupService.createFirstAdmin(firstAdminDto);
+    public ResponseEntity<String> createFirstAdmin(@RequestBody @Valid FirstAdminRequest firstAdminRequest){
+        setupService.createFirstAdmin(firstAdminRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body("First admin created successfully");
     }
 }

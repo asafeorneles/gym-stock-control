@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.repositories;
 
-import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsDto;
+import com.asafeorneles.gymstock.dtos.analytics.TopSellingProductsResponse;
 import com.asafeorneles.gymstock.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,7 +25,7 @@ public interface AnalyticsRepository extends JpaRepository<Product, UUID> {
             """,
             nativeQuery = true
     )
-    List<TopSellingProductsDto> findTopSellingProducts(@Param(value = "limit") int limit);
+    List<TopSellingProductsResponse> findTopSellingProducts(@Param(value = "limit") int limit);
 
     @Query(value = """
             SELECT BIN_TO_UUID(SI.product_id) AS productId, P.name AS productName, SUM(SI.quantity) AS quantitySold
@@ -39,5 +39,5 @@ public interface AnalyticsRepository extends JpaRepository<Product, UUID> {
             """,
             nativeQuery = true
     )
-    List<TopSellingProductsDto> findTopSellingProductsByPeriod(@Param(value = "limit") int limit, @Param(value = "startDate") LocalDateTime startDate, @Param(value = "endDate") LocalDateTime endDate);
+    List<TopSellingProductsResponse> findTopSellingProductsByPeriod(@Param(value = "limit") int limit, @Param(value = "startDate") LocalDateTime startDate, @Param(value = "endDate") LocalDateTime endDate);
 }

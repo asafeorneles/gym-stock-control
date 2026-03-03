@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.security;
 
-import com.asafeorneles.gymstock.dtos.auth.FirstAdminDto;
+import com.asafeorneles.gymstock.dtos.auth.FirstAdminRequest;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.enums.RoleName;
@@ -24,7 +24,7 @@ public class SetupService {
     final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createFirstAdmin(FirstAdminDto firstAdminDto) {
+    public void createFirstAdmin(FirstAdminRequest firstAdminRequest) {
 
         if (userRepository.existsByRoles_Name(RoleName.ROLE_ADMIN.name())){
             throw new BusinessConflictException("There is already an admin in the system.");
@@ -34,8 +34,8 @@ public class SetupService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         User firstAdmin = User.builder()
-                .username(firstAdminDto.username())
-                .password(passwordEncoder.encode(firstAdminDto.password()))
+                .username(firstAdminRequest.username())
+                .password(passwordEncoder.encode(firstAdminRequest.password()))
                 .roles(Set.of(roleAdmin))
                 .build();
 

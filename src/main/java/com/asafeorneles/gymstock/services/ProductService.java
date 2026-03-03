@@ -30,8 +30,8 @@ public class ProductService {
     final ProductMapper productMapper;
 
     @Transactional
-    public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
-        UUID categoryId = createProductDto.categoryId();
+    public ProductDetailResponse createProduct(ProductCreateRequest productCreateRequest) {
+        UUID categoryId = productCreateRequest.categoryId();
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
@@ -39,14 +39,14 @@ public class ProductService {
             throw new ActivityStatusException("This category is inactivity!");
         }
 
-        if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
+        if (productRepository.existsByNameAndBrand(productCreateRequest.name(), productCreateRequest.brand())) {
             throw new BusinessConflictException("Product already exists");
         }
 
-        Product product = productMapper.toEntity(createProductDto);
+        Product product = productMapper.toEntity(productCreateRequest);
 
         ProductInventory productInventory = ProductInventoryFactory
-                .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
+                .newProductInventory(product, productCreateRequest.quantity(), productCreateRequest.lowStockThreshold());
 
         product.setInventory(productInventory);
         product.setCategory(category);
@@ -57,28 +57,28 @@ public class ProductService {
         return productMapper.toResponseDetails(product);
     }
 
-    public List<ResponseProductDto> getAllProducts(Specification<Product> specification) {
+    public List<ProductResponse> getAllProducts(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
                 .map(productMapper::toResponse)
                 .toList();
     }
 
-    public List<ResponseProductDetailDto> getAllProductsDetails(Specification<Product> specification) {
+    public List<ProductDetailResponse> getAllProductsDetails(Specification<Product> specification) {
         return productRepository.findAll(specification)
                 .stream()
                 .map(productMapper::toResponseDetails)
                 .toList();
     }
 
-    public ResponseProductDto getProductById(UUID id) {
+    public ProductResponse getProductById(UUID id) {
         return productRepository.findById(id)
                 .filter(Product::isActivity)
                 .map(productMapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
     }
 
-    public List<ResponseProductDetailDto> getAllProductsWithLowStock() {
+    public List<ProductDetailResponse> getAllProductsWithLowStock() {
         return productRepository.findProductWithLowStock()
                 .stream()
                 .map(productMapper::toResponseDetails)
@@ -86,17 +86,17 @@ public class ProductService {
     }
 
     @Transactional
-    public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
+    public ProductDetailResponse updateProduct(UUID id, ProductUpdateRequest productUpdateRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive.. You can only update activity products.");
 
-        UUID updateCategoryId = updateProductDto.categoryId();
+        UUID updateCategoryId = productUpdateRequest.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
-        productMapper.updateEntity(updateProductDto, product);
+        productMapper.updateEntity(productUpdateRequest, product);
         product.setCategory(category);
 
         productRepository.save(product);
@@ -118,11 +118,11 @@ public class ProductService {
 
 
     @Transactional
-    public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
+    public ProductDetailResponse deactivateProduct(UUID id, ProductDeactivateRequest productDeactivateRequest) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        product.inactivity(deactivateProductDto.reason());
+        product.inactivity(productDeactivateRequest.reason());
 
         productRepository.save(product);
 
@@ -130,7 +130,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ResponseProductDetailDto activateProduct(UUID id) {
+    public ProductDetailResponse activateProduct(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 

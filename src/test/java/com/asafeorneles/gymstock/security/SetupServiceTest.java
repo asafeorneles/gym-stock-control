@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.security;
 
-import com.asafeorneles.gymstock.dtos.auth.FirstAdminDto;
+import com.asafeorneles.gymstock.dtos.auth.FirstAdminRequest;
 import com.asafeorneles.gymstock.entities.Role;
 import com.asafeorneles.gymstock.entities.User;
 import com.asafeorneles.gymstock.exceptions.BusinessConflictException;
@@ -36,12 +36,12 @@ class SetupServiceTest {
     private SetupService setupService;
 
     private Role role;
-    private FirstAdminDto firstAdminDto;
+    private FirstAdminRequest firstAdminRequest;
 
     @BeforeEach
     void setUp() {
         role = new Role(1L, "ROLE_ADMIN");
-        firstAdminDto = new FirstAdminDto("admin", "123");
+        firstAdminRequest = new FirstAdminRequest("admin", "123");
     }
 
     @Nested
@@ -50,9 +50,9 @@ class SetupServiceTest {
         void shouldCreateFirstAdminSuccessfully() {
             when(userRepository.existsByRoles_Name("ROLE_ADMIN")).thenReturn(false);
             when(roleRepository.findByName(role.getName())).thenReturn(Optional.of(role));
-            when(passwordEncoder.encode(firstAdminDto.password())).thenReturn("encoded-password");
+            when(passwordEncoder.encode(firstAdminRequest.password())).thenReturn("encoded-password");
 
-            setupService.createFirstAdmin(firstAdminDto);
+            setupService.createFirstAdmin(firstAdminRequest);
 
             verify(userRepository, times(1)).save(any(User.class));
         }
@@ -61,7 +61,7 @@ class SetupServiceTest {
         void shouldThrowExceptionWhenAdminAlreadyExists(){
             when(userRepository.existsByRoles_Name("ROLE_ADMIN")).thenReturn(true);
 
-            assertThrows(BusinessConflictException.class, ()->  setupService.createFirstAdmin(firstAdminDto));
+            assertThrows(BusinessConflictException.class, ()->  setupService.createFirstAdmin(firstAdminRequest));
             verify(userRepository, never()).save(any(User.class));
         }
     }

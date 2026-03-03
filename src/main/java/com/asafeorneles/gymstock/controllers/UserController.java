@@ -1,6 +1,6 @@
 package com.asafeorneles.gymstock.controllers;
 
-import com.asafeorneles.gymstock.dtos.user.UserResponseDto;
+import com.asafeorneles.gymstock.dtos.user.UserResponse;
 import com.asafeorneles.gymstock.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,8 +32,8 @@ public class UserController {
     })
     @PreAuthorize("hasAuthority('user:read')")
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
-        List<UserResponseDto> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers(){
+        List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
@@ -45,8 +45,8 @@ public class UserController {
     })
     @PreAuthorize("hasAuthority('user:read')")
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable(name = "id") UUID id){
-        UserResponseDto user = userService.getUserById(id);
+    public ResponseEntity<UserResponse> getUserById(@PathVariable(name = "id") UUID id){
+        UserResponse user = userService.getUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
